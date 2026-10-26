@@ -1,12 +1,12 @@
 # Analog BD
 
-Version `0.1.5-experimental` restores valid stock playback and SETUP defaults when leaving Analog BD, preventing the working bank from being rejected on the next power-up. The owner reports FLEX persists on exact private build AB015FIX01 and directed publication with the remaining qualification limits recorded in TESTING.md. The 808/909 DSP sound is unchanged from 0.1.4.
+Version `0.1.6-experimental` adds two switches to SRC SETUP, the top-left TYPE switch (808 or 909) in place of the engine browser, and the 909's FIXD switch at the top middle (ON: every hit opens identically; OFF, the default: today's slight hit-to-hit variation). A double-tap on the TRACK key now opens the machine list. Both engines also run about 15% fewer DSP instructions on average with bit-identical output (TESTING.md). It is not yet tested on hardware. Version 0.1.5 restored valid stock playback and SETUP defaults when leaving Analog BD, preventing the working bank from being rejected on the next power-up. The owner reports FLEX persists on exact private build AB015FIX01 and directed publication with the remaining qualification limits recorded in TESTING.md. The 808/909 DSP sound is unchanged from 0.1.4.
 
 ## Overview
 
 Analog BD synthesizes 808 and 909 bassdrums inside the Octatrack DSP. The 909 update fits harmonic phase/asymmetry as well as magnitude, and refines the complete hit's envelope/DC response. Minimum and maximum Attack are fitted together with both fast onset and longer discharge following the knob. Tune uses the final recorded hits for its high endpoint, including a small settled-pitch difference; the sweep is not treated as evenly spaced knob positions.
 
-Pulse strength and shaped noise vary subtly between consecutive hits. Timing and pitch receive no random variation. The model's transient shapes remain more consistent than the recording, so individual-hit reproduction is approximate. The reference instrument has a decay modification and was recorded with decay a little above halfway; its full modified decay range is not reproduced.
+Pulse strength and shaped noise vary subtly between consecutive hits unless the FIXD switch (SRC SETUP, top middle) is ON. Timing and pitch receive no random variation. The model's transient shapes remain more consistent than the recording, so individual-hit reproduction is approximate. The reference instrument has a decay modification and was recorded with decay a little above halfway; its full modified decay range is not reproduced.
 
 Existing 0.1.3 smoothing is retained: 909 TDEP excursion/thump and both models' SAT position slew by 1/64 of the remaining difference per sample, about 1.44 ms at 44.1 kHz. SAT drive, makeup and coupling interpolate along that common position. First use seeds the patch directly and retriggers retain smoothing history. No new saved parameter is added.
 
@@ -16,17 +16,18 @@ All ranges are 0–127. Assignment defaults and stored control bytes remain unch
 
 | Control | Assignment default | Behavior |
 | --- | --- | --- |
-| PITCH | 64 | Body pitch; 909 spans approximately 30–100 Hz. |
-| DECAY | 80 | Original body-decay law for each model. |
+| PTCH | 64 | Body pitch; 909 spans approximately 30–100 Hz. |
+| DCAY | 80 | Original body-decay law for each model. |
 | TONE / TUNE | 80 | 808 transient tone / 909 pitch-envelope duration and fitted endpoint excursion, with a small settled-pitch difference. |
 | ATK | 64 | 808 transient control; 909 fast/long pulse strength with a retained minimum transient. |
-| SWEEP / TDEP | 64 | Original 808 sweep; smoothed 909 pitch excursion and associated thump. |
+| SWEP / TDEP | 64 | Original 808 sweep; smoothed 909 pitch excursion and associated thump. |
 | SAT | 0 | Shared desk drive with smoothed table interpolation. |
-| ACCNT | 64 | Accent in SRC SETUP. Loud combinations can reach the existing output limiter. |
-| LPF | 127 | Bypass at 0; existing nominal network at 64; 18 kHz at the assignment default. Use 0 for comparison with the direct-out recording. |
-| LOW / HIGH | 64 / 64 | Shared desk bands; 64 is neutral. High LOW/ACCNT can limit. |
+| ACNT | 64 | Accent in SRC SETUP. Loud combinations can reach the existing output limiter. |
+| LPF | 127 (OFF) | Bottom right. 0 is 500 Hz, ORIG (the existing nominal network) is 63, 126 is 18 kHz, and 127, fully clockwise and the default, is OFF. OFF is also the direct-out comparison. 0.1.5's default was 18 kHz, practically the same sound. |
+| LOW / HIGH | 64 / 64 | Shared desk bands; 64 is neutral. High LOW/ACNT can limit. |
+| FIXD | OFF | Top middle of SRC SETUP, an OFF/ON switch on both models. 909: ON sets the click strength to its mean (0.96) and restarts the noise from its seed at every hit, so the attack is identical each time (the filters' tails still carry a little over, about -64 dB); OFF is the 0.1.5 sound. 808: OFF scales each hit's trigger transient by 1 ± 4 % (a per-hit random step); ON is the 0.1.5 sound. Saved as 0 (OFF) or 1 (ON). |
 
-The former MODEL knob and final SRC SETUP encoder stay inactive. Choose 808 or 909 in the engine browser. AMP and both FX pages retain their existing behavior.
+SRC SETUP reads TYPE, FIXD, ACNT on the top row and LOW, HIGH, LPF below. The top-left TYPE switch chooses 808 (left) or 909 (right) and the 909's FIXD switch (top middle) is OFF or ON; both are stock's two-state switch, like AMP SETUP's SYNC. 0.1.6 removes the engine browser: a double-tap on the TRACK key opens the machine list, as on any track, and RIGHT on the machine row does nothing. TYPE is the same stored byte the browser edited, so projects saved with 0.1.5 keep their 808/909 choice; their ACNT, LPF and FIXD settings need setting again, because 0.1.6 moves them on the page.1.5 keep their 808/909 choice. AMP and both FX pages retain their existing behavior.
 
 ## Usage
 
@@ -34,9 +35,9 @@ Use separate Attack and Tune sweeps so their effects are easy to hear. For the d
 
 ### Compare the 909 direct-out response
 
-1. In a disposable project, hold FUNC and press SRC for SRC SETUP, choose ANALOG BD and press YES. Double-tap the TRACK key, choose 909 and confirm with YES. Set LOW/HIGH to 64 and SAT to 0.
-2. For the direct-out reference, set PITCH 49, DECAY 100, TUNE 0, TDEP 64, ACCNT 72 and LPF 0. Trigger repeated hits at 70 BPM and sweep ATK alone through 0–127, then hold it at one value to hear the small strength/noise differences.
-3. Hold ATK at 0 and sweep TUNE through its endpoints separately. Return SAT to 0 and TDEP to 64, then press STOP and let the tail finish. Choose 808 in the engine browser to compare; its saved knob values remain intact.
+1. In a disposable project, hold FUNC and press SRC for SRC SETUP, choose ANALOG BD and press YES. Turn the top-left TYPE switch to the right for the 909. Set LOW/HIGH to 64 and SAT to 0.
+2. For the direct-out reference, set PTCH 49, DCAY 100, TUNE 0, TDEP 64, ACNT 72 and LPF 127 (OFF). Trigger repeated hits at 70 BPM and sweep ATK alone through 0–127, then hold it at one value to hear the small strength/noise differences.
+3. Hold ATK at 0 and sweep TUNE through its endpoints separately. Return SAT to 0 and TDEP to 64, then press STOP and let the tail finish. Turn TYPE to the left to compare the 808; its saved knob values remain intact.
 
 ### Switch back to Flex
 
@@ -70,20 +71,16 @@ Many thanks to **Skee Mask**, who kindly recorded his TR-909 so we could match A
 
 These are actual MKII controller-emulator LCD pixels from the current AB015FIX01 image, with the real DSP enabled and transport stopped. [Capture provenance](media/capture.json) records the image, tool and disposable project. UI captures demonstrate controls and access; they do not prove physical audio or persistence. The owner auditioned 0.1.4 firmware-emulator audio separately; its DSP code is unchanged here.
 
-Hold FUNC and press SRC for SRC SETUP. ANALOG BD is assigned; LOW/HIGH 64 provide a neutral desk starting point. Use LPF 0 when comparing the direct-out reference, then adjust filtering separately.
+Hold FUNC and press SRC for SRC SETUP. ANALOG BD is assigned; LOW/HIGH 64 provide a neutral desk starting point. Use LPF OFF (127, fully clockwise) when comparing the direct-out reference, then adjust filtering separately.
 
-![Analog BD SRC SETUP with ACCNT, LPF, LOW and HIGH controls.](media/ot-setup.png)
+![Analog BD SRC SETUP with ACNT, LPF, LOW and HIGH controls.](media/ot-setup.png)
 
-Double-tap the assigned TRACK key to open the engine browser. Choose 909 with UP/DOWN or LEVEL and press YES. NO closes the browser without changing the engine.
+Press SRC for 909 PTCH, DCAY, TUNE, ATK, TDEP and SAT (the shared third label reads TONE in this capture). Try Attack alone with Tune fixed, then a separate Tune sweep; finish with STOP and let the tail decay.
 
-![Analog BD engine browser with 909 highlighted below 808.](media/ot-engines.png)
+![909 SRC main controls with PTCH, DCAY, TONE, ATK, TDEP and SAT.](media/ot-909.png)
 
-Press SRC for 909 PITCH, DECAY, TUNE, ATK, TDEP and SAT (the shared third label reads TONE in this capture). Try Attack alone with Tune fixed, then a separate Tune sweep; finish with STOP and let the tail decay.
+Turn TYPE to the left in SRC SETUP to compare the 808's retained engine. E is labelled SWEP in place of TDEP. The third encoder controls 808 TONE, labelled TONE in this capture; switching retains control bytes.
 
-![909 SRC main controls with PITCH, DECAY, TONE, ATK, TDEP and SAT.](media/ot-909.png)
+![808 SRC main page with PTCH, DCAY, TONE, ATK, SWEP and SAT labels.](media/ot-808.png)
 
-Choose 808 in the same browser to compare its retained engine. E is labelled SWEEP in place of TDEP. The third encoder controls 808 TONE, labelled TONE in this capture; switching retains control bytes.
-
-![808 SRC main page with PITCH, DECAY, TONE, ATK, SWEEP and SAT labels.](media/ot-808.png)
-
-**Audio preview.** [Listen](media/audio-preview.mp3). At 128 BPM: default 808 (0 s), 909 TUNE 0 (3.75 s) and 127 (5.625 s), slow TUNE 0→127 (7.5 s), built-in Mackie SAT 0→95 (15 s). Tune Depth stays at default 64, PITCH at 49 and 909 ATK at 0; only TUNE and SAT sweep. 22.5 s, no added gaps, one common gain. Offline render through Analog BD 0.1.5's own DSP, not a physical Octatrack recording. Exact engine identity, trigger timing and automation are in [audio-preview.json](media/audio-preview.json); [media rights](media/LICENSE.md) covers the generated audio.
+**Audio preview.** [Listen](media/audio-preview.mp3). At 128 BPM: default 808 (0 s), 909 TUNE 0 (3.75 s) and 127 (5.625 s), slow TUNE 0→127 (7.5 s), built-in Mackie SAT 0→95 (15 s). Tune Depth stays at default 64, PTCH at 49 and 909 ATK at 0; only TUNE and SAT sweep. 22.5 s, no added gaps, one common gain. Offline render through Analog BD 0.1.5's own DSP, not a physical Octatrack recording. Exact engine identity, trigger timing and automation are in [audio-preview.json](media/audio-preview.json); [media rights](media/LICENSE.md) covers the generated audio.

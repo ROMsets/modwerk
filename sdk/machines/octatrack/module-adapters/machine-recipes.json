@@ -6,7 +6,7 @@
    "schema": 1,
    "imageSha256": "642d27796f5ee0100eed8477266a7aff77d8614b40da50b554218170a19d49c5",
    "sources": {
-    "sdk/machines/octatrack/module-adapters/machine-ports.json": "d86987d0496f5c4c0d094cc9ac6f89872ee7f48a6541feba1285f680f06d2dd9",
+    "sdk/machines/octatrack/module-adapters/machine-ports.json": "beadd259d0212c52bbec3a5d1c35f36bf3b21e6a8ca6f2ce88ef92f9c24ee1a5",
     "sdk/machines/octatrack/module-adapters/machine_ports.py": "84935596134e44e8582ef99233ec8ca4a6e365dd8e1c2414c7e9853e504f6357",
     "sdk/octabam/modules/poly8/manifest.py": "1b9dfc90a6d5901ee3e453b7c3854363aad82f7267edc090b5f4439a57f12ddb",
     "sdk/octabam/modules/poly8/polyphony.s": "c86a3a783c46ecdbb3b44341098f0c094c65b9a8d11716835c2d28c2d2d6ecee",
@@ -57,7 +57,7 @@
    "schema": 1,
    "imageSha256": "eb2c30d222a63ed062dc07f057f172973cd35c7b7c2b952d3662be809d600df4",
    "sources": {
-    "sdk/machines/octatrack/module-adapters/machine-ports.json": "d86987d0496f5c4c0d094cc9ac6f89872ee7f48a6541feba1285f680f06d2dd9",
+    "sdk/machines/octatrack/module-adapters/machine-ports.json": "beadd259d0212c52bbec3a5d1c35f36bf3b21e6a8ca6f2ce88ef92f9c24ee1a5",
     "sdk/machines/octatrack/module-adapters/machine_ports.py": "84935596134e44e8582ef99233ec8ca4a6e365dd8e1c2414c7e9853e504f6357",
     "sdk/machines/octatrack/module-adapters/quantizer_runtime.py": "d40b72c887142cec0bed46b26de6269e7939f7453350b25ae24f48395777e6a4",
     "sdk/octabam/modules/quantizer/manifest.py": "0cb4a79f7cd68e1881cd1076a0f6ba2e132b1c199da3a2d4923906b443797602",
@@ -112,7 +112,7 @@
    "imageSha256": "11afe489011aa243c5bc579a824635f7d1334b17f0a21d554d897ceec3d3fb1a",
    "sources": {
     "sdk/machines/octatrack/module-adapters/fm_runtime.py": "ecf39c395bd8231d1dda340e1c6bc26e8473ba548cfa422f9a4ae4ff2bd6807e",
-    "sdk/machines/octatrack/module-adapters/machine-ports.json": "d86987d0496f5c4c0d094cc9ac6f89872ee7f48a6541feba1285f680f06d2dd9",
+    "sdk/machines/octatrack/module-adapters/machine-ports.json": "beadd259d0212c52bbec3a5d1c35f36bf3b21e6a8ca6f2ce88ef92f9c24ee1a5",
     "sdk/machines/octatrack/module-adapters/machine_ports.py": "84935596134e44e8582ef99233ec8ca4a6e365dd8e1c2414c7e9853e504f6357",
     "sdk/octabam/modules/synth/machine.s": "de9d849bf0b6e5d5ad747df32ae5806e7f9516674a14ac74b1c15d73d30d280a",
     "sdk/octabam/modules/synth/manifest.py": "7854330aca001d2841de2fb384f0ca8adb7497db49dacc56da2815c1f444c0e6",
@@ -401,7 +401,7 @@
    "schema": 1,
    "imageSha256": "12db7a860bad918abd20b40cd465d8d4742fcf58aa3763cdcbf0fab392fd33e9",
    "sources": {
-    "sdk/machines/octatrack/module-adapters/machine-ports.json": "d86987d0496f5c4c0d094cc9ac6f89872ee7f48a6541feba1285f680f06d2dd9",
+    "sdk/machines/octatrack/module-adapters/machine-ports.json": "beadd259d0212c52bbec3a5d1c35f36bf3b21e6a8ca6f2ce88ef92f9c24ee1a5",
     "sdk/machines/octatrack/module-adapters/machine_ports.py": "84935596134e44e8582ef99233ec8ca4a6e365dd8e1c2414c7e9853e504f6357",
     "sdk/machines/octatrack/module-adapters/vector_runtime.py": "9f0a0ffe8c0e3bacef6e6aad057f8f454b43b5daef32e9adb8fa2def0937ea39",
     "sdk/octabam/modules/vector/control.s": "c4f829e437ffbde1275c00827031b694a86011013d37269077e4696818323471",
@@ -470,16 +470,16 @@
   },
   "analog-bassdrum": {
    "schema": 1,
-   "imageSha256": "df5b6f76534b93231c6956d2be5ce148ec4f95dd105ca1a155c0061876ca29ed",
+   "imageSha256": "5c17ee5783c5ba625725dd2fbbbd9406a332f4e10f9b588fe9c3424cd1cb40c9",
    "sources": {
-    "sdk/machines/octatrack/module-adapters/analog_bd_runtime.py": "c3e3f51076e9ae3579e2e00d96d21eee87a2d12afa4ae69fb7067da3399fa17a",
-    "sdk/machines/octatrack/module-adapters/analog_bd_write_lease.py": "7ee9a7bfbefc43064b7578dd3c3e23146896e52b24af47aecd2d1ebe16ee3c30",
-    "sdk/machines/octatrack/module-adapters/machine-ports.json": "d86987d0496f5c4c0d094cc9ac6f89872ee7f48a6541feba1285f680f06d2dd9",
+    "sdk/machines/octatrack/module-adapters/analog_bd_runtime.py": "12f2533f35e02e78b1a0c66a32c8b6e182ada12bc1b641300070726c80691b91",
+    "sdk/machines/octatrack/module-adapters/analog_bd_write_lease.py": "606d923f5747486702b6932f1e4d6a5e614d14447a4bb2845079112d8a33da94",
+    "sdk/machines/octatrack/module-adapters/machine-ports.json": "beadd259d0212c52bbec3a5d1c35f36bf3b21e6a8ca6f2ce88ef92f9c24ee1a5",
     "sdk/machines/octatrack/module-adapters/machine_ports.py": "84935596134e44e8582ef99233ec8ca4a6e365dd8e1c2414c7e9853e504f6357",
     "sdk/machines/octatrack/module-adapters/stock_hook_write_lease.h": "ab14679a5faae84ef47d1ca37e46b3171da45252d12310e0b4458228be8334be",
-    "sdk/octabam/modules/analog-bassdrum/control.s": "644f10fbc534d8351424e55ee96c2d0ff2f39a1b691ad8a695422d1c05e37a3f",
-    "sdk/octabam/modules/analog-bassdrum/engine.s": "c86a6ac24326fb52f71dd766b1ccc25e5dfd8511028b162459447c279da48425",
-    "sdk/octabam/modules/analog-bassdrum/machine.s": "90f9ddb5c2a4cee47e0334c3cd35a7e92d42b0ee37eb3bbc8062cc7821e6aeb4",
+    "sdk/octabam/modules/analog-bassdrum/control.s": "44d69935467bd7f2752546fb6f104703bf592e8d7caa31ad3d2690298263f90c",
+    "sdk/octabam/modules/analog-bassdrum/engine.s": "a6ff5f2fe90dbe5570512bbe54dede4c8c8f86c4ef4656fce4c57a9b600c4805",
+    "sdk/octabam/modules/analog-bassdrum/machine.s": "a33e4d36da6a14e7e856c7c7088be2820a40c7fb7014917983c729931eed55a3",
     "sdk/octabam/modules/analog-bassdrum/manifest.py": "20fa1f744630354b3986a3ad82ac6a41744345796dc783891a4c9f0bd81c787e",
     "sdk/runtime/loader/build.py": "1bc1a0e66f9b93871f429c53c8adebb39d21b5da7b7b101bf0f1f7c558313407"
    },
@@ -506,17 +506,24 @@
      "purpose": "analog-bassdrum: authored bytes coinciding with stock (strict scan), reconstructed from the identical bytes of the user's OS; review"
     },
     {
-     "offset": 3460,
-     "length": 16,
-     "address": 1073802002,
-     "sha256": "cb540dc6673ad766d174c3076671b07e32f5064511c8cd575ccad58fb9d7934b",
+     "offset": 3346,
+     "length": 15,
+     "address": 1073934426,
+     "sha256": "532ccfdbeda1f24a92dff3bff914f0c178f143a4ba52c4c6f82a50696eabf852",
      "purpose": "analog-bassdrum: authored bytes coinciding with stock (strict scan), reconstructed from the identical bytes of the user's OS; review"
     },
     {
-     "offset": 3976,
+     "offset": 3514,
+     "length": 15,
+     "address": 1073934426,
+     "sha256": "532ccfdbeda1f24a92dff3bff914f0c178f143a4ba52c4c6f82a50696eabf852",
+     "purpose": "analog-bassdrum: authored bytes coinciding with stock (strict scan), reconstructed from the identical bytes of the user's OS; review"
+    },
+    {
+     "offset": 3988,
      "length": 14,
-     "address": 1074237950,
-     "sha256": "0939a4ca02b038ba72eec962b17c37d00c17ed240b08a4400cc3d071c8ebbe31",
+     "address": 1073905786,
+     "sha256": "caa0e06253f5c827a3bb071467edc7bbbc2e842d3c6dff6b538176b285d00adf",
      "purpose": "analog-bassdrum: authored bytes coinciding with stock (strict scan), reconstructed from the identical bytes of the user's OS; review"
     }
    ],

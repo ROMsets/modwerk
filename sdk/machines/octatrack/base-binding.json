@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "identity": "cc74d638543c243fe3ef457535571aeb33d238fe8983facb7f81fb218710e5a6",
+ "identity": "9976a5e8d9c6f46d421437c649374323a66c1e468c0ae383e6b2a403949bc843",
  "arena": 1089484256,
  "pool": 1087525504,
  "symbols": {
@@ -12,15 +12,15 @@
  "controllers": {
   "sidechain-compressor": "b2def9d705a0135f4bf89ae497a810a55c078413ef4af3936da0a0703eda00f1",
   "output-matrix": "a3a10bd91c711483bacde1a07b9e70e4f5cf9cad0276299faed33d6689c63f10",
-  "analog-bassdrum": "ef82fe90c8fd90f979a7d4934dbcbd13bfea88c7718dd93dd18d3f7bf5cebd7d"
+  "analog-bassdrum": "0775dc7e4ebef7ee0c29c3f22400e86ed7d2d5a2a0147dcaffddd43e54bf8ce5"
  },
  "variants": {
-  "tracks-main-cue": "cc74d638543c243fe3ef457535571aeb33d238fe8983facb7f81fb218710e5a6",
-  "tracks": "baf11ca43a7be6c4c9fc5bf8311a41c13e2f802fd72b3d2c212706edf13fc181",
-  "tracks-post": "61612b6caa2018a3d2f374a37026c5e3bf75a24c80b4019bcf2706774e9ac52f",
-  "main-cue": "0d0425e588ed70c0a7154902f61f7154ec9bc74870881f9ae6b91823f8c41a5d",
-  "main": "216ec7d2a38c83344967d0a2471619c6ba36b99b6edac1f5b7a7425879faa908",
-  "master": "40cc5aefc665790f53507ebabc58e278caf8b5c134adbdf87d4e11948699f66b",
-  "off": "3bf7c27f6cd8ea216c8bb19e1f6ed957777b91f6618b1c6d87a23641ccdde78c"
+  "tracks-main-cue": "9976a5e8d9c6f46d421437c649374323a66c1e468c0ae383e6b2a403949bc843",
+  "tracks": "39e5626e4851f93c03b6e0e25f929024a50b78ffe1e4ce3fc56139dad367eadb",
+  "tracks-post": "6f3a1d847846ee5df343b791bc0354eb4cc381f336a3f57aed6ad6982fcc1638",
+  "main-cue": "92e115d3754d11a579bfa594a36649864eecd9de6cb5991ed913ad194f3ef720",
+  "main": "d350af88f612588ef136fa47bc7f60a5c98d62a9899be12b79f98b29d1c8727b",
+  "master": "ec18fe98f013f5a27109d677ffeae875fe8299a29ebcf6b9fa85d7a92fdbe859",
+  "off": "40dad8a1dcb5da1bba8bba6c84e44deb8611125682a9b51a5b8110917ee5fb18"
  }
 }

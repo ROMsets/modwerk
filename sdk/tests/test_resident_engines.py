@@ -66,7 +66,7 @@ ACTIVE = {resident_dsp.SIDECHAIN: ('X 1056 3', 'X %d %d' % (0x628d, 0x30000), 'Y
 LIMIT = {('A', resident_dsp.ANALOG_BD): 160}
 # Each on-demand unit's words. Sidechain's 423 before the key bus split: its detector and table now, and the tap (with
 # #640's phase rule) as the key bus's own unit.
-UNIT_WORDS = {1: 322, 2: 675, 4: 998, 8: 101}  # 322 + 101 = 423: no word added or lost
+UNIT_WORDS = {1: 322, 2: 675, 4: 1009, 8: 101}  # 322 + 101 = 423: no word added or lost
 
 
 def read(name, path):
