@@ -114,11 +114,11 @@ static void leave_a(unsigned t) { left = (int)t + 1; }
 static unsigned assign_v(volatile uint8_t *part, unsigned t, unsigned on)
 { unsigned s = 60 + 30 * t; part[s] = on ? 'S' : 0; part[s + 1] = on ? '2' : 0; part[s + 2] = on ? 2 : 0; return on ? 1 : 0; }
 static int validate_v(uint8_t *part, int (*next)(uint8_t *)) { ++v_wraps; return next(part) + 1; }
-static const struct modwerk_machine A = {MODWERK_MACHINE_ABI, {'A', 'B'}, 1, 1, "ANALOG BD", MODWERK_MACHINE_PROTECT | MODWERK_MACHINE_POOL, 0, a_defaults,
+static const struct modwerk_machine A = {MODWERK_MACHINE_ABI, {'A', 'B'}, 1, 1, "ANALOG BD", MODWERK_MACHINE_PROTECT | MODWERK_MACHINE_POOL | MODWERK_MACHINE_SETUP_ALL, 0, a_defaults,
                                          0, admit_a, 0, page_a, 0, leave_a, 0, 0, 0, 0, render_a, 0, 0, 0, 0, {0}};
 static const struct modwerk_machine V = {MODWERK_MACHINE_ABI, {'S', '2'}, 1, 2, "VECTOR", MODWERK_MACHINE_POOL | MODWERK_MACHINE_BACKING, 0, 0,
                                          assign_v, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, validate_v, 0, 0, 0, {0}};
-static const struct modwerk_machine F = {MODWERK_MACHINE_ABI, {'F', 'M'}, 1, 1, "FM SYNTH", MODWERK_MACHINE_PROTECT | MODWERK_MACHINE_RENDER_FLEX, 0, a_defaults,
+static const struct modwerk_machine F = {MODWERK_MACHINE_ABI, {'F', 'M'}, 1, 1, "FM SYNTH", MODWERK_MACHINE_PROTECT | MODWERK_MACHINE_RENDER_FLEX | MODWERK_MACHINE_LIST, 0, a_defaults,
                                          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, render_f, 0, 0, 0, 0, {0}};
 static const struct modwerk_machine X = {2u, {'X', 'X'}, 1, 1, "FUTURE", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, {0}};
 static const struct modwerk_machine D = {MODWERK_MACHINE_ABI, {'D', 'V'}, 1, 1, "PRICED", MODWERK_MACHINE_PROTECT, 0, a_defaults,
@@ -178,12 +178,21 @@ int main(void)
     CHECK(mw_type(1, slot(2)) == 5 && mw_type(3, slot(2)) == 3 && mw_type(1, slot(3)) == 1);
     misc[0x0c] = 2; /* current track 3 */
     CHECK(mw_page(slot(2)) == 0x1234u && mw_page(slot(3)) == 0);
+    /* SRC SETUP encoder E edits only a SETUP_ALL machine's slot (Analog BD at row 5, not VECTOR at 6 or a stock row). */
+    CHECK(mw_row_setup_all(5) && !mw_row_setup_all(6) && !mw_row_setup_all(4));
     /* Its own assign signs and unsigns the track; leaving A tells A. */
     CHECK(mw_assign(part0(), 2, 6) == 1 && part0()[60 + 60] == 'S' && left == 3 && mw_type(1, slot(2)) == 6);
     CHECK(mw_assign(part0(), 2, 1) == 1 && part0()[60 + 60] == 0 && mw_type(1, slot(2)) == 1);
     /* F on track 3 and A on track 2: renders route to their machine; an unowned track goes to RENDER_FLEX F. */
     CHECK(mw_assign(part0(), 3, 7) == 1 && mw_assign(part0(), 2, 5) == 1);
     CHECK(mw_source_render_impl(2, 0, 0, 1) == 1 && mw_source_render_impl(3, 0, 0, 1) == 101 && mw_source_render_impl(4, 0, 0, 1) == 102);
+    /* The track window's column: F (LIST in this fixture) opens on the machine list, A and a stock FLEX track on the pool,
+     * a stock non-sample type on the list. */
+    *(uint8_t *)host_at(0x100b14ccu) = 3; CHECK(mw_window_column(slot(3)) == 0);
+    *(uint8_t *)host_at(0x100b14ccu) = 2; CHECK(mw_window_column(slot(2)) == 1);
+    *(uint8_t *)host_at(0x100b14ccu) = 4; CHECK(mw_window_column(slot(4)) == 1);
+    { const Part thru = 2; CHECK(mw_window_column(&thru) == 0); }
+    *(uint8_t *)host_at(0x100b14ccu) = 0;
     /* The validator: F's and A's tracks keep their 12 bytes away from stock's; V wraps it once; all restored. */
     unsigned before = part0()[0x2a + 90 + 6];
     int result = mw_validate(part0());

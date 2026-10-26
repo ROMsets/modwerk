@@ -426,6 +426,21 @@ uintptr_t mw_list_target(void)
     current(m, n, &who);
     return who && who->list_draw ? (uintptr_t)who->list_draw : (uintptr_t)mw_stock_list_draw;
 }
+/* The track window's column (0 the machine list, 1 the pool), from the selected track's type byte: stock's rule (STATIC
+ * and FLEX open on their pool), except that a LIST machine (one without a pool) opens on the list, as PICKUP does. */
+unsigned mw_window_column(const Part *type)
+{
+    const Machine *m[ROWS - 5u], *who = 0; unsigned n = machines(m);
+    if (valid_bank()) owner(m, n, current_part(), U8(0x100b14ccu) & 7u, &who);
+    if (who && who->flags & MODWERK_MACHINE_LIST) return 0;
+    return *type <= 1u;
+}
+/* SRC SETUP's editor skips encoder E (slot 10) for module machines, POLY8's hidden slot; a SETUP_ALL machine edits it. */
+unsigned mw_row_setup_all(unsigned row)
+{
+    const Machine *m[ROWS - 5u]; unsigned n = machines(m);
+    return row >= 5 && row < 5 + n && m[row - 5]->flags & MODWERK_MACHINE_SETUP_ALL;
+}
 unsigned mw_row_has_pool(unsigned row)
 {
     const Machine *m[ROWS - 5u]; unsigned n = machines(m);

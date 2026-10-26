@@ -219,6 +219,7 @@ The base patches these for its table readers; no package may patch them: contrib
 | 0x400786c8 | 6 | `ot_machines` | jmp mw_chooser_row | `c611970befafba97f882ab297bd19f0efe0c7d927bfd6110c53f03ad4b7da1c7` | machine chooser row highlight, by the list's row |
 | 0x400786ce | 2 | `ot_machines` | own | `04cd1c6d463ba6752ff68f9125991b1c4af983ae355b62366122ba2d47eee3b2` | machine chooser highlight bound: moveq #4+n |
 | 0x40078886 | 10 | `ot_machines` | jmp mw_chooser_open | `fe6cb52458c7d968dc467c1cd7721d832baf6bc2fac1826c8c10ed07fee2e7f8` | the machine list opens on the track's machine row |
+| 0x400788c4 | 12 | `ot_machines` | jmp mw_chooser_column | `2880ce77efc3e2a24682d51444fa9206a903380dc075dfd7e506c4a3a6573507` | the track window's column: a LIST machine opens on the machine list, as PICKUP |
 | 0x400791e4 | 8 | `ot_machines` | jmp mw_pool_open | `fa7132fac15d6e498fd0e73744e1f94218824f3f54d5b3bad6083b60363e9f14` | double-tap TRACK opens a machine's pool |
 | 0x40079248 | 4 | `ot_machines` | own | `8fbd3190028fe564c11b56e3e73e8eaf36925cbabf94164176eeb4c4f57bc6ac` | machine chooser rows: pea 5+n |
 | 0x4007981c | 6 | `ot_machines` | jmp mw_main_commit | `89c50ac3ca041fdf5647ec5ee2c3580f9a67dd79f0b5cc15ceadda4b9e9bede0` | machine chooser commit: assign/admit |

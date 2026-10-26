@@ -337,7 +337,7 @@
       "bytes": 1236,
       "sha256": "02d12ff6121c59e0e429a554b4743309b623db756432217f1560d4f1bb66d8ca",
       "path": "octatrack-modules/sidechain-compressor/0.1.2-experimental.mwrm",
-      "requiredBase": "0cce96de879073df23111b6180b84db4e4d3e2ad91da273a3ec4c3efced1494c"
+      "requiredBase": "cc74d638543c243fe3ef457535571aeb33d238fe8983facb7f81fb218710e5a6"
     },
     {
       "id": "output-matrix",
@@ -353,7 +353,7 @@
       "bytes": 3740,
       "sha256": "07081e26f23050bd4e5ccdda834c0de64dbae41988b63904bbab7c8c84582113",
       "path": "octatrack-modules/output-matrix/0.1.1-experimental.mwrm",
-      "requiredBase": "0cce96de879073df23111b6180b84db4e4d3e2ad91da273a3ec4c3efced1494c"
+      "requiredBase": "cc74d638543c243fe3ef457535571aeb33d238fe8983facb7f81fb218710e5a6"
     },
     {
       "id": "cc-map",
@@ -369,7 +369,7 @@
       "bytes": 966,
       "sha256": "c7cd39a5f645d69279d3a288c40b8366e6638acdc042cf0fe68dfb9964a68ea2",
       "path": "octatrack-modules/cc-map/0.1.2-experimental.mwrm",
-      "requiredBase": "0cce96de879073df23111b6180b84db4e4d3e2ad91da273a3ec4c3efced1494c"
+      "requiredBase": "cc74d638543c243fe3ef457535571aeb33d238fe8983facb7f81fb218710e5a6"
     },
     {
       "id": "quantize-live-rec-toggle",
@@ -430,7 +430,7 @@
       "bytes": 1818,
       "sha256": "ffd76eb8263d9eab8577a9a5dfbd9198f402d93b60d9e3231ef50f3bf466788f",
       "path": "octatrack-modules/recorder-loop-fix/0.1.0-experimental.mwrm",
-      "requiredBase": "0cce96de879073df23111b6180b84db4e4d3e2ad91da273a3ec4c3efced1494c"
+      "requiredBase": "cc74d638543c243fe3ef457535571aeb33d238fe8983facb7f81fb218710e5a6"
     },
     {
       "id": "analog-bassdrum",
@@ -446,7 +446,7 @@
       "bytes": 25822,
       "sha256": "af3f9b0ad96c3edbf09d8db6b54b76ae97bc3684efdcdedbacf2ff8123171ab4",
       "path": "octatrack-modules/analog-bassdrum/0.1.5-experimental.mwrm",
-      "requiredBase": "0cce96de879073df23111b6180b84db4e4d3e2ad91da273a3ec4c3efced1494c",
+      "requiredBase": "cc74d638543c243fe3ef457535571aeb33d238fe8983facb7f81fb218710e5a6",
       "requires": 0,
       "claims": 1,
       "entries": 1

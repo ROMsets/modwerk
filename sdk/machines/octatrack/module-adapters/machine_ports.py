@@ -23,7 +23,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 APP = HERE.parents[3]
 PORTS = HERE / 'machine-ports.json'
-FLAGS = {'PROTECT': 1, 'POOL': 2, 'RENDER_FLEX': 4, 'BACKING': 8}
+FLAGS = {'PROTECT': 1, 'POOL': 2, 'RENDER_FLEX': 4, 'BACKING': 8, 'SETUP_ALL': 16, 'LIST': 32}
 KINDS = {'executed': 1, 'modeled': 2, 'hardware': 3}  # loader.h runtime_cycles
 FIELDS = ('assign', 'admit_track', 'chooser_type', 'track_page', 'ui_tick', 'leave', 'pool_open', 'pool_left',
           'choice_left', 'list_draw', 'render', 'validate')  # struct modwerk_machine after abi, sig, label, flags, page, defaults

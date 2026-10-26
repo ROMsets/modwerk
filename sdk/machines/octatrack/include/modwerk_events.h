@@ -124,6 +124,8 @@ struct modwerk_machine {
 #define MODWERK_MACHINE_POOL 2u         /* its row has a pool or engine list (the title's chevron) */
 #define MODWERK_MACHINE_RENDER_FLEX 4u  /* its render is also offered FLEX tracks no machine owns */
 #define MODWERK_MACHINE_BACKING 8u      /* its page is STATIC's when its track's backing pool is STATIC */
+#define MODWERK_MACHINE_SETUP_ALL 16u   /* all six SRC SETUP encoders edit its slots; without it encoder E (slot 10) stays read-only, POLY8's hidden slot */
+#define MODWERK_MACHINE_LIST 32u       /* its track window (TRACK double tap) opens on the machine list, as PICKUP's; for a machine without a pool */
 
 /* ot_sequencer_rows (table, contribute {"to": "ot_sequencer_rows", "order", "data"}): PROJECT > CONTROL > SEQUENCER lists stock's three rows, then one per contributed label. The UI task. Contribute one struct modwerk_sequencer_rows: its rows, in order. The window shows stock's three rows and up to eight more; a row with a label an earlier row has is not shown; the getter and setter follow stock's rows' convention (CHAIN AFTER's 0x400659ec). */
 #define MODWERK_OT_SEQUENCER_ROWS 29
