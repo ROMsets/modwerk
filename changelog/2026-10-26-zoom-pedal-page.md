@@ -1,0 +1,1 @@
+Beta: a Zoom MultiStomp gets its pedal page, the Octatrack page for the pedal (`#zoom-ms-70cdr/pedal`, beta testers only). Over Web MIDI in Chrome or Edge it shows the pedal's model and firmware, lists what's on it and backs up every file into a zip. It writes nothing to the pedal yet. Visitors without the beta who open the address go to the machine's library.

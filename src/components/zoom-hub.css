@@ -1,0 +1,5 @@
+/* The Zoom pedal page (ZoomHub.tsx): the Octatrack page's layout (octatrack-link.css), plus its file list. */
+.zoom-files { list-style: none; margin: 10px 0 14px; padding: 0; columns: 3 160px; column-gap: 18px; }
+.zoom-files li { display: flex; justify-content: space-between; gap: 8px; padding: 3px 0; break-inside: avoid; font-size: 13px; }
+.zoom-files small { color: var(--muted); }
+.zoom-hub .hub-error { color: var(--danger, #e8868e); margin: 0 0 12px; }
