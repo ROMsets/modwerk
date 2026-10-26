@@ -18,97 +18,121 @@
   "presentation": {
     "label": "Digi Perform",
     "family": "Performance",
-    "summary": "Eight performance macros on knobs A-H: each moves one track parameter, per pattern.",
-    "overview": "Digi Perform adds a performance page to the original Digitakt, modelled on the Analog Four's performance macros. The page is a second page of the TRIG page (press TRIG again); the assignments are made in SETTINGS > PERFORM EDIT, or on the page itself with FUNC and a knob's push. Knobs A-H each move one parameter of one track. A knob spans the parameter's own range, 0-127 for most and shorter for lists such as the filter type, and picks up the parameter's current value when the page opens, so it never jumps. The eight assignments live in the pattern, so each pattern has its own and they are saved with the project. The change is added after the engine has smoothed and modulated the parameter, so it is never a parameter lock and never changes the stored value: leaving the page, opening the edit view or reloading the pattern puts the parameter back to what the sound stores.",
+    "summary": "Eight performance macros on knobs A-H: each moves one track parameter, or the same parameter of every track, per pattern.",
+    "overview": "Digi Perform adds a Perform page to the original Digitakt, modelled on the Analog Four’s performance macros. It is the second page of the TRIG page (press TRIG again). Knobs A-H each move one parameter of one track, or the same parameter of all eight audio tracks, as an offset added on top of the sound. A knob feels like the stock parameter knobs: the same acceleration, push-and-turn for larger steps, and FUNC and turn to jump between the parameter’s own snap values. A knob picks up the parameter’s current value when the page opens, so nothing jumps. The eight assignments live in the pattern, so each pattern has its own and they are saved with the project. They are made on the page itself with Perform Quick Assign (FUNC and a knob’s push), or in SETTINGS > PERFORM EDIT. The change is added after the engine has smoothed and modulated the parameter, so it is never a parameter lock and never changes the stored value: leaving the page, opening Perform Edit or reloading the pattern puts every parameter back to what the sound stores. With the sequencer playing, selecting another pattern leaves the offsets in place until that pattern starts, then they let go and the knobs show the new pattern’s values.",
     "highlights": [
-      "Eight macros on knobs A-H, each moving one track parameter.",
-      "Each assignment picks a track, one of the sound's parameters on the LFO, SRC, filter and AMP pages, and a direction, + or -.",
-      "Each knob spans its parameter's own range and picks up its current value, so nothing jumps; pushing a knob while turning it goes in larger steps.",
-      "Looks like the MIDI CC page: round knobs with the track's number in them and the parameter's name under, which becomes its value while turning; the header shows Name=value too.",
-      "FUNC + NO on the page reloads the pattern the stock way and the knobs pick up the saved values again.",
-      "Stored in the pattern's kit and saved with the project.",
-      "A parameter of a track can be assigned to one knob only; the knobs skip the ones already taken."
+      "Eight macros on knobs A-H, each moving one track parameter or the same parameter of all tracks.",
+      "Perform Quick Assign on the page itself: FUNC and a knob’s push, then choose the track and the parameter with the knob. Perform Edit in SETTINGS lists all eight and sets each one’s direction, + or -.",
+      "Knobs use the stock encoder acceleration and the parameter’s own range; FUNC and turn snaps to the parameter’s stock snap values, and the track and parameter choosers scroll like the SAMP selector.",
+      "Looks like the MIDI CC page: round knobs with the track’s number in them and the parameter’s name under, which becomes its value while turning.",
+      "Hold TRIG and press REC, STOP or PLAY to copy, paste or clear the page, as on the stock pages; the same key again undoes it.",
+      "Stored in the pattern’s kit and saved with the project; each pattern has its own set.",
+      "A new pattern’s knobs take over when it starts playing, not when it is selected. FUNC and NO reloads the pattern the stock way.",
+      "The chord setup, metronome, scale and microtiming/retrig screens are the stock ones: using them leaves the Perform page."
     ],
     "usage": [
-      "Assign a macro to a filter on several tracks and sweep them together while playing.",
-      "Build a transition: one knob raising reverb sends and lowering the amp volume on chosen tracks.",
-      "Copy a finished macro setup to every pattern before a set."
+      "Use a build containing Digi Perform and a pattern with a sounding sample on track 1. On the TRIG page press TRIG again to open the Perform page.",
+      "Perform Quick Assign: hold FUNC and push knob A, push to accept track 1, then push again to accept TUNE. Knob A now shows TUNE and the track’s number.",
+      "Play the pattern and turn knob A: track 1’s pitch moves and the value shows under the knob. Hold FUNC while turning to jump between the parameter’s own snap values.",
+      "Tap TRIG to leave: the pitch goes back to what the sound stores. The assignment stays in the pattern and is saved with the project, and SETTINGS > PERFORM EDIT lists it."
     ]
   },
   "access": {
-    "location": "TRIG page, press TRIG again; assignments in SETTINGS > PERFORM EDIT",
+    "location": "TRIG page, press TRIG again; Perform Edit in SETTINGS > PERFORM EDIT",
     "steps": [
-      "On the TRIG page press TRIG again to open the performance page. Hold FUNC and push an empty knob, turn it to choose the track (1-8 or ALL) and push; turn to choose the parameter and push. NO cancels.",
-      "Turn a knob to move its parameter. FUNC and a push on an assigned knob removes it. SETTINGS > PERFORM EDIT lists all eight knobs and sets each one's direction.",
+      "On the TRIG page press TRIG again to open the Perform page. Hold FUNC and push an empty knob (Perform Quick Assign): turn to choose the track (1-8 or ALL) and push, then turn to choose the parameter and push. NO cancels.",
+      "Turn a knob to move its parameter; hold FUNC while turning to snap. FUNC and a push on an assigned knob removes it.",
+      "SETTINGS > PERFORM EDIT lists all eight knobs and sets each one’s direction.",
       "A tap of TRIG leaves the page, as does any other page key."
     ],
-    "screenshots": []
+    "screenshots": [
+      "media/perform-page.png",
+      "media/settings.png"
+    ]
   },
   "controls": [
     {
       "name": "TRIG, pressed again on the TRIG page",
       "default": null,
-      "doc": "Opens the performance page over the TRIG page. Press TRIG again, or SRC, FLTR, AMP, LFO or a menu key, to leave. The trig keys, transport, FUNC, TRK and PAGE keep working under it.",
+      "doc": "Opens the Perform page over the TRIG page. Tap TRIG again, or press SRC, FLTR, AMP, LFO or a menu key, to leave. The trig keys, transport and the rest of the sequencer keep working under it.",
       "labels": null
     },
     {
-      "name": "Knobs A-H (play view)",
+      "name": "Knobs A-H (Perform page)",
       "default": null,
-      "doc": "Move the knob's parameter over its range. Each knob starts at the parameter's current value, so nothing jumps. The knob shows the value for a second after it moves. Push and turn for larger steps. Leaving the page puts every parameter back.",
+      "doc": "Move the knob’s parameter over its range, with the stock encoder acceleration; push and turn for larger steps. Each knob starts at the parameter’s current value, so nothing jumps. The value shows under the knob for a second after it moves. Leaving the page puts every parameter back.",
       "labels": null
     },
     {
-      "name": "FUNC + a knob's push (play view)",
+      "name": "FUNC + turn a knob (Perform page)",
       "default": null,
-      "doc": "On an empty knob, start assigning it: turn to choose the track (1-8 or ALL), push, turn to choose the parameter, push. NO cancels. On an assigned knob, remove the assignment.",
+      "doc": "Snaps the parameter to its own stock snap values, with the stock lock after each snap.",
       "labels": null
     },
     {
-      "name": "FUNC + NO (play view)",
+      "name": "FUNC + knob push (Quick Assign)",
       "default": null,
-      "doc": "Reloads the pattern as stock does; the knobs pick up the reloaded values again.",
+      "doc": "On an empty knob, start assigning it: turn to choose the track (1-8 or ALL) and push, then turn to choose the parameter and push. NO cancels. On an assigned knob, remove the assignment.",
       "labels": null
     },
     {
-      "name": "UP / DOWN or LEVEL (edit view)",
+      "name": "FUNC + NO (Perform page)",
       "default": null,
-      "doc": "Choose a row; the one under the cursor is shown inverted.",
-      "labels": null
-    },
-    {
-      "name": "YES or a knob's second push (edit view)",
-      "default": null,
-      "doc": "Make an assignment (track 1, FLT.FREQ, +) when the row is empty, or remove it. A first push on a knob only selects its row.",
-      "labels": null
-    },
-    {
-      "name": "Knob A (edit view)",
-      "default": null,
-      "doc": "The track whose parameter moves, 1-8, then ALL: the same offset on every audio track.",
-      "labels": null
-    },
-    {
-      "name": "Knob B (edit view)",
-      "default": null,
-      "doc": "The parameter: L1.* and L2.*, SRC.*, FLT.* or AMP.* of that track (or of every track).",
-      "labels": null
-    },
-    {
-      "name": "Knob C (edit view)",
-      "default": null,
-      "doc": "Direction: turn right for + (the knob raises the parameter), left for - (it lowers it).",
+      "doc": "Reloads the pattern as stock does; the offsets go and the knobs pick up the reloaded values again.",
       "labels": null
     },
     {
       "name": "Hold TRIG + REC / STOP / PLAY",
       "default": null,
-      "doc": "As the stock pages: copy the whole page (all eight tracks and parameters), paste it over the page, or clear every assignment. The same key again undoes the paste or clear. Holding TRIG shows the values instead of the labels; a tap of TRIG leaves the page. Plain REC, STOP and PLAY work as usual.",
+      "doc": "Copy the page (all eight assignments), paste it over the page, or clear every assignment. The same key again undoes the paste or clear. Holding TRIG shows the values instead of the labels; a tap of TRIG leaves the page. Plain REC, STOP and PLAY work as usual.",
       "labels": null
     },
     {
-      "name": "NO",
+      "name": "NO (Perform page)",
       "default": null,
-      "doc": "In the edit view, back to the play view, or to SETTINGS if the edit view was opened from there. In the play view it puts any moved knob back to its stored value and stays on the page; TRIG or another page key leaves.",
+      "doc": "Puts any moved knob back to its stored value and stays on the page; TRIG or another page key leaves.",
+      "labels": null
+    },
+    {
+      "name": "FUNC+TRK/PTN/PAGE, step + arrow",
+      "default": null,
+      "doc": "FUNC + TRK, FUNC + PTN, FUNC + PAGE, and a held step with LEFT/RIGHT or UP/DOWN leave the Perform page and open the stock screens, which behave exactly as stock. Press TRIG twice to come back.",
+      "labels": null
+    },
+    {
+      "name": "UP / DOWN or LEVEL (Perform Edit)",
+      "default": null,
+      "doc": "Choose a row; the one under the cursor is shown inverted.",
+      "labels": null
+    },
+    {
+      "name": "YES or second push (Perform Edit)",
+      "default": null,
+      "doc": "Make an assignment (track 1, SRC.TUNE, +) when the row is empty, or remove it. A first push on a knob only selects its row.",
+      "labels": null
+    },
+    {
+      "name": "Knob A (Perform Edit)",
+      "default": null,
+      "doc": "The track whose parameter moves, 1-8, then ALL: the same offset on every audio track.",
+      "labels": null
+    },
+    {
+      "name": "Knob B (Perform Edit)",
+      "default": null,
+      "doc": "The parameter: L1.* and L2.*, SRC.*, FLT.* or AMP.* of that track (or of every track).",
+      "labels": null
+    },
+    {
+      "name": "Knob C (Perform Edit)",
+      "default": null,
+      "doc": "Direction: turn right for + (the knob raises the parameter), left for - (it lowers it).",
+      "labels": null
+    },
+    {
+      "name": "NO (Perform Edit)",
+      "default": null,
+      "doc": "Back to the Perform page, or to the SETTINGS list when Perform Edit was opened from there; a second NO leaves SETTINGS.",
       "labels": null
     }
   ],
@@ -119,13 +143,17 @@
     ],
     "requires": [],
     "conflicts": [
+      "cc-names",
       "digimatrix"
     ],
     "limitations": [
-      "Cannot be installed with Digi Matrix: both keep their data in the same bytes of the pattern's kit and use the same hook site.",
-      "Parameters are the sound's slots 1-45, named as the Digitakt's pages name them; ranges come from the firmware's own table. FLT.DEL to FLT.ROUT are the filter's second page.",
-      "One assignment for each knob A-H; other mods that keep data in the same bytes of the kit (Digi EQ, Digi Poly) use only bytes this mod leaves alone.",
-      "Tested in the emulator only; hardware results are in TESTING.md when recorded."
+      "Cannot be installed with Digi Matrix: both keep their data in the same bytes of the pattern’s kit and use the same hook site.",
+      "Cannot be installed with cc-names: both replace the same pointer in the MIDI track page’s view (0x4018351c on OS 1.53, 0x4018381c on OS 1.54), so the configurator never offers them together.",
+      "Parameters are the sound’s slots 1-45, named as the Digitakt’s pages name them; ranges come from the firmware’s own table. FLT.DEL to FLT.ROUT are the filter’s second page.",
+      "One assignment for each knob A-H, and a track’s parameter can belong to one knob only; other mods that keep data in the same bytes of the kit (Digi EQ, Digi Poly) use only bytes this mod leaves alone.",
+      "Selecting another pattern while the sequencer is stopped reloads the offsets at once; while it plays, the new pattern’s knobs take over when it starts. This is detected from the audio engine’s own pattern bytes, and the author has seen it work on a unit.",
+      "After the stock chord, metronome, scale, microtiming or retrig screens, press TRIG twice to open the Perform page again.",
+      "Built for OS 1.53 and 1.54. The author’s hardware observations, with the OS release each was made on, are in TESTING.md."
     ]
   },
   "platform": {
@@ -147,12 +175,12 @@
     ]
   },
   "resources": {
-    "memoryBytes": null,
-    "fastBytes": null,
+    "memoryBytes": 17292,
+    "fastBytes": 0,
     "load": {
       "display": "Not measured yet",
       "method": "unmeasured",
-      "conditions": "Measure with every track playing, parameters modulated and the mod at its heaviest setting."
+      "conditions": "Measure with every track playing, parameters modulated and all eight macros assigned and moving."
     }
   },
   "evidence": {
@@ -165,7 +193,26 @@
   },
   "tests": {
     "report": "TESTING.md",
-    "summary": "Not tested yet."
+    "summary": "Built and linked by Modwerk’s vendored elekloader builder for OS 1.53 and 1.54; emulator checks of the pages on both releases; the author’s own observations on a unit are in TESTING.md. The evidence tier stays none until a version-matched hardware report is filed; audio timing, CPU load and project persistence across a power cycle are not qualified.",
+    "documentation": {
+      "tutorial": {
+        "title": "Quick tutorial: move a track’s pitch from the Perform page",
+        "steps": [
+          "Use a build containing Digi Perform and a pattern with a sounding sample on track 1. On the TRIG page press TRIG again to open the Perform page.",
+          "Perform Quick Assign: hold FUNC and push knob A, push to accept track 1, then push again to accept TUNE. Knob A now shows TUNE and the track’s number.",
+          "Play the pattern and turn knob A: track 1’s pitch moves and the value shows under the knob. Hold FUNC while turning to jump between the parameter’s own snap values.",
+          "Tap TRIG to leave: the pitch goes back to what the sound stores. The assignment stays in the pattern and is saved with the project, and SETTINGS > PERFORM EDIT lists it."
+        ]
+      },
+      "screenshots": [
+        "media/perform-page.png",
+        "media/assign-track.png",
+        "media/assigned.png",
+        "media/settings.png",
+        "media/perform-edit.png"
+      ],
+      "captureRecord": "media/capture.json"
+    }
   },
   "license": {
     "spdx": "GPL-3.0-or-later",
@@ -176,11 +223,91 @@
     {
       "path": "media/thumbnail.svg",
       "kind": "thumbnail",
-      "caption": "Digiperform thumbnail",
-      "alt": "Placeholder thumbnail for Digiperform",
+      "caption": "Digi Perform thumbnail",
+      "alt": "Eight macro knobs, one of them fanning out to several parameter curves.",
       "credit": "ROMsets",
       "license": "GPL-3.0-or-later",
-      "source": "Original placeholder from the Modwerk SDK template; replace with your own artwork."
+      "source": "Original illustration in the shared signal-art style"
+    },
+    {
+      "path": "media/perform-page.png",
+      "kind": "screenshot",
+      "caption": "The Perform page: TRIG pressed again on the TRIG page",
+      "alt": "The Perform page with eight empty knobs on the Digitakt monochrome LCD",
+      "credit": "Modwerk documentation capture; Elektron interface; ROMsets module",
+      "license": "LicenseRef-Digi-UI-Documentation",
+      "source": "original",
+      "capture": {
+        "type": "emulator",
+        "release": "1.54",
+        "moduleVersion": "0.1.0-experimental",
+        "imageSha256": "917b882f3acdde69d6dbc7b9a06f192dd3a23bc2c4d655a744dbc060b2f7b2bd",
+        "setup": "Pinned digiemu, firmware-native drawing, disposable first-boot project. No audio or cycle-timing qualification."
+      }
+    },
+    {
+      "path": "media/assign-track.png",
+      "kind": "screenshot",
+      "caption": "Perform Quick Assign: FUNC and a knob’s push, then turn to choose the track",
+      "alt": "Knob A being assigned: a solid ring with the track number 1 in it, the other knobs empty, on the Digitakt monochrome LCD",
+      "credit": "Modwerk documentation capture; Elektron interface; ROMsets module",
+      "license": "LicenseRef-Digi-UI-Documentation",
+      "source": "original",
+      "capture": {
+        "type": "emulator",
+        "release": "1.54",
+        "moduleVersion": "0.1.0-experimental",
+        "imageSha256": "917b882f3acdde69d6dbc7b9a06f192dd3a23bc2c4d655a744dbc060b2f7b2bd",
+        "setup": "Pinned digiemu, firmware-native drawing, disposable first-boot project. No audio or cycle-timing qualification."
+      }
+    },
+    {
+      "path": "media/assigned.png",
+      "kind": "screenshot",
+      "caption": "Knob A assigned to track 1’s TUNE",
+      "alt": "Knob A with track number 1 and the name TUNE under it, the other knobs empty, on the Digitakt monochrome LCD",
+      "credit": "Modwerk documentation capture; Elektron interface; ROMsets module",
+      "license": "LicenseRef-Digi-UI-Documentation",
+      "source": "original",
+      "capture": {
+        "type": "emulator",
+        "release": "1.54",
+        "moduleVersion": "0.1.0-experimental",
+        "imageSha256": "917b882f3acdde69d6dbc7b9a06f192dd3a23bc2c4d655a744dbc060b2f7b2bd",
+        "setup": "Pinned digiemu, firmware-native drawing, disposable first-boot project. No audio or cycle-timing qualification."
+      }
+    },
+    {
+      "path": "media/settings.png",
+      "kind": "screenshot",
+      "caption": "SETTINGS > PERFORM EDIT is the last row of the SETTINGS list",
+      "alt": "The SETTINGS list with the PERFORM EDIT row selected on the Digitakt monochrome LCD",
+      "credit": "Modwerk documentation capture; Elektron interface; ROMsets module",
+      "license": "LicenseRef-Digi-UI-Documentation",
+      "source": "original",
+      "capture": {
+        "type": "emulator",
+        "release": "1.54",
+        "moduleVersion": "0.1.0-experimental",
+        "imageSha256": "917b882f3acdde69d6dbc7b9a06f192dd3a23bc2c4d655a744dbc060b2f7b2bd",
+        "setup": "Pinned digiemu, firmware-native drawing, disposable first-boot project. No audio or cycle-timing qualification."
+      }
+    },
+    {
+      "path": "media/perform-edit.png",
+      "kind": "screenshot",
+      "caption": "Perform Edit lists all eight knobs: A moves SRC.TUNE of track 1, direction +",
+      "alt": "Perform Mode Edit with row A set to T1 SRC.TUNE + and rows B to F empty on the Digitakt monochrome LCD",
+      "credit": "Modwerk documentation capture; Elektron interface; ROMsets module",
+      "license": "LicenseRef-Digi-UI-Documentation",
+      "source": "original",
+      "capture": {
+        "type": "emulator",
+        "release": "1.54",
+        "moduleVersion": "0.1.0-experimental",
+        "imageSha256": "917b882f3acdde69d6dbc7b9a06f192dd3a23bc2c4d655a744dbc060b2f7b2bd",
+        "setup": "Pinned digiemu, firmware-native drawing, disposable first-boot project. No audio or cycle-timing qualification."
+      }
     }
   ]
 }
