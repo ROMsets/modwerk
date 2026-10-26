@@ -208,6 +208,7 @@ export default function App() {
   const allRoute = route === ALL_MACHINES || !!allCategory
   // A Zoom pedal's page (ZoomHub.tsx): #<machine>/pedal, beta only, over its own Web MIDI link.
   const zoomHub = betaUi ? parseZoomHubRoute(moduleRoute) : undefined
+  const zoomHubName = zoomHub?.device.name
   useEffect(() => { if (zoomHub && !mobileWorkspace) void beta().then(module => setZoomLink(link => link ?? module.createZoomLink())) }, [!!zoomHub, mobileWorkspace]) // eslint-disable-line react-hooks/exhaustive-deps
   const missingRoute=!zoomHub&&!faqRoute&&!projectsRoute&&!overviewRoute&&!allRoute&&!devicesRoute&&!machineView&&route!=='octatrack'&&!route.startsWith('octatrack/')&&!route.startsWith('device/')&&!forumRoute&&!accountRoute&&!developerRoute&&!['library',...LIBRARY_CATEGORIES,'module-sets','configuration','faq','credits','review','admin','privacy','impressum','community-rules','modding-guidelines','report-content'].includes(route)&&!route.startsWith('submit')&&!detailModule&&!communityModule&&!route.startsWith('module-set/')
   const filter = LIBRARY_CATEGORIES.find(category => category === route) ?? 'all'
@@ -319,10 +320,10 @@ export default function App() {
     else if (route === 'submit') setPageMetadata({ title: pageTitle('Start developing'), description: 'Build a mod for Elektron instruments: write it with the SDK, submit it through GitHub and get it reviewed for the Modwerk library.', url: new URL('submit/', appUrl).href })
     // A public thread owns its title and description, supplied by its static page and refreshed after loading.
     else if (!route.startsWith('forum/thread/')) {
-      const title = overviewRoute || allRoute || route === 'library' ? HOME_TITLE : pageTitle(zoomHub?'Your '+zoomHub.device.name:hubRoute?'Your Octatrack':machineView==='configuration'?currentDevice.name+' '+w.set:machineView?currentDevice.name+' modules':forumRoute?'Forum':accountRoute?(betaInvitationRoute?'Join the beta':'Account'):developerRoute?(developer?.user&&!route.startsWith('developer/complete')?'Creator settings':'Account'):faqRoute?'FAQ':route==='credits'?'Credits':route==='privacy'?'Privacy':route==='impressum'?'Impressum':route==='community-rules'?'Community rules':route==='modding-guidelines'?'Modding guidelines':route==='report-content'?'Report content':route==='configuration'?w.Set:route.startsWith('submit')?'Start developing':(route==='review'||route==='admin')?'Admin workspace':route.startsWith('module-set')?'Module sets':'Module library')
+      const title = overviewRoute || allRoute || route === 'library' ? HOME_TITLE : pageTitle(zoomHubName?'Your '+zoomHubName:hubRoute?'Your Octatrack':machineView==='configuration'?currentDevice.name+' '+w.set:machineView?currentDevice.name+' modules':forumRoute?'Forum':accountRoute?(betaInvitationRoute?'Join the beta':'Account'):developerRoute?(developer?.user&&!route.startsWith('developer/complete')?'Creator settings':'Account'):faqRoute?'FAQ':route==='credits'?'Credits':route==='privacy'?'Privacy':route==='impressum'?'Impressum':route==='community-rules'?'Community rules':route==='modding-guidelines'?'Modding guidelines':route==='report-content'?'Report content':route==='configuration'?w.Set:route.startsWith('submit')?'Start developing':(route==='review'||route==='admin')?'Admin workspace':route.startsWith('module-set')?'Module sets':'Module library')
       setPageMetadata({ title, description: HOME_DESCRIPTION, url: appUrl.href })
     }
-  }, [overviewRoute, projectsRoute, faqRoute, route,detailModule,digiMod,forumRoute,accountRoute,betaInvitationRoute,developerRoute,developer?.user,allRoute,machineView,currentDevice.name,w,hubRoute])
+  }, [overviewRoute, projectsRoute, faqRoute, route,detailModule,digiMod,forumRoute,accountRoute,betaInvitationRoute,developerRoute,developer?.user,allRoute,machineView,currentDevice.name,w,hubRoute,zoomHubName])
   const selection = resolveSelection(selectedIds)
   const availabilityError = moduleAvailabilityError(selectedIds, betaAccess)
   const stockFx2Kept = DSP_LOADER && (active?.keepStockFx2 ?? true)

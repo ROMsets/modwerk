@@ -29,12 +29,14 @@ export function ZoomHub({ device, view, link, header }: { device: DeviceProfile;
   const connected = status === 'ready' || status === 'reading', busy = status === 'reading' || status === 'connecting'
   const expected = ZOOM_DEVICE_IDS[device.id], other = connected && identity && expected !== undefined && identity.deviceId !== expected
   const model = identity?.model ?? device.name
-  const [files, setFiles] = useState<ZoomFile[]>(), [free, setFree] = useState<number>()
+  // What was read belongs to the pedal it was read from: gone when that pedal is.
+  const pedalKey = connected && identity ? identity.deviceId + ':' + identity.firmware : ''
+  const [onPedal, setOnPedal] = useState<{ key: string; files: ZoomFile[]; free?: number }>()
+  const files = onPedal && onPedal.key === pedalKey ? onPedal.files : undefined, free = files ? onPedal!.free : undefined
   const [backup, setBackup] = useState<{ url: string; name: string; files: number }>(), [error, setError] = useState<string>()
   useEffect(() => () => { if (backup) URL.revokeObjectURL(backup.url) }, [backup])
-  useEffect(() => { if (!connected) { setFiles(undefined); setFree(undefined) } }, [connected])
   const run = (work: () => Promise<void>) => { setError(undefined); work().catch(e => setError((e as Error).message)) }
-  const read = () => run(async () => { if (!link) return; setFiles(await link.listFiles()); setFree(await link.freeSpace()) })
+  const read = () => run(async () => { if (!link) return; const listed = await link.listFiles(), space = await link.freeSpace(); setOnPedal({ key: pedalKey, files: listed, free: space }) })
   const save = () => run(async () => {
     if (!link) return
     const { files: count, zip } = await link.backup(), stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-')
