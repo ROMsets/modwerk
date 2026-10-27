@@ -4,7 +4,7 @@
 
 Evidence tier: `none`. Nothing here is a filed hardware report; the author's own observations on a unit are listed below as they were reported.
 
-Source: `sdk/digitakt/modules/digiperform/src` at commit `d3e987a723e392d0ae4f66d7a3a30e06036ddcfb`. Modwerk's pinned toolchain compiled the source twice and produced the source-only packages in `sdk/imports/packages/digiperform/` (no stock bytes: addresses, lengths and SHA-256 guards only). The vendored elekloader builder (kit 0.6.0) then linked core 2.1 and Digi Perform into a local image on each release, with the owner's stock OS files, which stay on the author's computer:
+Source: `sdk/digitakt/modules/digiperform/src` at commit `21e098a73f442daff0fc82e7c437b6731179f4dd`. Modwerk's pinned toolchain compiled the source twice and produced the source-only packages in `sdk/imports/packages/digiperform/` (no stock bytes: addresses, lengths and SHA-256 guards only). The vendored elekloader builder (kit 0.6.0) then linked core 2.1 and Digi Perform into a local image on each release, with the owner's stock OS files, which stay on the author's computer:
 
 - OS 1.54: core 2.1 and Digi Perform 0.1.0-experimental, built and verified; image SHA-256 `917b882f3acdde69d6dbc7b9a06f192dd3a23bc2c4d655a744dbc060b2f7b2bd`. Digi Perform package SHA-256 `d789f0e709e5f1ea7455c52ac627bfb827a271dd729285ad2ec01be1063bb01d`.
 - OS 1.53: core 2.1 and Digi Perform 0.1.0-experimental, built and verified; image SHA-256 `017c016a29512b07b48b0d60c5dde36d64d7e3fe294e4e0783a17020771463bb`.
@@ -54,7 +54,7 @@ Not tested on a unit, or not reported: power-cycle persistence of the assignment
 
 ## Documentation capture — 26 October 2026
 
-Documentation version: `0.1.0-experimental`. Source revision: `d3e987a723e392d0ae4f66d7a3a30e06036ddcfb` (`sdk/digitakt/modules/digiperform`). The OS 1.54 image above was captured through real panel inputs in the pinned digiemu with firmware-native drawing (`hle=False`) and a disposable first-boot project. The capture script runs without the audio engine, so the knobs show their assignment but not live values. Only complete, unmodified LCD frames were kept at 6× integer scale, and every image was opened for review. The record is [capture.json](media/capture.json); the plan is [capture-plan.txt](media/capture-plan.txt).
+Documentation version: `0.1.0-experimental`. Source revision: `21e098a73f442daff0fc82e7c437b6731179f4dd` (`sdk/digitakt/modules/digiperform`). The OS 1.54 image above was captured through real panel inputs in the pinned digiemu with firmware-native drawing (`hle=False`) and a disposable first-boot project. The capture script runs without the audio engine, so the knobs show their assignment but not live values. Only complete, unmodified LCD frames were kept at 6× integer scale, and every image was opened for review. The record is [capture.json](media/capture.json); the plan is [capture-plan.txt](media/capture-plan.txt).
 
 - The Perform page with eight empty knobs.
 - Perform Quick Assign: choosing the track for knob A.

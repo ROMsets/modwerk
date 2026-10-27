@@ -9,7 +9,7 @@
   "stockSha256": "f78ba80fa7b1da5fb0e1ff61ad61e9e71aafe79f4364fc49679f3651353e3cf6",
   "source": {
     "repository": "https://github.com/repeat98/modwerk",
-    "revision": "d3e987a723e392d0ae4f66d7a3a30e06036ddcfb",
+    "revision": "21e098a73f442daff0fc82e7c437b6731179f4dd",
     "path": "sdk/digitakt/modules/digiperform"
   },
   "kit": {
