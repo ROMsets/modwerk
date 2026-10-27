@@ -98,7 +98,16 @@ export function ZoomHub({ device, view, link, header }: { device: DeviceProfile;
           <section className="hub-section" aria-labelledby="zoom-firmware-title">
             <h3 id="zoom-firmware-title">Firmware</h3>
             <p>{connected ? <>Your {model} runs firmware <b>{identity?.firmware || 'unknown'}</b>.</> : 'Connect your pedal to see its firmware.'} Effects here are tested on the MS-70CDR with Zoom’s firmware 2.10.</p>
-            <p>MIDISTOMP, a replacement firmware for the MS-70CDR 2.10, keeps Zoom’s effects and adds routing, a looper and a higher DSP limit. Flash it, or go back to Zoom’s firmware, with their own updaters; this page never flashes firmware.</p>
+            <table className="zoom-firmware">
+              <caption>Two routes: keep Zoom’s firmware and add files, or replace the firmware.</caption>
+              <thead><tr><th scope="col">Firmware</th><th scope="col">What you get</th><th scope="col">To install, and to go back</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Zoom’s firmware (2.10) with added effects</th><td>Zoom’s pedal as it is, plus effects, NAM captures and cabs added as files.</td><td>No reflash. Remove a file to undo it.</td></tr>
+                <tr><th scope="row"><a href="https://github.com/matujuice/zoom-ms-midistomp" target="_blank" rel="noreferrer">MIDISTOMP</a> 2.0, by Luca Matturro</th><td>Zoom’s effects, plus routing on two buses, PERFORM mode, a looper, metering and a DSP limit of 300 (MS-70CDR 2.10).</td><td>A reflash with its own updater. Back with Zoom’s 2.10 updater.</td></tr>
+                <tr><th scope="row">A fully custom firmware (in development)</th><td>Its own audio engine: USB audio, the pedal as a USB disk, ZDL and ZD2 effects and its own effect format.</td><td>A reflash. Details once its author releases it.</td></tr>
+              </tbody>
+            </table>
+            <p>This page never flashes firmware: each firmware has its own updater. Back up all files first (Backups).</p>
           </section>
           <section className="hub-section" aria-labelledby="zoom-connect-title">
             <h3 id="zoom-connect-title">Can’t connect?</h3>
