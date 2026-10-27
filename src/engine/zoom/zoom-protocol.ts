@@ -138,3 +138,7 @@ export function listWithout(list: number[], name: string): number[] | undefined 
 }
 /** A name the pedal accepts: at most 8 letters, digits or underscores, then .ZDL (it shortens longer ones, and two that shorten alike freeze it). */
 export const validEffectName = (name: string) => /^[A-Z0-9_]{1,8}\.ZDL$/.test(name)
+
+/** Effects this page may install or remove: added ones (group 8, IDs 403-957, the ranges in the ID ledger,
+ * docs/ZDL_MODULE_CONTRACT.md) until modules settle it. Zoom's own effects are never offered for removal. */
+export const isAddedEffect = (effect?: { gid: number; fxid: number }) => !!effect && effect.gid === 8 && effect.fxid >= 403 && effect.fxid <= 957

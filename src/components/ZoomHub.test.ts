@@ -2,7 +2,7 @@
 import { act, createElement } from 'react'
 import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { fakeEffect, fakeZoomPedal } from '../dev/zoom-pedal-fake'
+import { fakeEffect, fakeEffectList, fakeZoomPedal } from '../dev/zoom-pedal-fake'
 import { DEVICES_BY_ID } from '../devices/registry'
 import { parseZoomHubRoute, zoomHubHref, type ZoomHubView } from '../devices/zoom-hub-route'
 import { ZoomLink } from '../engine/zoom/zoom-link'
@@ -68,5 +68,49 @@ describe('the Zoom pedal page', () => {
   it('needs MIDI: without it, it says which browsers work', async () => {
     await render('status', new ZoomLink(null))
     expect(container.querySelector('[role=status]')?.textContent).toMatch(/Chrome or Edge on a computer/)
+  })
+})
+
+describe('installing and removing on the pedal page', () => {
+  const device = DEVICES_BY_ID['zoom-ms-70cdr']
+  const setup = async () => {
+    vi.stubGlobal('confirm', () => true)
+    const files = [fakeEffect('DELAY.ZDL', 7, 16, '1.00'), fakeEffect('LOOP.ZDL', 8, 480, '0.03'), fakeEffectList({ 7: ['DELAY.ZDL'], 8: ['LOOP.ZDL'] })]
+    const fake = fakeZoomPedal({ files }), link = new ZoomLink(() => Promise.resolve(fake.access), 200)
+    await link.connect()
+    await act(() => root.render(createElement(ZoomHub, { device, view: 'status', link })))
+    await click(button('Read the pedal'))
+    for (let i = 0; i < 100 && !open().querySelector('.zoom-files'); i++) await settle()
+    return fake
+  }
+  const until = async (done: () => boolean) => { for (let i = 0; i < 150 && !done(); i++) await settle() }
+
+  it('offers Remove only for added effects, never for Zoom’s own', async () => {
+    await setup()
+    const rows = [...open().querySelectorAll('.zoom-files li')].map(li => [li.querySelector('code')?.textContent, !!li.querySelector('button')])
+    expect(rows).toEqual([['DELAY.ZDL', false], ['LOOP.ZDL', true]])
+  })
+  it('installs a chosen file, then offers the list from before', async () => {
+    const fake = await setup(), input = open().querySelector<HTMLInputElement>('input[type=file]')!
+    const effect = fakeEffect('NAM1SMOK.ZDL', 8, 900, '0.26')
+    Object.defineProperty(input, 'files', { value: [new File([Uint8Array.from(effect.data)], 'nam1smok.zdl')], configurable: true })
+    await act(() => { input.dispatchEvent(new Event('change', { bubbles: true })) })
+    await until(() => /installed and read back/.test(open().textContent ?? ''))
+    expect(fake.files.find(f => f.name === 'NAM1SMOK.ZDL')?.data).toEqual(effect.data)
+    expect(open().querySelector<HTMLAnchorElement>('a[download^="pedal-FLST_SEQ"]')).not.toBeNull()
+  })
+  it('refuses a file outside the added range before writing anything', async () => {
+    const fake = await setup(), input = open().querySelector<HTMLInputElement>('input[type=file]')!
+    Object.defineProperty(input, 'files', { value: [new File([Uint8Array.from(fakeEffect('X.ZDL', 7, 99, '1.00').data)], 'X.ZDL')], configurable: true })
+    await act(() => { input.dispatchEvent(new Event('change', { bubbles: true })) })
+    await until(() => !!container.querySelector('.hub-error'))
+    expect(container.querySelector('.hub-error')?.textContent).toMatch(/installs added effects only/)
+    expect(fake.sent.some(m => m[4] === 0x60 && m[5] === 0x23)).toBe(false)
+  })
+  it('removes an added effect', async () => {
+    const fake = await setup()
+    await click([...open().querySelectorAll('.zoom-files button')][0])
+    await until(() => /LOOP\.ZDL removed/.test(open().textContent ?? ''))
+    expect(fake.files.some(f => f.name === 'LOOP.ZDL')).toBe(false)
   })
 })
