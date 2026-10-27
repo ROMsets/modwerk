@@ -10,3 +10,10 @@ Octatrack modules build on [octabam](https://github.com/sambanks/octabam) (MIT, 
 - OT UI captures follow [MODULE_UI_CAPTURES.md](../../../docs/MODULE_UI_CAPTURES.md).
 
 Recovery: hold FUNC while powering on, choose MIDI UPGRADE and send the stock .syx over 5-pin DIN MIDI.
+
+
+## Proposed sample-editor service
+
+The [sample-editor proposal](SAMPLE_EDITOR.md) is private staging, not a released
+base capability. Its only confirmed consumer is Beat Slicer; shared-site reuse
+and the index collision with MIDI events PR #857 remain owner-review decisions.

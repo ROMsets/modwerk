@@ -63,11 +63,11 @@ void modwerk_machine_flush_data(uint32_t a, uint32_t n) { CHECK(masked); (void)a
 uint8_t *modwerk_machine_code(uint32_t a) { return host_at(a); }
 void modwerk_machine_invalidate_code(void) {}
 /* The asm side (machine_registry.s). */
-static uint8_t seen[12], seen_keys[4]; static int stock_validations;
+static uint8_t seen[12], seen_keys[5]; static int stock_validations;
 int mw_stock_validate(uint8_t *part)
 {
     ++stock_validations; memcpy(seen, part + 0x2a + 30 * 3 + 6, 6); memcpy(seen + 6, part + 0x1da + 30 * 3 + 6, 6);
-    memcpy(seen_keys, part + 0x2fe + 30 * 3 + 6 + 2, 4); /* T4 FX2's page-2 slots 8-11 */
+    memcpy(seen_keys, part + 0x2fe + 30 * 3 + 6 + 1, 5); /* T4 FX2's page-2 slots 7-11 */
     return 11;
 }
 void mw_stock_pool_open(void) { ++stock_calls; }
@@ -266,19 +266,32 @@ int main(void)
     CHECK(mw_validate(part0()) == 11 && seen[0] == 0x70 && seen[11] == 0x7b);
     part0()[60 + 90] = 'D'; part0()[61 + 90] = 'V'; part0()[62 + 90] = 1;   /* a signature this base does not know */
     CHECK(mw_validate(part0()) == 11 && seen[0] == 0x70);
-    /* Beta finding 47: a set-up Sidechain Compressor (KEY T2, KFLT and KGN 64) on T4 FX2 shows stock its own COMPRESSOR
-     * defaults in slots 8-11 and keeps its bytes; stock's own KEY 127, another effect or a MON out of range reach stock. */
-    uint8_t *keys = (uint8_t *)part0() + 0x2fe + 90 + 6 + 2, fx2 = part0()[8 + 3], was[4];
-    memcpy(was, keys, 4); part0()[8 + 3] = 24; keys[0] = 2; keys[1] = 64; keys[2] = 64; keys[3] = 0;
-    CHECK(mw_validate(part0()) == 11 && seen_keys[0] == 0x7f && !seen_keys[1] && !seen_keys[2] && !seen_keys[3]);
-    CHECK(keys[0] == 2 && keys[1] == 64 && keys[2] == 64 && keys[3] == 0);
+    /* Beta finding 47 (#712): a set-up Sidechain Compressor on T4 FX2 shows stock its own COMPRESSOR defaults in
+     * slots 7-11 (1, 0x7f, 0, 0, 0) and keeps its bytes; 0.2.0's MON OFF (slot 7 = 2), KEY T2, KGN 64, KBAS 30, KWID
+     * OFF (127). seen_keys[] is slots 7-11 as stock sees them. */
+    uint8_t *keys = (uint8_t *)part0() + 0x2fe + 90 + 6 + 2, *mon = keys - 1, fx2 = part0()[8 + 3], was[5];
+    memcpy(was, mon, 5); part0()[8 + 3] = 24;
+    *mon = 2; keys[0] = 2; keys[1] = 64; keys[2] = 30; keys[3] = 127;
+    CHECK(mw_validate(part0()) == 11 && seen_keys[0] == 1 && seen_keys[1] == 0x7f && !seen_keys[2] && !seen_keys[3]
+          && !seen_keys[4]);
+    CHECK(*mon == 2 && keys[0] == 2 && keys[1] == 64 && keys[2] == 30 && keys[3] == 127);
+    *mon = 3;                                                                  /* MON on */
+    CHECK(mw_validate(part0()) == 11 && seen_keys[0] == 1 && seen_keys[1] == 0x7f && *mon == 3 && keys[3] == 127);
+    *mon = 0;                                                                  /* saved before 0.2.0: 0 or 1 */
+    CHECK(mw_validate(part0()) == 11 && seen_keys[1] == 0x7f && *mon == 0);
+    /* A set saved with 0.1.x (KEY, KFLT 64, KGN 64, MON 0 in slots 8-11; slot 7 still stock's 1) matches too. */
+    *mon = 1; keys[1] = 64; keys[2] = 64; keys[3] = 0;
+    CHECK(mw_validate(part0()) == 11 && seen_keys[1] == 0x7f && keys[1] == 64 && keys[2] == 64);
+    /* Stock's own KEY 127, a slot 7 or a slot 9-11 out of range, or another effect reach stock as they are. */
     keys[0] = 0x7f;
-    CHECK(mw_validate(part0()) == 11 && seen_keys[0] == 0x7f && seen_keys[1] == 64);
-    keys[0] = 2; keys[3] = 2;
-    CHECK(mw_validate(part0()) == 11 && seen_keys[0] == 2 && seen_keys[3] == 2);
-    keys[3] = 0; part0()[8 + 3] = 8;                                          /* DELAY */
-    CHECK(mw_validate(part0()) == 11 && seen_keys[0] == 2 && seen_keys[1] == 64);
-    part0()[8 + 3] = fx2; memcpy(keys, was, 4);
+    CHECK(mw_validate(part0()) == 11 && seen_keys[1] == 0x7f && seen_keys[2] == 64);
+    keys[0] = 2; *mon = 4;
+    CHECK(mw_validate(part0()) == 11 && seen_keys[0] == 4 && seen_keys[1] == 2 && seen_keys[2] == 64);
+    *mon = 2; keys[3] = 0x80;
+    CHECK(mw_validate(part0()) == 11 && seen_keys[1] == 2 && seen_keys[4] == 0x80);
+    keys[3] = 127; part0()[8 + 3] = 8;                                        /* DELAY */
+    CHECK(mw_validate(part0()) == 11 && seen_keys[0] == 2 && seen_keys[1] == 2 && seen_keys[2] == 64);
+    part0()[8 + 3] = fx2; memcpy(mon, was, 5);
     /* Its track renders stock's silent source, an unsigned FLEX track stock's FLEX. */
     part0()[60 + 90] = 'A'; part0()[61 + 90] = 'B'; part0()[62 + 90] = 1;
     silent = silent_renders; int flex = stock_renders;

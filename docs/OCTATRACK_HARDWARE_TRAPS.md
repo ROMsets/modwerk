@@ -607,10 +607,10 @@ loaded and the MODULES LOADED dialog appeared. The track screen's drawer is
 marks the display for the UI loop's flush (`0x46c7c72c`). It writes the screen's
 plane and globals, so call it only from the UI task (`ev_tick`, key and encoder
 handlers), never from the engine task that installs or from an interrupt. The
-base calls it on the UI tick once the live modules change (`runtime.c`). On the
-same MKII the fix base `2f575d3e` showed Output Matrix's own label right after the
-install. That build was made before a rebase onto newer main code; the same
-`runtime.c` is now in base `6650236a`. After a RAM-boot restore `2f575d3e` showed MNL with a solid bar that CUE left
+base calls it on the UI tick once the live modules change or the controller board
+writes or reverts an effect's page, then an open FX SETUP window's own draw
+(`runtime.c`, #882). On the same MKII the fix base `2f575d3e` showed Output Matrix's
+own label right after the install. After a RAM-boot restore it showed MNL with a solid bar that CUE left
 unchanged. A PROJECT menu stayed intact through an install and a removal. Flashed
 `6650236a` (same MKII, 20 October 2026): an install, the first boot's restore and a
 power cycle with six modules kept each left MNL with a solid bar, no key pressed.

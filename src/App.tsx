@@ -156,7 +156,6 @@ export default function App() {
   const phoneLayout = useSyncExternalStore(subscribePhoneLayout, getPhoneLayout, () => false)
   const mobileWorkspace = useMobileWorkspace()
   const presence = useMembersOnline(), online = presence?.online ?? null
-  useEffect(()=>trackPageView(route),[route])
   const { session, loading: sessionLoading, developer, catalog } = useCommunity()
   const betaAccess = hasBetaAccess(session), accessibleModules = availableModules(betaAccess)
   const detailModule = moduleRoute.startsWith('module/') ? accessibleModules.find((module) => module.id === moduleRoute.slice(7)) : undefined
@@ -215,6 +214,10 @@ export default function App() {
   const hubRoute = betaUi && (route === 'octatrack' || route.startsWith('octatrack/') || route === 'configuration')
   // The Octatrack page's list: the unit's own pages (#octatrack is Status), and #configuration for the set you edit.
   const hubView: HubView = route === 'configuration' ? 'set' : (['backups', 'samples', 'setup'] as const).find(view => route === 'octatrack/' + view) ?? 'status'
+  useEffect(() => {
+    // Wait for access/catalog resolution; redirecting unit routes do not render a page.
+    if (!sessionLoading && !((route === 'octatrack' || route.startsWith('octatrack/')) && !betaUi)) trackPageView(route, missingRoute && !pausedModule)
+  }, [route, sessionLoading, betaUi, missingRoute, pausedModule])
   const octatrackRoute = hubRoute || route === 'library' || route === 'configuration' || route === 'module-sets' || route.startsWith('module') || LIBRARY_CATEGORIES.includes(route as typeof LIBRARY_CATEGORIES[number])
   // The selected machine follows library routes and is remembered for the rest of the app.
   const remembered = rememberedDevice()
@@ -493,7 +496,7 @@ export default function App() {
         <div className="sidebar-section-label configuration-label"><span>Configurations</span><button className="icon-button" aria-label={'New ' + (machineCanConfigure ? currentDevice.name : 'Octatrack') + ' configuration'} disabled={!ready} onClick={() => newConfiguration(machineCanConfigure ? currentDevice.id : 'octatrack')}><Icon name="plus" size={18} /></button></div>
         <div className="configuration-launcher"><button type="button" className="configuration-browse" onClick={event => { event.currentTarget.focus(); setConfigurationsOpen(true) }}><Icon name="file" size={17} /><span>Browse configurations</span><small>{workspace.configurations.length}</small></button><button type="button" className="configuration-recent" disabled={!sidebarConfiguration} onClick={() => { const item = allMachines ? storedActive : machineActive; if (item) changeConfiguration(item.id) }}>{sidebarConfiguration ? <><span>{sidebarConfiguration.name}</span><small>{DEVICES_BY_ID[configurationDevice(sidebarConfiguration)].name} · current</small></> : <><span>No configuration yet</span><small>Saved on this device</small></>}</button></div>
         </>}
-        <div className="sidebar-section-label community-label">Community & help</div><nav className="sidebar-nav community-nav" aria-label="Community and help"><div className="sidebar-nav-row"><a href="#forum" className={forumRoute?'active':''}><Icon name="message"/><span>Forum</span></a>{presence?.online ? <MembersOnlineChip presence={presence}/> : null}</div><a href="#projects" className={projectsRoute ? 'active' : ''} aria-current={projectsRoute ? 'page' : undefined}><Icon name="external"/><span>Other projects</span></a>{!DEVELOP_HIGHLIGHT && <a href="#submit" className={route.startsWith('submit') ? 'active' : ''}><Icon name="plus"/><span>Start developing</span></a>}<a href="#faq" className={faqRoute ? 'active' : ''} aria-current={faqRoute ? 'page' : undefined}><Icon name="help" /><span>FAQ<span className="help-guide-label"> & flashing guide</span></span></a><a href="#credits" className={route === 'credits' ? 'active' : ''} aria-current={route === 'credits' ? 'page' : undefined}><Icon name="heart" /><span>Credits &amp; acknowledgements</span></a></nav>
+        <div className="sidebar-section-label community-label">Community & help</div><nav className="sidebar-nav community-nav" aria-label="Community and help"><div className="sidebar-nav-row"><a href="#forum" className={forumRoute?'active':''}><Icon name="message"/><span>Forum</span></a>{presence?.online ? <MembersOnlineChip presence={presence}/> : null}</div><a href="#projects" className={projectsRoute ? 'active' : ''} aria-current={projectsRoute ? 'page' : undefined}><Icon name="external"/><span>Other projects</span></a>{!DEVELOP_HIGHLIGHT && <a href="#submit" className={route.startsWith('submit') ? 'active' : ''}><Icon name="plus"/><span>Start developing</span></a>}<a href="#faq" className={faqRoute ? 'active' : ''} aria-current={faqRoute ? 'page' : undefined}><Icon name="help" /><span>FAQ<span className="help-guide-label"> & flashing guide</span></span></a><a href="#credits" className={route === 'credits' ? 'active' : ''} aria-current={route === 'credits' ? 'page' : undefined}><Icon name="heart" /><span>Credits &amp; acknowledgements</span></a><a href="#modding-guidelines" className={route === 'modding-guidelines' ? 'active' : ''} aria-current={route === 'modding-guidelines' ? 'page' : undefined}><Icon name="file" /><span>Modding guidelines</span></a></nav>
         <div className="sidebar-spacer" />
         <div className="sidebar-bottom">
         <AccountMenu route={route} />

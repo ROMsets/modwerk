@@ -335,18 +335,23 @@ uint32_t mw_page(const Part *ptr)
     if (t < 8) owner(m, n, current_part(), (unsigned)t, &who); else who = 0;
     return who && who->track_page ? who->track_page(ptr) : 0;
 }
-/* Sidechain Compressor keeps KEY, KFLT, KGN and MON in stock COMPRESSOR's page-2 slots 8-11 (Part 0x2fe + 30 t + 6 fx
- * + 2..5), which stock's descriptor declares with its own ranges and defaults 0x7f/0/0/0. Before the saved set is
- * back, the boot's battery restore judged a set-up side-chain (KEY OFF..T8, KFLT and KGN 64) by those ranges and
- * refused the whole bank (beta finding 47, as finding 24 above). Stock judges its own defaults there instead, and the
- * side-chain's bytes come back; a KEY above T8 is stock's own value and goes to stock as it is. */
+/* Sidechain Compressor keeps MON, KEY, KGN, KBAS and KWID in stock COMPRESSOR's page-2 slots 7-11 (Part 0x2fe + 30 t
+ * + 6 fx + 1..5). Stock's descriptor declares slot 7 with 2 values (default 1) and slots 8-11 with 128, 2, 128 and 128
+ * (defaults 0x7f/0/0/0). Before the saved set is back, the boot's battery restore judged a set-up side-chain by those
+ * ranges, refused KGN (slot 9) above 1 and with it the whole bank (beta finding 47, as finding 24 above; #712). Stock
+ * judges its own defaults in slots 7-11 instead, and the side-chain's bytes come back. A side-chain is: MON 0..3
+ * (0.2.0 stores 2 = OFF, 3 = ON, its page declares 4 values; 0 and 1 are a set saved before, which the module turns
+ * OFF; stock's count of 2 would refuse 2 and 3, so slot 7 is shown stock's default 1 too), KEY OFF..T8, KGN, KBAS and
+ * KWID 0..127. Since 0.2.0 slot 11 is KWID (127 = OFF), where 0.1.x kept MON (0/1); a set saved with 0.1.x (slot 7
+ * still stock's 1) matches too. A KEY above T8 is stock's own value and goes to stock as it is. */
 #define COMPRESSOR 24u
 #define FX_SETUP 0x2feu
-static const uint8_t compressor_slots[4] = {0x7f, 0, 0, 0};
+static const uint8_t compressor_slots[5] = {1, 0x7f, 0, 0, 0};  /* slots 7-11 */
 static unsigned sidechain(const Part *part, unsigned t, unsigned fx)
 {
-    unsigned at = FX_SETUP + 30 * t + 6 * fx + 2;
-    return part[8 * fx + t] == COMPRESSOR && part[at] <= 8 && part[at + 1] < 0x80 && part[at + 2] < 0x80 && part[at + 3] <= 1 ? at : 0;
+    unsigned at = FX_SETUP + 30 * t + 6 * fx + 1;  /* slot 7, MON */
+    return part[8 * fx + t] == COMPRESSOR && part[at] <= 3 && part[at + 1] <= 8 && part[at + 2] < 0x80 && part[at + 3] < 0x80
+        && part[at + 4] < 0x80 ? at : 0;
 }
 /* The stock validator never sees a PROTECT machine's 12 FLEX bytes, nor a known absent one's (the boot's battery
  * restore, above), nor a side-chain's four; machines' validate wrap it in row order. */
@@ -360,7 +365,7 @@ static int next_validator(uint8_t *part)
 int mw_validate(Part *part)
 {
     const Machine *m[ROWS - 5u], *who; unsigned n = machines(m), mask = 0;
-    uint8_t saved[8][12], keys[8][2][4];
+    uint8_t saved[8][12], keys[8][2][5];
     unsigned key_at[8][2];
     const Part *stock = AT(0x400d320cu);
     for (unsigned t = 0; t < 8; ++t) {
@@ -371,7 +376,7 @@ int mw_validate(Part *part)
         }
         for (unsigned fx = 0; fx < 2; ++fx)
             if ((key_at[t][fx] = sidechain(part, t, fx)))
-                for (unsigned k = 0; k < 4; ++k) keys[t][fx][k] = part[key_at[t][fx] + k], part[key_at[t][fx] + k] = compressor_slots[k];
+                for (unsigned k = 0; k < 5; ++k) keys[t][fx][k] = part[key_at[t][fx] + k], part[key_at[t][fx] + k] = compressor_slots[k];
     }
     for (unsigned k = 0; k < n; ++k) wrapping[k] = m[k];
     wraps = n; depth = 0;
@@ -381,7 +386,7 @@ int mw_validate(Part *part)
         if (mask & 1u << t)
             for (unsigned k = 0; k < 12; ++k) { unsigned at = (k < 6 ? 0x2a : 0x1da) + 30 * t + 6 + k % 6; part[at] = saved[t][k]; }
         for (unsigned fx = 0; fx < 2; ++fx)
-            if (key_at[t][fx]) for (unsigned k = 0; k < 4; ++k) part[key_at[t][fx] + k] = keys[t][fx][k];
+            if (key_at[t][fx]) for (unsigned k = 0; k < 5; ++k) part[key_at[t][fx] + k] = keys[t][fx][k];
     }
     return result;
 }
