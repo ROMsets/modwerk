@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "sources": [
     "src/pipo.c",
+    "src/snap.c",
     "src/audio.s"
   ],
   "defsym": {},
@@ -15,7 +16,9 @@
   "storage": [],
   "claims": [
     "ui:SAMPLE page LOP value PIPO and its three-position switch",
-    "param:LOP range OFF/ON/PIPO, its value text and icon"
+    "param:LOP range OFF/ON/PIPO, its value text and icon",
+    "ui:FUNC + SAMPLE STA turn",
+    "ui:FUNC + SAMPLE END turn"
   ],
   "requires": [],
   "derive": null,
@@ -29,13 +32,15 @@
         "pipo_loop_icon_ctx": "0x419a5770",
         "pipo_loop_icon3": "0x400fef4a",
         "pipo_loop_icon_frames": "0x419f03cc",
-        "pipo_loop_icon_resume": "0x400fedfa"
+        "pipo_loop_icon_resume": "0x400fedfa",
+        "pipo_loop_func_resume": "0x4003a246"
       },
       "cflags": [
         "-DPARAMS_EFF_AT=0x8000f7a8",
         "-DVOICE_REC_AT=0x80005b30",
         "-DVOICE_OWNER_AT=0x40291138",
-        "-DTRIG_NEXT_AT=0x8000586c"
+        "-DTRIG_NEXT_AT=0x8000586c",
+        "-DSAMPLE_SLOTS_AT=0x41329e70"
       ],
       "sites": [
         {
@@ -66,6 +71,13 @@
           "stockSha256": "0528305f5347b3808effa560c49adb196e58354efe1c9c8ea8566757ad4ffac3",
           "op": "jmp",
           "target": "pipo_loop_icon_gate"
+        },
+        {
+          "addr": "0x4003a240",
+          "len": 6,
+          "stockSha256": "8737736787699bee24f07b0561eb3dcb4786d83c7e79ff2d664e8bc838f23e20",
+          "op": "jmp",
+          "target": "pipo_loop_func_gate"
         }
       ]
     }

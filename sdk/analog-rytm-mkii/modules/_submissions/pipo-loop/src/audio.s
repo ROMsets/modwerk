@@ -59,6 +59,43 @@ pipo_loop_icon_gate:
 1:      movea.l pipo_loop_icon_frames,%a0       | displaced
         jmp     pipo_loop_icon_resume
 
+| Zero snap: FUNC + turn on the SAMPLE page's STA or END. Stock's encoder
+| handler ends by calling the view's apply-delta with FUNC held, which steps
+| STA and END by whole numbers. The site replaces the first two instructions
+| of that call's setup (d6 = FUNC held, d2 the id, d4 the delta, a2 the view,
+| a0 the view's vtable). For STA and END with FUNC held, pipo_loop_snap gives
+| the delta to the next zero crossing the way the turn went; the call then
+| goes out as an ordinary fine turn of that size, so stock's own path clamps,
+| draws and stores it. With no crossing in reach it returns SNAP_NONE and the
+| turn stays stock's whole-number step.
+
+        .equ    SNAP_NONE, 0x7fffffff
+        .globl  pipo_loop_func_gate
+        .extern pipo_loop_snap
+
+pipo_loop_func_gate:
+        mvz.b   %d6,%d6                         | displaced
+        tst.l   %d6
+        beq.s   9f
+        moveq   #43,%d0                         | STA
+        cmp.l   %d2,%d0
+        beq.s   1f
+        moveq   #44,%d0                         | END
+        cmp.l   %d2,%d0
+        bne.s   9f
+1:      move.l  %d4,-(%sp)
+        move.l  %d2,-(%sp)
+        move.l  %a2,-(%sp)
+        jsr     pipo_loop_snap
+        lea     12(%sp),%sp
+        movea.l (%a2),%a0                       | the view's vtable, as stock had it
+        cmp.l   #SNAP_NONE,%d0
+        beq.s   9f
+        move.l  %d0,%d4                         | the step to the crossing
+        moveq   #0,%d6                          | applied as a fine turn
+9:      pea     -34(%fp)                        | displaced
+        jmp     pipo_loop_func_resume
+
         .section .rodata
 pipo_loop_pipo:
         .asciz  "PIPO"

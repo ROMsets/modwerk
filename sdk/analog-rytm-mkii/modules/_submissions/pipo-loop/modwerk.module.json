@@ -18,25 +18,28 @@
   "presentation": {
     "label": "PIPO LOOP",
     "family": "Sample playback",
-    "summary": "LOP gets a third value, PIPO: the sample's loop plays forward, then backward, and so on (ping-pong). ON stays the stock forward loop.",
-    "overview": "Pipo Loop adds PIPO to the SAMPLE page's LOP parameter, after OFF and ON. A sample whose LOP is PIPO plays from STA to END, then back to STA, then forward again, for as long as the note lasts, with no jump at the turns. LOP's switch becomes a three-position switch like BD CLASSIC's WAV: OFF on the left, ON in the middle, PIPO on the right. PIPO is an ordinary LOP value: it saves with the sound and kit, takes parameter locks and scene locks, and comes back after a power cycle. A sound saved with PIPO plays as a normal forward loop (ON) on an OS without the mod. The turn falls on the audio engine's 32-frame block, so it comes up to about one block before STA or END.",
+    "summary": "LOP gets a third value, PIPO: the sample's loop plays forward, then backward (ping-pong). FUNC + turn on STA or END steps to the next zero crossing.",
+    "overview": "Pipo Loop adds PIPO to the SAMPLE page's LOP parameter, after OFF and ON. A sample whose LOP is PIPO plays from STA to END, then back to STA, then forward again, for as long as the note lasts, with no jump at the turns. LOP's switch becomes a three-position switch like BD CLASSIC's WAV: OFF on the left, ON in the middle, PIPO on the right. PIPO is an ordinary LOP value: it saves with the sound and kit, takes parameter locks and scene locks, and comes back after a power cycle. A sound saved with PIPO plays as a normal forward loop (ON) on an OS without the mod. The turn falls on the audio engine's 32-frame block, so it comes up to about one block before STA or END. On the SAMPLE page, FUNC + turn on STA or END now moves that point to the next zero crossing of the sample in the direction you turn, one crossing a detent, instead of stock's whole-number step; plain turns stay stock.",
     "highlights": [
       "Ping-pong loops for any sample, from the SAMPLE page's own LOP knob.",
       "Lock PIPO on a step, or put it in a scene, like any LOP value.",
       "No jump at the turns; ON and OFF stay stock.",
-      "Saved with the sound; plays as a forward loop on stock OS."
+      "Saved with the sound; plays as a forward loop on stock OS.",
+      "FUNC + STA or END walks through the sample's zero crossings, one a detent, for click-free start and loop points."
     ],
     "usage": [
       "On the SAMPLE page, turn LOP past ON to PIPO and play the sound: the loop between STA and END goes back and forth.",
       "Set STA and END around a sustained part of the sample (a pad, a vowel, a held note) for a seamless back-and-forth drone.",
-      "Hold a trig in GRID RECORDING and turn LOP to PIPO to ping-pong only on that step; the other steps keep the sound's ON or OFF."
+      "Hold a trig in GRID RECORDING and turn LOP to PIPO to ping-pong only on that step; the other steps keep the sound's ON or OFF.",
+      "Hold FUNC and turn STA (or END) a detent at a time: the point moves to the next zero crossing each time, so the loop starts and ends where the waveform crosses zero."
     ]
   },
   "access": {
-    "location": "SAMPLE page, LOP (encoder G): OFF, ON, PIPO.",
+    "location": "SAMPLE page: LOP (encoder G) OFF, ON, PIPO; FUNC + STA (E) or END (F) for zero crossings.",
     "steps": [
       "Select a track whose sound plays a sample, and press SAMPLE.",
-      "Turn LOP (encoder G) clockwise past ON: the value reads PIPO."
+      "Turn LOP (encoder G) clockwise past ON: the value reads PIPO.",
+      "Hold FUNC and turn STA (encoder E) or END (encoder F): each detent moves the point to the next zero crossing."
     ],
     "screenshots": [
       "media/lop-pipo.png"
@@ -52,6 +55,12 @@
         "ON",
         "PIPO"
       ]
+    },
+    {
+      "name": "FUNC + STA / END",
+      "default": null,
+      "doc": "SAMPLE page (and its SMPL WAVEFORM view), FUNC held, encoder E or F: each detent moves STA or END to the next zero crossing of the sample in the direction turned, never past the other point. Exact for samples up to 30,720 frames (0.64 s at 48 kHz); longer samples take the nearest STA/END value, at most frames / 61,440 frames off. With no crossing in reach the turn stays stock's whole-number step. Plain turns and lock editing (a trig held) are stock.",
+      "labels": null
     }
   ],
   "compatibility": {
@@ -66,7 +75,9 @@
       "A turn falls on a 32-frame audio block, up to about one block (plus 8 frames) before STA or END, so a PIPO loop is a few frames shorter at each end than ON's; inaudible on most material, audible on very short loops.",
       "MIDI CC 30 (LOP) writes its value unchanged, as on stock: CC value 2 now gives PIPO, every other nonzero value ON. Other OFF/ON parameters still read ON for 2.",
       "On stock OS, or a build without this mod, PIPO plays as ON.",
-      "LOP's switch is drawn with the knob in the middle for ON, where stock draws it on the right; the value text still reads ON."
+      "LOP's switch is drawn with the knob in the middle for ON, where stock draws it on the right; the value text still reads ON.",
+      "Zero snap on samples longer than 30,720 frames lands on the nearest STA/END value, up to frames / 61,440 frames from the crossing (1 frame at 1 s, about 8 at 10 s, 47 at 60 s).",
+      "FUNC + turn on STA or END no longer gives stock's whole-number steps; use a plain turn for fine moves."
     ]
   },
   "platform": {
@@ -76,22 +87,24 @@
     "events": [],
     "claims": [
       "ui:SAMPLE page LOP value PIPO and its three-position switch",
-      "param:LOP range OFF/ON/PIPO, its value text and icon"
+      "param:LOP range OFF/ON/PIPO, its value text and icon",
+      "ui:FUNC + SAMPLE STA turn",
+      "ui:FUNC + SAMPLE END turn"
     ]
   },
   "resources": {
-    "memoryBytes": 1169,
+    "memoryBytes": 2025,
     "fastBytes": 0,
     "load": {
       "display": "About 0.1 % of an audio block with no sample looping, about 0.6 % with eight voices in PIPO (static estimate)",
       "method": "static",
-      "conditions": "Static count of the compiled handler, run once an audio block before the sample engine: about 15 instructions for a voice with LOP OFF or no track, about 70 for one looping with ON, about 105 for one in PIPO, plus four 32-bit divisions for a voice whose STA, END or sample just changed. With the Rytm guide's 0.023 % of a block per instruction a frame: about 0.1 % with nothing looping and about 0.6 % with all eight voices in PIPO. Not measured on a unit."
+      "conditions": "Static count of the compiled handler, run once an audio block before the sample engine: about 15 instructions for a voice with LOP OFF or no track, about 70 for one looping with ON, about 105 for one in PIPO, plus four 32-bit divisions for a voice whose STA, END or sample just changed. With the Rytm guide's 0.023 % of a block per instruction a frame: about 0.1 % with nothing looping and about 0.6 % with all eight voices in PIPO. Not measured on a unit. Zero snap runs only on a FUNC + STA or END turn, in the UI task: a scan of up to 262,144 samples, not in the audio path."
     }
   },
   "evidence": {
     "tier": "emulator",
     "moduleVersion": "0.1.0-experimental",
-    "sourceSha256": "2b82007f7af45b5e8bc2eb5b7835768d4320918e9c93d0098222f67ddcd9acf8",
+    "sourceSha256": "59a66c938da953c82a619e4b6f43e84e180aef556e7137d332794962ea216086",
     "reports": [
       "TESTING.md"
     ],
@@ -100,14 +113,15 @@
   },
   "tests": {
     "report": "TESTING.md",
-    "summary": "rytm-emu c5732f0, OS 1.74, build PP06 (core-ar2 0.3 + 0.1.0), ramp sample on BD: LOP steps OFF/ON/PIPO on a three-position switch like BD CLASSIC's WAV; ON plays stock's loop, PIPO a click-free triangle at TUN about -24, 0 and +24; ON to PIPO mid-note; p-lock and scene lock; two voices; retrig; power-off persistence; stock 1.74 plays a saved PIPO as a normal loop. Not run on a unit.",
+    "summary": "rytm-emu c5732f0, OS 1.74, build PP07 (core-ar2 0.3 + 0.1.0): LOP steps OFF/ON/PIPO on a three-position switch; ON plays stock's loop, PIPO a click-free triangle from TUN -24 to +24; p-lock, scene lock, two voices, retrig, power-off, stock playing a saved PIPO as a loop; FUNC + STA/END stepping crossing by crossing on a test sine. Not run on a unit beyond PC03.",
     "documentation": {
       "tutorial": {
         "title": "Quick tutorial",
         "steps": [
           "On the SAMPLE page, turn LOP past ON to PIPO and play the sound: the loop between STA and END goes back and forth.",
           "Set STA and END around a sustained part of the sample (a pad, a vowel, a held note) for a seamless back-and-forth drone.",
-          "Hold a trig in GRID RECORDING and turn LOP to PIPO to ping-pong only on that step; the other steps keep the sound's ON or OFF."
+          "Hold a trig in GRID RECORDING and turn LOP to PIPO to ping-pong only on that step; the other steps keep the sound's ON or OFF.",
+          "Hold FUNC and turn STA (or END) a detent at a time: the point moves to the next zero crossing each time, so the loop starts and ends where the waveform crosses zero."
         ]
       },
       "screenshots": [
