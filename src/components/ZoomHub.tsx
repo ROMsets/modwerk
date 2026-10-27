@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { DeviceImage } from '../devices/DeviceImage'
 import { zoomHubHref, type ZoomHubView } from '../devices/zoom-hub-route'
 import type { DeviceProfile } from '../devices/registry'
@@ -35,8 +35,11 @@ export function ZoomHub({ device, view, link, header }: { device: DeviceProfile;
   const files = onPedal && onPedal.key === pedalKey ? onPedal.files : undefined, free = files ? onPedal!.free : undefined
   const [backup, setBackup] = useState<{ url: string; name: string; files: number }>(), [error, setError] = useState<string>()
   useEffect(() => () => { if (backup) URL.revokeObjectURL(backup.url) }, [backup])
-  const run = (work: () => Promise<void>) => { setError(undefined); work().catch(e => setError((e as Error).message)) }
-  const read = () => run(async () => { if (!link) return; const listed = await link.listFiles({ versions: true }), space = await link.freeSpace(); setOnPedal({ key: pedalKey, files: listed, free: space }) })
+  // Work keeps going on the link after the page closes; its result is then dropped.
+  const alive = useRef(true)
+  useEffect(() => { alive.current = true; return () => { alive.current = false } }, [])
+  const run = (work: () => Promise<void>) => { setError(undefined); work().catch(e => { if (alive.current) setError((e as Error).message) }) }
+  const read = () => run(async () => { if (!link) return; const listed = await link.listFiles({ versions: true }), space = await link.freeSpace(); if (alive.current) setOnPedal({ key: pedalKey, files: listed, free: space }) })
   // Installing and removing: confirm, offer the effect list from before for saving, then read again.
   const [changed, setChanged] = useState<{ text: string; list?: { url: string; name: string } }>()
   useEffect(() => () => { if (changed?.list) URL.revokeObjectURL(changed.list.url) }, [changed])
@@ -48,19 +51,19 @@ export function ZoomHub({ device, view, link, header }: { device: DeviceProfile;
     if (!isAddedEffect(info)) throw new Error(file.name + ' has effect ID ' + info.gid + '/' + info.fxid + ': this page installs added effects only (group 8, IDs 403 to 957). Zoom’s own effects stay as they are.')
     if (!window.confirm('Install ' + name + ' (version ' + info.version + ', ' + kb(data.length) + ')? It is written, read back and added to the pedal’s effect list. Don’t touch the pedal or the cable until it’s done.')) return
     const result = await link.installFile(name, data)
-    setChanged({ text: result.unchanged ? name + ' is already this exact file.' : name + ' installed and read back identical. Power-cycle the pedal to load it.', list: keepList(result.previousList) })
+    if (alive.current) setChanged({ text: result.unchanged ? name + ' is already this exact file.' : name + ' installed and read back identical. Power-cycle the pedal to load it.', list: keepList(result.previousList) })
     await read()
   })
   const uninstall = (file: ZoomFile) => run(async () => {
     if (!link || !window.confirm('Remove ' + file.name + ' from the pedal? Patches that use it will show an empty slot.')) return
     const result = await link.removeFile(file.name)
-    setChanged({ text: file.name + ' removed. Power-cycle the pedal.', list: keepList(result.previousList) })
+    if (alive.current) setChanged({ text: file.name + ' removed. Power-cycle the pedal.', list: keepList(result.previousList) })
     await read()
   })
   const save = () => run(async () => {
     if (!link) return
     const { files: count, zip } = await link.backup(), stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-')
-    setBackup({ url: URL.createObjectURL(zip), name: device.id + '-backup-' + stamp + '.zip', files: count })
+    if (alive.current) setBackup({ url: URL.createObjectURL(zip), name: device.id + '-backup-' + stamp + '.zip', files: count })
   })
 
   const line: ReactNode = status === 'unsupported' ? 'This browser can’t use MIDI. Open this page in Chrome or Edge on a computer.'
