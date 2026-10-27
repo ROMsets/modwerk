@@ -4435,6 +4435,36 @@ copyrighted by its owner and is not part of this repository.
 
 ========================================================================
 
+MIDISTOMP (Zoom MultiStomp firmware patches and their sources)
+SPDX: MIT
+Used in: vendor/midistomp; Zoom MultiStomp browser builder (src/engine/zoom)
+Notice source: vendor/midistomp/LICENSE
+Notice source: https://github.com/matujuice/zoom-ms-midistomp/tree/c8d3e1ba04e71bbae7919e256f2b2f611fca409a
+
+MIT License
+
+Copyright (c) 2026 Luca
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+========================================================================
+
 USB audio and MIDI contributions (USB Audio 0.2)
 
 Source: sambanks/octabam at 7b2984c859732ae6c797ae49c7d61d250b1b6519.
