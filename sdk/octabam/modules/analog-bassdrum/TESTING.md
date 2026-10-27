@@ -19,7 +19,7 @@ Current as of 27 October 2026. The package this pull request publishes (`a2def72
 
 ## Hardware (MKII, reported by npp1993)
 
-- 27 October, this build: base `64ce4825` RAM-booted over USB, Analog BD `a2def725` kept, self-test passed (1/1). Then flashed as part of a personal base `5afa623e` (this branch plus a separate base fix for FLEX switching, not in this pull request) with 13 other modules: self-test passed (14/14 intact, 9 DSP effects together, cores 77 % / 80 %), and after a power cycle the unit started from that slot and reloaded all 14. Observed: SRC SETUP reads TYPE FIXD ACNT / LOW HIGH LPF with 4-letter labels; TYPE flips 808/909 live; FIXD shows and switches on both models; encoder E moves HIGH; LOW and LPF move, LPF reads OFF fully clockwise; the double tap opens the machine list at once with no flicker.
+- 27 October, this build: base `64ce4825` RAM-booted over USB, Analog BD `a2def725` kept, self-test passed (1/1). Then flashed as part of a personal base `5afa623e` (this branch plus a separate base fix for FLEX switching, not in this pull request) with 13 other modules: self-test passed (14/14 intact, 9 DSP effects together, cores 77 % / 80 %), and after a power cycle the unit started from that slot and reloaded all 14. Observed: SRC SETUP reads TYPE FIXD ACNT / LOW HIGH LPF with 4-letter labels; TYPE flips 808/909 live; FIXD shows and switches on both models; encoder E moves HIGH; LOW and LPF move, LPF reads OFF fully clockwise; the double tap opens the machine list at once with no flicker. On the flashed personal base, later the same evening: T2's window switched to T1 shows the machine list, and a double tap on a FLEX and on a STATIC track opens their pools.
 - Known base limits seen in the same run, not caused by this module: switching a track FLEX → Analog BD → FLEX left the old machine's live parameters until SOURCE CLEAR (a base fix on its own branch); right after a boot, Analog BD stays silent if PLAY is pressed before its engine is placed, which happens only while stopped (`docs/OCTATRACK_RESIDENT_ENGINES_ON_DEMAND.md`, "What this costs"; a base fix is planned separately).
 
 - 25 October, RAM-booted base `7346a1f5`, Analog BD `fbc09d07`: the SETUP order, LPF direction and default, 4-letter labels, TYPE flipping live, save/reload of every value and SOURCE CLEAR (LPF back to OFF) work. HIGH did not move; the double tap flickered from the main page and showed an empty page when the window was switched to the Analog BD track from another track. Both were fixed afterwards (HIGH and Double tap, above).
@@ -41,7 +41,7 @@ So one voice loads its core about a fifth to a quarter less than in 0.1.5 on the
 
 ## Not tested
 
-- On the unit: T2 → T1 showing the machine list, the FLEX/STATIC double tap opening their pools, and loading a 0.1.5 project (808/909 kept, FIXD OFF before a track is selected, ACNT/LPF as README says, save and reload).
+- Loading a project saved with 0.1.5 on the unit (808/909 kept, FIXD OFF before a track is selected, ACNT/LPF as README says, save and reload): no such project was at hand. There is no migration; this would check the documented behaviour.
 - A null test of FIXD OFF (909) or FIXD ON (808) against 0.1.5 on the unit.
 - Chip cycles per instruction and full-chain loads with several voices.
 
