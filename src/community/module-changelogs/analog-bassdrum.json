@@ -1,13 +1,13 @@
 [
   {
     "version": "0.1.6-experimental",
-    "date": "2026-10-24",
+    "date": "2026-10-27",
     "changes": [
-      "SRC SETUP now reads TYPE, FIXD, ACNT above LOW, HIGH, LPF. TYPE (808 left, 909 right) replaces the engine browser.",
-      "FIXD ON makes every hit identical; OFF, the default, varies each hit slightly, now on the 808 too (808 with FIXD ON sounds as in 0.1.5).",
-      "LPF is OFF fully clockwise, the default. HIGH can be edited over USB again. Re-check ACNT, LPF and FIXD in 0.1.5 projects.",
-      "Double-tapping TRACK opens the machine list. Labels are four letters (PTCH, DCAY, SWEP, ACNT).",
-      "The 909 with FIXD OFF sounds as in 0.1.5; both engines use about 15% less DSP time. Needs the new Modwerk beta base."
+      "SRC SETUP now reads TYPE, FIXD, ACNT above LOW, HIGH, LPF. TYPE (808 left, 909 right) replaces the engine browser; double-tapping TRACK opens the machine list.",
+      "FIXD ON makes every hit identical; OFF, the default, varies each hit slightly, now on the 808 too (808 with FIXD ON and 909 with FIXD OFF sound as in 0.1.5).",
+      "LPF is OFF fully clockwise, the default. HIGH can now be edited over USB. Labels are four letters (PTCH, DCAY, SWEP, ACNT).",
+      "0.1.5 projects keep their 808/909 choice, but ACNT, LPF and FIXD moved on the page: set them again on each Analog BD track.",
+      "About 15% fewer DSP instructions on average (emulator count; peaks about 5-8% lower; the price stays 411 per voice). Needs the new Modwerk beta base."
     ]
   },
   {

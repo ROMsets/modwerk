@@ -980,6 +980,13 @@ ab_render:
 	addq.l #2,%a6
 	jra .L184
 .L183:
+	move.b 43(%sp),%d0
+	mov3q.l #1,%d4
+	eor.l %d4,%d0
+	tst.b %d0
+	seq %d0
+	neg.l %d0
+	move.b %d0,43(%sp)
 	cmp.l 24(%sp),%d3
 	jls .L185
 	moveq #16,%d0

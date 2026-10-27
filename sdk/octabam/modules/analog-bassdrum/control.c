@@ -191,6 +191,9 @@ int ab_render(unsigned track,unsigned ping,unsigned start,unsigned end) {
         p[k]=k<6 ? (uint8_t)(fp[k]>>8)
                  : U8(0x80000810u+72*track+0x20+k-6);
     }
+    /* FIXD is ON only at its stored 1. A 0.1.5 track keeps ACCNT (0-127) in this slot until it is set again,
+     * and plays FIXD OFF meanwhile, not ON for any nonzero accent. */
+    p[7]=p[7]==1;
     /* The stock builder calls twice, before and after the event offset.
      * Reserve the same space as FLEX so every later track keeps its record
      * boundary. Once the second segment exists, replace the start with a
@@ -265,6 +268,9 @@ void ab_engine_open(void) {
     /* Open it a few UI ticks later, once the double tap's last key release has passed: a release
      * while the window is open moves it back to the pool column (a visible flicker). */
     if(ab_selected_source() && !U32(0x460e5e30u) && !U32(0x460e70e0u)) ab_open_delay=AB_OPEN_TICKS;
+    /* Everything below is the 0.1.5 engine browser, unreachable since 0.1.6. It stays compiled because the card
+     * build's list hooks (machine.s ab_list_draw, manifest.py's ab_engine_left) and the CF verifier
+     * (verify_analog_bassdrum_cf.py: ab_engine_select) still name its symbols; removing it means removing those too. */
     if(1) return;
     if(!ab_selected_source() || U32(0x460e5e30u)) return;
     engine_bank=U32(BANK);
