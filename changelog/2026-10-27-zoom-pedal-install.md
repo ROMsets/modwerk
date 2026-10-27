@@ -1,0 +1,1 @@
+Beta: the Zoom pedal page installs and removes effect files over USB. On Status, choose an added effect (.ZDL), such as a NAM capture or cab, to install it, or remove one already on the pedal; Zoom's own effects are never offered for removal. Every write is read back, and the pedal's effect list from before is offered for saving. Power-cycle the pedal to load the change.
