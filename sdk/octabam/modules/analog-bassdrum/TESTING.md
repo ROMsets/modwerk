@@ -1,6 +1,6 @@
 # Analog BD 0.1.6 — TYPE and FIXD switches
 
-Current as of 27 October 2026. The build this pull request publishes (rebuilt on the base of repeat98/modwerk#943 after merging `main`, with FIXD read as ON only at its stored 1) is **not yet tested on hardware**. The hardware results below are from earlier 0.1.6 builds, named with each one.
+Current as of 27 October 2026. The package this pull request publishes (`a2def725`, beta base `64ce4825`) was tested on a MKII on 27 October (below); the results of earlier 0.1.6 builds are named with each one.
 
 ## What changed and how it was checked (software)
 
@@ -19,15 +19,31 @@ Current as of 27 October 2026. The build this pull request publishes (rebuilt on
 
 ## Hardware (MKII, reported by npp1993)
 
+- 27 October, this build: base `64ce4825` RAM-booted over USB, Analog BD `a2def725` kept, self-test passed (1/1). Then flashed as part of a personal base `5afa623e` (this branch plus a separate base fix for FLEX switching, not in this pull request) with 13 other modules: self-test passed (14/14 intact, 9 DSP effects together, cores 77 % / 80 %), and after a power cycle the unit started from that slot and reloaded all 14. Observed: SRC SETUP reads TYPE FIXD ACNT / LOW HIGH LPF with 4-letter labels; TYPE flips 808/909 live; FIXD shows and switches on both models; encoder E moves HIGH; LOW and LPF move, LPF reads OFF fully clockwise; the double tap opens the machine list at once with no flicker.
+- Known base limits seen in the same run, not caused by this module: switching a track FLEX → Analog BD → FLEX left the old machine's live parameters until SOURCE CLEAR (a base fix on its own branch); right after a boot, Analog BD stays silent if PLAY is pressed before its engine is placed, which happens only while stopped (`docs/OCTATRACK_RESIDENT_ENGINES_ON_DEMAND.md`, "What this costs"; a base fix is planned separately).
+
 - 25 October, RAM-booted base `7346a1f5`, Analog BD `fbc09d07`: the SETUP order, LPF direction and default, 4-letter labels, TYPE flipping live, save/reload of every value and SOURCE CLEAR (LPF back to OFF) work. HIGH did not move; the double tap flickered from the main page and showed an empty page when the window was switched to the Analog BD track from another track. Both were fixed afterwards (HIGH and Double tap, above).
 - Later RAM boots: base `1e022103` (FIXD shows at once, T2 -> T1 shows the machine list, the direct double tap still flickered); base `89b8226d` (no flicker, but the window came up a little later than on stock machines).
 - 26 October, flashed base `9976a5e8`, Analog BD `dfcb89a1`, 13 other modules kept: the layout and labels, TYPE flips live, FIXD shows on both models, HIGH moves, LPF OFF fully clockwise and at SOURCE CLEAR, save/reload keeps every SETUP value, the double tap opens the machine list at once with no flicker, T2 -> T1 shows the list, and the 14-module set survives a power cycle.
 
+## DSP load on the chip (MKII, 27 October)
+
+Development twins of the two bases (`--dev`, identical but for Analog BD's trust row: #944's with 0.1.6 `462af6b8`, #943's with 0.1.5 `c03c9a5b`), RAM-booted. A blank project, one Analog BD voice on T1 (core 1), a trig on all 16 steps at 120 BPM, playing; the same settings on both (ACNT 64, LOW/HIGH 64, LPF 18 kHz, FIXD OFF). Twelve readings of the base's per-core meter (`stats`, per mille of core 1, idle-pass based) one second apart after 3 s of play; medians. One voice because the base refused a second (DSP FULL, +23 %).
+
+| | 0.1.5 | 0.1.6 | change |
+|---|---|---|---|
+| 909, mean | 545 (+141 over the empty track's 404) | 508 (+104) | -26 % |
+| 808, mean | 495 (+91) | 476 (+72) | -21 % |
+| 909, peak | 554 (+142 over 412) | 529 (+117) | -18 % |
+| 808, peak | 506 (+94) | 487 (+75) | -20 % |
+
+So one voice loads its core about a fifth to a quarter less than in 0.1.5 on the chip, more than the emulator count (about 15 % fewer executed instructions on average). Limits: one voice on one core, knobs still, the base's idle-pass meter rather than a cycle counter; the 0.1.6 808 includes its per-hit variation. The declared price (411 per voice) is unchanged.
+
 ## Not tested
 
-- This build on hardware, including loading a 0.1.5 project.
+- On the unit: T2 → T1 showing the machine list, the FLEX/STATIC double tap opening their pools, and loading a 0.1.5 project (808/909 kept, FIXD OFF before a track is selected, ACNT/LPF as README says, save and reload).
 - A null test of FIXD OFF (909) or FIXD ON (808) against 0.1.5 on the unit.
-- Chip cycles (parallel long immediates are two-word instructions) and full-chain loads.
+- Chip cycles per instruction and full-chain loads with several voices.
 
 # Analog BD 0.1.5 — FLEX restore regression
 

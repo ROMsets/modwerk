@@ -211,7 +211,7 @@
       "value": null,
       "unit": "instructions/sample",
       "method": "emulator",
-      "conditions": "Peak 4034/5999 executed instructions per 16-sample block in the 0.1.6 dsp_host comparison (52 scenarios: control extremes, SAT steps, ramps and jitter, random automation, retriggers); 0.1.5 measured 4260/6534 in the same set. Mean 3345/5519: about 15% fewer executed instructions on average than 0.1.5 (emulator count), peaks about 5% (808) and 8% (909) lower, with bit-identical audio and state. Not chip cycles or full-chain utilization; the declared DSP price (411 per voice) is unchanged, so no voice gains room.",
+      "conditions": "Peak 4034/5999 executed instructions per 16-sample block in the 0.1.6 dsp_host comparison (52 scenarios: control extremes, SAT steps, ramps and jitter, random automation, retriggers); 0.1.5 measured 4260/6534 in the same set. Mean 3345/5519: about 15% fewer executed instructions on average than 0.1.5 (emulator count), peaks about 5% (808) and 8% (909) lower, with bit-identical audio and state. Not chip cycles or full-chain utilization; the declared DSP price (411 per voice) is unchanged, so no voice gains room. On a MKII (dev base meter, one voice, 16 trigs a bar) one voice loads its core 26 % (909) and 21 % (808) less than 0.1.5 (TESTING.md).",
       "source": "TESTING.md"
     },
     "impact": {

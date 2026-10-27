@@ -7,7 +7,7 @@
       "FIXD ON makes every hit identical; OFF, the default, varies each hit slightly, now on the 808 too (808 with FIXD ON and 909 with FIXD OFF sound as in 0.1.5).",
       "LPF is OFF fully clockwise, the default. HIGH can now be edited over USB. Labels are four letters (PTCH, DCAY, SWEP, ACNT).",
       "0.1.5 projects keep their 808/909 choice, but ACNT, LPF and FIXD moved on the page: set them again on each Analog BD track.",
-      "About 15% fewer DSP instructions on average (emulator count; peaks about 5-8% lower; the price stays 411 per voice). Needs the new Modwerk beta base."
+      "On a MKII one voice loads its DSP core about a quarter (909) and a fifth (808) less; emulator count about 15% fewer instructions. The price stays 411 per voice. Needs the new Modwerk beta base."
     ]
   },
   {
