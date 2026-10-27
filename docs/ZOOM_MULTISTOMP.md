@@ -66,8 +66,9 @@ asked, over its own Web MIDI link ([`zoom-link.ts`](../src/engine/zoom/zoom-link
 [`zoom-protocol.ts`](../src/engine/zoom/zoom-protocol.ts)). It identifies the pedal (model, firmware), lists
 its files and backs every file up into a zip; it writes nothing yet. Status, Backups and Setup are its unit
 pages; NAM / Cab (in the Samples slot), Patches and module sets with a USB install follow. Tests run against
-a fake pedal (`src/dev/zoom-pedal-fake.ts`) in the pedal's reply formats; none of this proves the real
-pedal, which needs a test on hardware.
+a fake pedal (`src/dev/zoom-pedal-fake.ts`) in the pedal's reply formats. On an MS-70CDR 2.10 (27 October
+2026) it identified the pedal, listed its 162 files and backed them up: every file byte-identical to the
+project's Patch Editor backup, the effect list apart (changed on the pedal in between).
 
 ## Contract changes
 
