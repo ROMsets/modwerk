@@ -95,6 +95,7 @@
     },
     {
       "id": "ring-sc",
+      "unitName": "SC Ringmod",
       "slots": "both",
       "cycles": 81,
       "cyclesKind": "executed",
@@ -116,10 +117,10 @@
       "requires": 8,
       "claims": 4,
       "version": "0.2.0-experimental",
-      "name": "Ringmod SC",
+      "name": "SC Ringmod",
       "module": "773c84aa",
       "bytes": 2416,
-      "sha256": "2ba32a49c49fbda951ae3658d663e6e8663d7ff6680e27e5b089b163d7e0a187",
+      "sha256": "5c4e7fcfdc2ec212ae2bd551fe959fe2a2c8a798e8ad24baee08b44093c6304a",
       "path": "octatrack-modules/ring-sc/0.2.0-experimental.mwrm"
     },
     {
@@ -239,14 +240,14 @@
       "abi": 8,
       "features": 3,
       "sites": 2,
-      "copies": 6,
+      "copies": 7,
       "fills": 0,
-      "version": "0.1.5-experimental",
+      "version": "0.1.6-experimental",
       "name": "Tape Echo",
       "module": "9f482bb9",
-      "bytes": 111932,
-      "sha256": "21b953eb038429a5f7428c655cb889aa871e6c794313e51b00568150528630d1",
-      "path": "octatrack-modules/tapeecho/0.1.5-experimental.mwrm"
+      "bytes": 112124,
+      "sha256": "921e7a60c3418e7ece96f24c254802b44fee2082713f25e7b964b37f233bbe9e",
+      "path": "octatrack-modules/tapeecho/0.1.6-experimental.mwrm"
     },
     {
       "id": "euclid",
@@ -327,17 +328,17 @@
       "id": "sidechain-compressor",
       "base": true,
       "abi": 8,
-      "features": 129,
+      "features": 131,
       "sites": 2,
-      "copies": 0,
+      "copies": 8,
       "fills": 0,
-      "version": "0.1.2-experimental",
+      "version": "0.2.0-experimental",
       "name": "SIDECHAIN COMP",
       "module": "95cff696",
-      "bytes": 1236,
-      "sha256": "02d12ff6121c59e0e429a554b4743309b623db756432217f1560d4f1bb66d8ca",
-      "path": "octatrack-modules/sidechain-compressor/0.1.2-experimental.mwrm",
-      "requiredBase": "9976a5e8d9c6f46d421437c649374323a66c1e468c0ae383e6b2a403949bc843"
+      "bytes": 2636,
+      "sha256": "d34737d2d7b804643967788741c23f0d5010a6c14a20967acc6831376c8af95f",
+      "path": "octatrack-modules/sidechain-compressor/0.2.0-experimental.mwrm",
+      "requiredBase": "68e6a90bad94dae2f889305e9ad83d2e0285cd4f7395841b5980ad3ae78a1550"
     },
     {
       "id": "output-matrix",
@@ -351,9 +352,9 @@
       "name": "OUTPUT MATRIX",
       "module": "caf158b5",
       "bytes": 3740,
-      "sha256": "07081e26f23050bd4e5ccdda834c0de64dbae41988b63904bbab7c8c84582113",
+      "sha256": "af1a5742c7544e6b19e81812a1375ed2955691550095661aa86bf4837f49fa91",
       "path": "octatrack-modules/output-matrix/0.1.1-experimental.mwrm",
-      "requiredBase": "9976a5e8d9c6f46d421437c649374323a66c1e468c0ae383e6b2a403949bc843"
+      "requiredBase": "68e6a90bad94dae2f889305e9ad83d2e0285cd4f7395841b5980ad3ae78a1550"
     },
     {
       "id": "cc-map",
@@ -369,7 +370,7 @@
       "bytes": 966,
       "sha256": "c7cd39a5f645d69279d3a288c40b8366e6638acdc042cf0fe68dfb9964a68ea2",
       "path": "octatrack-modules/cc-map/0.1.2-experimental.mwrm",
-      "requiredBase": "9976a5e8d9c6f46d421437c649374323a66c1e468c0ae383e6b2a403949bc843"
+      "requiredBase": "68e6a90bad94dae2f889305e9ad83d2e0285cd4f7395841b5980ad3ae78a1550"
     },
     {
       "id": "quantize-live-rec-toggle",
@@ -417,6 +418,21 @@
       "path": "octatrack-modules/dejavu/0.1.0-experimental.mwrm"
     },
     {
+      "id": "arp-key-locks",
+      "octabam": true,
+      "version": "0.1.0-experimental",
+      "path": "octatrack-modules/arp-key-locks/0.1.0-experimental.mwrm",
+      "abi": 8,
+      "features": 128,
+      "sites": 0,
+      "copies": 0,
+      "fills": 0,
+      "name": "Arp Key Locks",
+      "module": "894693ae",
+      "bytes": 4888,
+      "sha256": "907a03cf980996b30b0c3ba89ea0e80b889727ba4d407d04e2f95ceb30b44e8c"
+    },
+    {
       "id": "recorder-loop-fix",
       "base": true,
       "abi": 8,
@@ -428,9 +444,9 @@
       "name": "Recorder Loop",
       "module": "823e0f45",
       "bytes": 1818,
-      "sha256": "ffd76eb8263d9eab8577a9a5dfbd9198f402d93b60d9e3231ef50f3bf466788f",
+      "sha256": "21a8447ccaa058148c9ac075887f22445e80ee49a17014b28681c8cf3aaaccf5",
       "path": "octatrack-modules/recorder-loop-fix/0.1.0-experimental.mwrm",
-      "requiredBase": "9976a5e8d9c6f46d421437c649374323a66c1e468c0ae383e6b2a403949bc843"
+      "requiredBase": "68e6a90bad94dae2f889305e9ad83d2e0285cd4f7395841b5980ad3ae78a1550"
     },
     {
       "id": "analog-bassdrum",
@@ -438,15 +454,15 @@
       "abi": 10,
       "features": 130,
       "sites": 0,
-      "copies": 6,
+      "copies": 5,
       "fills": 0,
-      "version": "0.1.6-experimental",
+      "version": "0.1.5-experimental",
       "name": "Analog BD",
       "module": "abdb1445",
-      "bytes": 26174,
-      "sha256": "dfcb89a15406799c027372c01f15e0bed31a9bd3feaf0196078df457238f9ca5",
-      "path": "octatrack-modules/analog-bassdrum/0.1.6-experimental.mwrm",
-      "requiredBase": "9976a5e8d9c6f46d421437c649374323a66c1e468c0ae383e6b2a403949bc843",
+      "bytes": 25822,
+      "sha256": "7a1b08e8912d190400fb37cff6c8dbdc85d09bf01ba887cbe99e3ed5d66a5e4b",
+      "path": "octatrack-modules/analog-bassdrum/0.1.5-experimental.mwrm",
+      "requiredBase": "68e6a90bad94dae2f889305e9ad83d2e0285cd4f7395841b5980ad3ae78a1550",
       "requires": 0,
       "claims": 1,
       "entries": 1

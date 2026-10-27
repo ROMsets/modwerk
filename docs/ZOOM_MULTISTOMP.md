@@ -157,11 +157,41 @@ Before any browser write, in this order:
 
 What this means for the Octatrack interface ([ADD_A_MACHINE.md](ADD_A_MACHINE.md#aim-for-the-octatracks-interface)):
 stock Zoom firmware has no way to load an effect into RAM, so there is no
-trial, Keep or Undo; installs write persistent storage. That is a resource
-reason for the exception, for owner review. A Modwerk base firmware for these
-pedals, which could load and flash differently and need no stock updater, is
-an option for later (owner, 23 October 2026), not the current priority: the
-first effects ship safely through Effect Manager and are documented first.
+trial, Keep or Undo; installs write persistent storage. Zoom's firmware with
+effect files stays the route without a base, like the Octatrack's card build,
+with that resource reason for the exception, for owner review.
+
+## The base: MIDISTOMP
+
+Owner, 27 October 2026: the pedals get the Octatrack beta's setup, with Luca
+Matturro's [MIDISTOMP](https://github.com/matujuice/zoom-ms-midistomp) (MIT)
+as the base: Zoom's own 2.10 patched in the browser from the user's own
+updater, flashed once in update mode, then modules over USB. Luca agreed to
+mod selection and to his transport block as the shared tempo contract.
+
+- `vendor/midistomp/` holds MIDISTOMP at a pinned revision
+  (`sdk/imports/midistomp-*.json`): `LICENSE`, `models/` and `asm/` unchanged,
+  and its patches in `midistomp.json`, converted by
+  [`scripts/midistomp-import.ts`](../scripts/midistomp-import.ts) without Zoom's
+  bytes. Each `expect` becomes a sha256 (as the Octatrack's `stock_guard`), a
+  text `replace` becomes writes at the addresses it hits in the stock 2.10 OS,
+  and a run of 16 or more bytes a patch repeats from Zoom's files (part of the
+  boot picture, a register-restore sequence) becomes a copy from the user's
+  own file.
+- [`zoom-base.ts`](../src/engine/zoom/zoom-base.ts), with `ais.ts` (a port of
+  zoomms' `ais.py`), applies them in the browser. From the stock MS-70CDR 2.10
+  Mac updater (27 October 2026) it builds `hello` and MIDISTOMP V1.2 byte for
+  byte as zoomms does: `ZOOM_MS70CDR_APP='…/ZOOM MS-70CDR v2.10 Updater.app'
+  npx vitest run src/engine/zoom`. Firmware never enters CI.
+- A new MIDISTOMP revision: run the import on a clean checkout with
+  `--app '<stock Mac updater>.app'`, then refresh the zoomms hashes in
+  `zoom-base.test.ts` (`zoomms build-mac` at that revision).
+- Not built yet: flashing from the browser (update mode: erase `0A`, write
+  `02`, finish `04`; MIDISTOMP never writes the bootloader, so Up+Down at
+  power-on and Zoom's updater recover a pedal), the Windows `.exe` as input,
+  the MS-50G and MS-60B (their stock updaters are needed to resolve and check
+  the patches), a Modwerk SysEx hello in the base, and loading effects without
+  a reboot.
 
 ## Proposed sequence
 
@@ -173,5 +203,6 @@ first effects ship safely through Effect Manager and are documented first.
 4. In-browser NAM and cab builds from the project's templates.
 5. Install: Effect Manager download now; a browser install from the user's own
    Zoom updater once the steps in [Installing on stock firmware](#installing-on-stock-firmware)
-   are done.
+   are done; the base ([MIDISTOMP](#the-base-midistomp)) built in the browser
+   (done) and flashed from it.
 6. Optional: the patch editor as a device page.

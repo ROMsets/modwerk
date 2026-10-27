@@ -2,8 +2,8 @@
  {
   "module": "sidechain-compressor",
   "moduleId": 2513434262,
-  "controllerSha256": "b2def9d705a0135f4bf89ae497a810a55c078413ef4af3936da0a0703eda00f1",
-  "sourcePolicySha256": "4294f9cea4bf6fd179093dbf7834979d8373bc8e8de87088473ada56ab1b7142",
+  "controllerSha256": "48104b9770742324df8d76c3f43031439ad986c0247843524b3a6c053d229e30",
+  "sourcePolicySha256": "96638989bbfb3b2f695d60eee84e6e3f9a6ada4099a0c9c889cbecf477f06b58",
   "revisions": [
    1,
    1,
@@ -12,16 +12,16 @@
   "feature": 1,
   "requiredCores": 3,
   "version": 1,
-  "imageBytes": 1020,
+  "imageBytes": 2060,
   "entryName": "sc_norm",
-  "entry": 632,
-  "beginReturn": 834,
-  "endReturn": 884
+  "entry": 1056,
+  "beginReturn": 1258,
+  "endReturn": 1308
  },
  {
   "module": "output-matrix",
   "moduleId": 3404814517,
-  "controllerSha256": "a3a10bd91c711483bacde1a07b9e70e4f5cf9cad0276299faed33d6689c63f10",
+  "controllerSha256": "4b653212a0f2189e8730ba5f3f3d4a23fa72219385e7fd42ccf8e0557f26f544",
   "sourcePolicySha256": "0994f291fc10c4b89c827cf60802e30ba152bf49c6572027e9edc0a22524a232",
   "revisions": [
    1,
@@ -40,7 +40,7 @@
  {
   "module": "output-matrix",
   "moduleId": 3404814517,
-  "controllerSha256": "a3a10bd91c711483bacde1a07b9e70e4f5cf9cad0276299faed33d6689c63f10",
+  "controllerSha256": "4b653212a0f2189e8730ba5f3f3d4a23fa72219385e7fd42ccf8e0557f26f544",
   "sourcePolicySha256": "0994f291fc10c4b89c827cf60802e30ba152bf49c6572027e9edc0a22524a232",
   "revisions": [
    1,
@@ -59,7 +59,7 @@
  {
   "module": "output-matrix",
   "moduleId": 3404814517,
-  "controllerSha256": "a3a10bd91c711483bacde1a07b9e70e4f5cf9cad0276299faed33d6689c63f10",
+  "controllerSha256": "4b653212a0f2189e8730ba5f3f3d4a23fa72219385e7fd42ccf8e0557f26f544",
   "sourcePolicySha256": "0994f291fc10c4b89c827cf60802e30ba152bf49c6572027e9edc0a22524a232",
   "revisions": [
    1,
@@ -78,8 +78,8 @@
  {
   "module": "analog-bassdrum",
   "moduleId": 2883261509,
-  "controllerSha256": "0775dc7e4ebef7ee0c29c3f22400e86ed7d2d5a2a0147dcaffddd43e54bf8ce5",
-  "sourcePolicySha256": "ffd80c5c9b5ad5b1d77c6d2cbac22bfa960edcf41b2e2d6197104e4db13f6c57",
+  "controllerSha256": "9b536a81404546319ac520d05b39e0bfe508bad03453f2828ec421d046c64a70",
+  "sourcePolicySha256": "21ac5908cb888bbe570299e1b8ca79889e54ab6e9b126a6e62bbc1bbd6606903",
   "revisions": [
    1,
    1,
@@ -88,10 +88,10 @@
   "feature": 4,
   "requiredCores": 3,
   "version": 1,
-  "imageBytes": 6252,
+  "imageBytes": 5956,
   "entryName": "ab_render",
-  "entry": 1106,
-  "beginReturn": 1266,
-  "endReturn": 1094
+  "entry": 1162,
+  "beginReturn": 1322,
+  "endReturn": 1150
  }
 ]

@@ -5,7 +5,7 @@ import { syncHistory, type SyncRecord } from '../config/octatrack-progress'
 import type { Configuration } from '../config/workspace'
 import type { DiagnosticReading } from '../community/octatrack-diagnostics-contract'
 import type { OctatrackLink } from '../engine/elekloader/octatrack-link'
-import { SELFTEST_FAILURES } from '../engine/elekloader/selftest'
+import { SELFTEST_FAILURES, selftestFaults } from '../engine/elekloader/selftest'
 import { useOctatrackLink } from '../hooks/useOctatrackLink'
 import { OctatrackLoad } from './OctatrackLoad'
 import { MissingNote, type ProjectNeeds } from './OctatrackUpdate'
@@ -28,8 +28,8 @@ function cardLine(health: DiagnosticReading) {
 }
 /** The last self-test in words: its result and the first reason it failed. */
 function selftestLine(health: DiagnosticReading) {
-  const reason = SELFTEST_FAILURES.find((_, bit) => health.failed & 1 << bit)
-  return health.state === 2 ? { text: 'Passed', led: 'on', peaks: true } : health.state === 3 ? { text: 'Failed' + (reason ? ': ' + reason : ''), led: 'leaving', peaks: true }
+  const faults = selftestFaults(health.failed), reason = SELFTEST_FAILURES.find((_, bit) => faults & 1 << bit)
+  return health.state === 2 || health.state === 3 && health.failed && !faults ? { text: 'Passed', led: 'on', peaks: true } : health.state === 3 ? { text: 'Failed' + (reason ? ': ' + reason : ''), led: 'leaving', peaks: true }
     : health.state === 1 ? { text: 'Running now', led: 'load' } : { text: 'Not run since the Octatrack was switched on', led: 'off' }
 }
 
