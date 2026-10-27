@@ -65,7 +65,7 @@
       "Not yet run on a unit: tested in rytm-emu only.",
       "A turn falls on a 32-frame audio block, up to about one block (plus 8 frames) before STA or END, so a PIPO loop is a few frames shorter at each end than ON's; inaudible on most material, audible on very short loops.",
       "The LOP knob's switch icon draws PIPO like ON; the value text shows PIPO while you turn it.",
-      "MIDI CC 30 (LOP) writes its value unchanged, as on stock: CC value 2 now gives PIPO, every other nonzero value ON.",
+      "MIDI CC 30 (LOP) writes its value unchanged, as on stock: CC value 2 now gives PIPO, every other nonzero value ON. Other OFF/ON parameters still read ON for 2.",
       "On stock OS, or a build without this mod, PIPO plays as ON."
     ]
   },
@@ -80,18 +80,18 @@
     ]
   },
   "resources": {
-    "memoryBytes": 764,
+    "memoryBytes": 1137,
     "fastBytes": 0,
     "load": {
-      "display": "About 0.2 % of an audio block idle, about 0.7 % with eight voices in PIPO (static estimate)",
+      "display": "About 0.1 % of an audio block with no sample looping, about 0.6 % with eight voices in PIPO (static estimate)",
       "method": "static",
-      "conditions": "Static count of the compiled handler, run once an audio block before the sample engine: about 27 instructions a voice not in PIPO and about 115 for a voice in PIPO (four 32-bit divisions), so about 220 a block with nothing in PIPO and about 950 with all eight voices in PIPO; at the Rytm guide's 0.023 % of a block per instruction a frame, about 0.2 % and 0.7 %. Divisions cost more cycles than the average instruction. Not measured on a unit."
+      "conditions": "Static count of the compiled handler, run once an audio block before the sample engine: about 15 instructions for a voice with LOP OFF or no track, about 70 for one looping with ON, about 105 for one in PIPO, plus four 32-bit divisions for a voice whose STA, END or sample just changed. With the Rytm guide's 0.023 % of a block per instruction a frame: about 0.1 % with nothing looping and about 0.6 % with all eight voices in PIPO. Not measured on a unit."
     }
   },
   "evidence": {
     "tier": "emulator",
     "moduleVersion": "0.1.0-experimental",
-    "sourceSha256": "840fefdb91d33d4f6bc3261fdf3d5dbacb8d15b4a88d8de9be9f573671acedc8",
+    "sourceSha256": "a3ec21a5531fabdfcdfd6bd2fcab26643bfbffbd8eedb1bdda6507284bdb65bc",
     "reports": [
       "TESTING.md"
     ],
@@ -100,7 +100,7 @@
   },
   "tests": {
     "report": "TESTING.md",
-    "summary": "rytm-emu c5732f0, OS 1.74, build PP03 (core-ar2 0.3 + 0.1.0), ramp sample on BD: LOP turns OFF/ON/PIPO and shows PIPO; ON plays stock's forward loop, PIPO a click-free triangle (largest sample step 5 of 32767) at -2, 0, +2 and +24 semitones; p-lock and scene lock of PIPO; two voices at once; retrig restarts forward; PIPO kept through power-off; stock 1.74 boots it as LOP 2 and plays a normal loop. Not run on a unit.",
+    "summary": "rytm-emu c5732f0, OS 1.74, build PP05 (core-ar2 0.3 + 0.1.0), ramp sample on BD: LOP steps OFF/ON/PIPO and shows PIPO; ON plays stock's loop, PIPO a click-free triangle at TUN about -24, 0 and +24; ON to PIPO mid-note; p-lock and scene lock; two voices; retrig; power-off persistence; stock 1.74 plays a saved PIPO as a normal loop. Not run on a unit.",
     "documentation": {
       "tutorial": {
         "title": "Quick tutorial",
@@ -145,8 +145,8 @@
         "type": "emulator",
         "release": "1.74",
         "moduleVersion": "0.1.0-experimental",
-        "imageSha256": "7c40259949fbc2b28a00f510afe81f4afc6a6a26ec4a15239aa4eed6d0130554",
-        "setup": "Headless rytm-emu c5732f0 (dtboot) running PP03: the released core-ar2 0.3 and this folder's Pipo Loop 0.1.0, linked by Modwerk on the owner's stock OS 1.74, BD playing a generated ramp sample. Firmware-rendered 128x64 screen at 3x. UI documentation only."
+        "imageSha256": "af1804708fa3c066f63f86697bc9562782fb0a75d0307d110d942fb562392311",
+        "setup": "Headless rytm-emu c5732f0 (dtboot) running PP05: the released core-ar2 0.3 and this folder's Pipo Loop 0.1.0, linked by Modwerk on the owner's stock OS 1.74, BD playing a generated ramp sample. Firmware-rendered 128x64 screen at 3x. UI documentation only."
       }
     },
     {
@@ -161,8 +161,8 @@
         "type": "emulator",
         "release": "1.74",
         "moduleVersion": "0.1.0-experimental",
-        "imageSha256": "7c40259949fbc2b28a00f510afe81f4afc6a6a26ec4a15239aa4eed6d0130554",
-        "setup": "Headless rytm-emu c5732f0 (dtboot) running PP03: the released core-ar2 0.3 and this folder's Pipo Loop 0.1.0, linked by Modwerk on the owner's stock OS 1.74, BD playing a generated ramp sample. Firmware-rendered 128x64 screen at 3x. UI documentation only."
+        "imageSha256": "af1804708fa3c066f63f86697bc9562782fb0a75d0307d110d942fb562392311",
+        "setup": "Headless rytm-emu c5732f0 (dtboot) running PP05: the released core-ar2 0.3 and this folder's Pipo Loop 0.1.0, linked by Modwerk on the owner's stock OS 1.74, BD playing a generated ramp sample. Firmware-rendered 128x64 screen at 3x. UI documentation only."
       }
     },
     {
@@ -177,8 +177,8 @@
         "type": "emulator",
         "release": "1.74",
         "moduleVersion": "0.1.0-experimental",
-        "imageSha256": "7c40259949fbc2b28a00f510afe81f4afc6a6a26ec4a15239aa4eed6d0130554",
-        "setup": "Headless rytm-emu c5732f0 (dtboot) running PP03: the released core-ar2 0.3 and this folder's Pipo Loop 0.1.0, linked by Modwerk on the owner's stock OS 1.74, BD playing a generated ramp sample. Firmware-rendered 128x64 screen at 3x. UI documentation only."
+        "imageSha256": "af1804708fa3c066f63f86697bc9562782fb0a75d0307d110d942fb562392311",
+        "setup": "Headless rytm-emu c5732f0 (dtboot) running PP05: the released core-ar2 0.3 and this folder's Pipo Loop 0.1.0, linked by Modwerk on the owner's stock OS 1.74, BD playing a generated ramp sample. Firmware-rendered 128x64 screen at 3x. UI documentation only."
       }
     }
   ]

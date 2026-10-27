@@ -4,11 +4,11 @@
   "moduleId": "pipo-loop",
   "moduleVersion": "0.1.0-experimental",
   "firmware": "1.74",
-  "capturedAt": "2026-10-27T21:30:00Z",
-  "imageSha256": "7c40259949fbc2b28a00f510afe81f4afc6a6a26ec4a15239aa4eed6d0130554",
-  "mainSha256": "a1829db90242920f991328c6e77f4c8cfe5ae9f37baaffa6cf25f66456c4dc83",
+  "capturedAt": "2026-10-27T22:30:00Z",
+  "imageSha256": "af1804708fa3c066f63f86697bc9562782fb0a75d0307d110d942fb562392311",
+  "mainSha256": "f5f9449750e22187c443acb8348c76029f74f452fc36540372c2705e2026c2f3",
   "stockSha256": "cb0f99d620edde994fb860c0e79cc2464e427d06882828cfdfb00fc53700e123",
-  "build": "Modwerk's linker: the released core-ar2 0.3 (6b97dfb3…3e58) + this folder's compiled Pipo Loop 0.1.0-experimental, materialised against the owner's stock OS 1.74, --version PP03",
+  "build": "Modwerk's linker: the released core-ar2 0.3 (6b97dfb3…3e58) + this folder's compiled Pipo Loop 0.1.0-experimental, materialised against the owner's stock OS 1.74, --version PP05",
   "emulator": {
     "name": "rytm-emu",
     "repository": "https://github.com/trigcondition/rytm-emu",
@@ -16,25 +16,25 @@
     "binary": "dtboot (cargo build --release --bin dtboot)",
     "settings": "card image with one generated sample, JIT on"
   },
-  "conditions": "SETUP (cold boot on a card holding a generated 0.5 s rising ramp, RAMP.wav, added with dtcard): dtboot pp03.syx --card card.img --instr 14800M --every 1000M --press NO@2000M --press NO@2300M --press NO@2600M --press NO@2900M --press GLOBAL@3300M --press DOWN@5100M --press YES@5400M --press DOWN@5700M --press YES@6000M --press DOWN@6300M --press YES@6600M --press DOWN@6900M --press YES@7200M --press RIGHT@7500M --press DOWN@7800M --press DOWN@8100M --press YES@8400M --press YES@8700M --press NO@10100M --press NO@10300M --press NO@10500M --press NO@10700M --press SMPL@11000M --turn 3:6@11300Mx6/30M --press YES@11700M --turn 6:6@12500Mx6/30M --save setup.snap (BD: SMP 1, LOP ON, SAMPLE page). Each capture then resumes setup.snap. A turn of +8 raw counts is one detent; stock's encoder hysteresis drops the first detents after the setup's turns, so more turns are sent than values. Frames are dtboot's firmware-rendered 128x64 screen at 3x, unmodified.",
+  "conditions": "SETUP (cold boot on a card holding a generated 0.5 s rising ramp, RAMP.wav, added with dtcard): dtboot pp05.syx --card card.img --instr 14800M --every 1000M --press NO@2000M --press NO@2300M --press NO@2600M --press NO@2900M --press GLOBAL@3300M --press DOWN@5100M --press YES@5400M --press DOWN@5700M --press YES@6000M --press DOWN@6300M --press YES@6600M --press DOWN@6900M --press YES@7200M --press RIGHT@7500M --press DOWN@7800M --press DOWN@8100M --press YES@8400M --press YES@8700M --press NO@10100M --press NO@10300M --press NO@10500M --press NO@10700M --press SMPL@11000M --turn 3:6@11300Mx6/30M --press YES@11700M --turn 6:6@12500Mx6/30M --save setup.snap (BD: SMP 1, LOP ON, SAMPLE page). Each capture then resumes setup.snap. A turn of +8 raw counts is one detent; stock's encoder hysteresis drops the first detents after the setup's turns, so more turns are sent than values. Frames are dtboot's firmware-rendered 128x64 screen at 3x, unmodified.",
   "captures": [
     {
       "path": "media/lop-pipo.png",
       "sha256": "2b90c9692f744695e405c08e92fe1def7b166fa7e6781580721f17cb57dc5e88",
       "frame": "turn04.png",
-      "plan": "DTBOOT_TURN_PNG=out dtboot pp03.syx --load setup.snap --instr 600M --every 300M --turn 6:8@14900Mx4/50M"
+      "plan": "DTBOOT_TURN_PNG=out dtboot pp05.syx --load setup.snap --instr 600M --every 300M --turn 6:8@14900Mx4/50M"
     },
     {
       "path": "media/plock-pipo.png",
       "sha256": "96b063e36abcd06e97af452d933d8b0f9c80fa7080e6fde1517e0179a39bea23",
       "frame": "turn10.png",
-      "plan": "DTBOOT_TURN_PNG=out dtboot pp03.syx --load setup.snap --instr 1600M --every 400M --press RECORD@14900M --press T1@15100M --press T9@15300M --press T1@15500M:700M --turn 6:8@15560Mx10/50M --press RECORD@16300M"
+      "plan": "DTBOOT_TURN_PNG=out dtboot pp05.syx --load setup.snap --instr 1600M --every 400M --press RECORD@14900M --press T1@15100M --press T9@15300M --press T1@15500M:700M --turn 6:8@15560Mx10/50M --press RECORD@16300M"
     },
     {
       "path": "media/scene-pipo.png",
       "sha256": "0f6e00b0eb3e0c0b87bd66a30a1689c6b04e016455758905e86f905162caf0b5",
       "frame": "turn10.png",
-      "plan": "DTBOOT_TURN_PNG=out dtboot pp03.syx --load setup.snap --instr 2000M --every 100M --press SCNE@14900M:900M --press BD@15000M:700M --turn 6:8@15160Mx10/50M"
+      "plan": "DTBOOT_TURN_PNG=out dtboot pp05.syx --load setup.snap --instr 2000M --every 100M --press SCNE@14900M:900M --press BD@15000M:700M --turn 6:8@15160Mx10/50M"
     }
   ]
 }
