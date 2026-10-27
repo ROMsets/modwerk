@@ -56,6 +56,30 @@ apart); one block halves the early turn and stays click-free at every pitch abov
 `media/lop-pipo.png`, `media/plock-pipo.png` and `media/scene-pipo.png`: PP05 frames, byte for byte
 the same as PP03's; plans in [media/capture.json](media/capture.json).
 
+## Hardware
+
+### PC03 on an Analog Rytm MKII (2026-10-27), as reported
+
+npp1993 flashed PC03 (`f128beb4…1e2a`; core-ar2 0.3, Silent Pad+Trig 0.5.1, Pipo Loop 0.1.0) and reported:
+
+- LOP displays the three values OFF, ON and PIPO, but the switch graphic is only two-way: PIPO draws like ON.
+- Zero crossing does not work. (Not part of this module: stock never snaps STA, END or the loop to a zero
+  crossing, and Zero Snap is planned as a separate module.)
+- The playhead in the sample player keeps moving after the envelope finishes.
+
+Not yet reported: clicks at the turns, several voices, p-locks, scenes, kit save and reload, power cycle.
+
+Follow-up in rytm-emu (PP05 against stock 1.74, BD with AMP DEC 3, LOP ON, one hit): the sample voice's
+play position (voice 0, sampled every 23M instructions) runs through the same values on both, looping
+on long after the amp envelope has ended. With LOP OFF it stops at the sample's end. With PIPO it keeps
+bouncing for as long as stock keeps an ON loop running. The voice keeps playing silently behind the amp
+envelope on stock too, so this is stock behaviour, not something the module adds. (rytm-emu's mixed
+output does not apply the AMP envelope to the sample layer, so audio could not show the silence.)
+Which screen shows the playhead was not identified.
+
+The switch icon is drawn from a two-frame sprite (17 x 9 pixels; OFF, ON) shared by twelve OFF/ON
+parameters; stock clamps any value above 1 to the last frame, so PIPO draws as ON.
+
 ## Code review (2026-10-27)
 
 A `/code-review` of the branch raised ten points. What was done with each:
@@ -109,7 +133,7 @@ parameter ids 34-37, 45 (LOP), 224, 248 and 463.
 
 ## Not tested
 
-- Anything on a unit.
+- On a unit, beyond the PC03 report above.
 - KIT SAVE and KIT RELOAD from the KIT menu, the sound browser, sound SysEx dumps and Overbridge.
 - Eight voices in PIPO at once, LFO or velocity modulation of STA and END while in PIPO, and Loop
   Sync and Pipo Loop on the same track.
