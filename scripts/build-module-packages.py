@@ -57,7 +57,7 @@ def manifest_build_fields(text):
     return json.dumps(fields, separators=(',', ':'), ensure_ascii=False)
 
 
-def source_hashes(root):
+def source_hashes(root, cardless=()):
     files = {}
     for group in ['modules', 'platform', 'tools', 'dsp', 'licenses']:
         for path in sorted((root / group).rglob('*')):
@@ -65,7 +65,7 @@ def source_hashes(root):
             # Finder metadata is never source; the release checkout never contains it.
             if not path.is_file() or '__pycache__' in path.parts or path.suffix == '.pyc' or path.name == '.DS_Store': continue
             relative = path.relative_to(root).as_posix()
-            if is_documentation(relative): continue
+            if is_documentation(relative) or relative.split('/')[0] == 'modules' and relative.split('/')[1] in cardless: continue
             if path.suffix.lower() in ('.bin', '.syx', '.exe', '.dll', '.dylib', '.zip') or path.name == 'stock_labels.json':
                 raise ValueError('Firmware/binary input is not allowed in source compilation')
             if re.fullmatch(r'modules/[^/]+/octamod\.module\.json', relative): files[relative] = HASH(manifest_build_fields(path.read_text(encoding='utf-8')).encode())
@@ -261,13 +261,16 @@ def main():
             parser.error('Untracked source is not allowed in a release build')
     if args.include_requested and args.source_commit: parser.error('Pending modules may be compiled only for local development verification')
     sdk = APP / 'sdk/octabam'
-    sources = source_hashes(sdk)
+    # A C runtime module (its USB package row has "sources") has no card form: src/catalog/usb-only.ts. Mirrors scripts/module-source.mjs.
+    usb_only = {row['id'] for row in json_file(APP / 'src/engine/assets/octatrack-module-packages.json')['packages'] if row.get('sources')}
+    sources = source_hashes(sdk, usb_only)
     baseline = {name: json_file(APP / 'src/engine/assets' / name) for name in ASSET_NAMES}
     catalog = json_file(APP / 'sdk/catalog.json')
     catalog_documents = {module['id']: json_file(sdk / 'modules' / module['id'] / 'octamod.module.json') for module in catalog['modules']}
     for module in catalog['modules']:
         if catalog_documents[module['id']]['version'] != module['version']: parser.error('Stale catalog module version: ' + module['id'])
-    buildable = [module for module in catalog['modules'] if catalog_documents[module['id']].get('build', {}).get('status') != 'pending']
+    buildable = [module for module in catalog['modules'] if catalog_documents[module['id']].get('build', {}).get('status') != 'pending'
+                 and module['id'] not in usb_only]
     try:
         approved_requested = requested_release_scope([module['id'] for module in buildable])
     except ValueError as error:
