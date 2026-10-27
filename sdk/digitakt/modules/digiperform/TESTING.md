@@ -6,7 +6,7 @@ Evidence tier: `none`. Nothing here is a filed hardware report; the author's own
 
 Source: `sdk/digitakt/modules/digiperform/src` at commit `21e098a73f442daff0fc82e7c437b6731179f4dd`. Modwerk's pinned toolchain compiled the source twice and produced the source-only packages in `sdk/imports/packages/digiperform/` (no stock bytes: addresses, lengths and SHA-256 guards only). The vendored elekloader builder (kit 0.6.0) then linked core 2.1 and Digi Perform into a local image on each release, with the owner's stock OS files, which stay on the author's computer:
 
-- OS 1.54: core 2.1 and Digi Perform 0.1.0-experimental, built and verified; image SHA-256 `917b882f3acdde69d6dbc7b9a06f192dd3a23bc2c4d655a744dbc060b2f7b2bd`. Digi Perform package SHA-256 `d789f0e709e5f1ea7455c52ac627bfb827a271dd729285ad2ec01be1063bb01d`.
+- OS 1.54: core 2.1 and Digi Perform 0.1.0-experimental, built and verified; image SHA-256 `917b882f3acdde69d6dbc7b9a06f192dd3a23bc2c4d655a744dbc060b2f7b2bd`. Digi Perform package SHA-256 `9337a7f099aa7f5c87ee3dadfb63e6571c8e8803e5fb4296270b29b83c3628a0`.
 - OS 1.53: core 2.1 and Digi Perform 0.1.0-experimental, built and verified; image SHA-256 `017c016a29512b07b48b0d60c5dde36d64d7e3fe294e4e0783a17020771463bb`.
 
 The local images carry the build label `2.3c`. Both are build checks, not hardware tests.

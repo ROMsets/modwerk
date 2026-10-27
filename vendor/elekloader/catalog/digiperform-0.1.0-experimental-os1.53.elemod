@@ -3,7 +3,7 @@
  "id": "digiperform",
  "version": "0.1.0-experimental",
  "title": "Digi Perform",
- "description": "Eight performance macros on knobs A-H: each moves one track parameter, per pattern.",
+ "description": "Eight performance macros on knobs A-H: each moves one track parameter, or the same parameter of every track, per pattern.",
  "category": "system",
  "author": "ROMsets",
  "license": "GPL-3.0-or-later",
@@ -3921,6 +3921,7 @@
   "core"
  ],
  "conflicts": [
+  "cc-names",
   "digimatrix"
  ],
  "signature": null
