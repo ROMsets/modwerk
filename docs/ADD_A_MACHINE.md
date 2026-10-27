@@ -27,6 +27,10 @@ An Erica Synths machine (`family: "erica"`) has published firmware source (the L
 
 An Erica Synths release lists its version with `"files": []`, and the machine stays locked for modules until an `lxr` module contract exists. The licence, trademark and install terms a build must meet are in [LXR_02.md](LXR_02.md).
 
+## Talk to the owner first
+
+Before any implementation to unlock a new device (research tools, a writer, a base or a profile), message Jannik Aßfalg, the owner, on the [Modwerk Discord](https://discord.gg/vzfAdMBtn5). Say which device and what you plan. An agent asked to unlock a device stops until the developer has done this and tells them so; reading public material is fine meanwhile.
+
 ## Never share firmware
 
 Do not put OS files, stock effects, memory dumps, disassembly listings or extracted Elektron or Zoom code in a pull request, issue or forum post, and do not use leaked or decrypted firmware someone else has published. Work from your own download of the stock OS. Where the OS is encrypted or signed, Modwerk does not break that: such a machine is modded here only with its maker's agreement. Before a new maker's machine gets its first public download, tell that maker ([modding guidelines](../MODDING_GUIDELINES.md)). Share hashes, file structure, addresses, notes and your own code only. Erica Synths' published source is not stock firmware: link and cite it under its GPL-3.0 licence, but never commit a built image.
