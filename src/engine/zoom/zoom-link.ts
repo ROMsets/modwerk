@@ -36,6 +36,8 @@ export class ZoomLink {
   private op: Promise<unknown> = Promise.resolve()
   /** Effect headers already read (upper-case name -> size and header); a write or delete forgets that file. */
   private readonly heads = new Map<string, { size: number; effect?: ZoomFile['effect'] }>()
+  /** A reply timed out: one may still arrive, so the next operation first waits for the line to go quiet. */
+  private stale = false
   private readonly requestAccess: (() => Promise<MidiAccessLike>) | null
   private readonly timeout: number
 
@@ -112,12 +114,30 @@ export class ZoomLink {
     const id = this.state.identity?.deviceId
     if (id === undefined || !this.output) return Promise.resolve(null)
     return new Promise(resolve => {
-      const timer = setTimeout(() => { this.waitFile = undefined; resolve(null) }, this.timeout)
+      const timer = setTimeout(() => { this.waitFile = undefined; this.stale = true; resolve(null) }, this.timeout)
       this.waitFile = m => { clearTimeout(timer); this.waitFile = undefined; resolve(m) }
       this.send(zoomSysex(id, body))
     })
   }
+  /** A reply the operation can't do without: none in time ends the operation, so a backup is whole or nothing. */
+  private async answer(body: number[]) {
+    const reply = await this.ask(body)
+    if (!reply) throw new Error('The pedal stopped answering. Nothing was saved; check the cable and try again.')
+    return reply
+  }
   private async close() { for (const body of FILE.close) await this.ask(body) }
+  // After a timeout a late reply would be taken as the answer to the next request: swallow replies until the
+  // line has been quiet for a moment, then start.
+  private async drain() {
+    if (!this.stale) return
+    const quiet = Math.min(300, this.timeout)
+    await new Promise<void>(resolve => {
+      const done = () => { this.waitFile = undefined; resolve() }
+      let timer = setTimeout(done, quiet)
+      this.waitFile = () => { clearTimeout(timer); timer = setTimeout(done, quiet) }
+    })
+    this.stale = false
+  }
 
   /** One file operation at a time, shown as reading while it runs. */
   private exclusive<T>(label: string, work: () => Promise<T>, status: 'reading' | 'writing' = 'reading'): Promise<T> {
@@ -125,7 +145,7 @@ export class ZoomLink {
       if (this.state.status !== 'ready') throw new Error('Connect the pedal first.')
       const identity = this.state.identity
       this.set({ status, identity, progress: { label, done: 0, total: 0 } })
-      try { return await work() } finally { if (this.getState().status === status) this.set({ status: 'ready', identity }) }
+      try { await this.drain(); return await work() } finally { if (this.getState().status === status) this.set({ status: 'ready', identity }) }
     })
     this.op = run.catch(() => undefined)
     return run
@@ -134,12 +154,12 @@ export class ZoomLink {
 
   private async list(): Promise<ZoomFile[]> {
     const files: ZoomFile[] = []
-    let reply = await this.ask(FILE.listFirst())
+    let reply: number[] = await this.answer(FILE.listFirst())
     for (let guard = 0; guard < 600; guard++) {
       const entry = parseListEntry(reply)
       if (!entry) break
       files.push(entry)
-      reply = await this.ask(FILE.listNext())
+      reply = await this.answer(FILE.listNext())
     }
     await this.close()
     if (!files.length) throw new Error('The pedal listed no files.')
@@ -147,11 +167,11 @@ export class ZoomLink {
   }
   private async read(name: string, maxBlocks = 256): Promise<number[]> {
     const out: number[] = []
-    await this.ask(FILE.readOpen(name))
+    await this.answer(FILE.readOpen(name))
     try {
       for (let block = 0; block < maxBlocks; block++) {
         let reply: number[] | null = null
-        for (const body of FILE.readBlock) reply = await this.ask(body)
+        for (const body of FILE.readBlock) reply = await this.answer(body)
         const chunk = parseBlock(reply)
         if (chunk.end) break
         if (!chunk.ok) throw new Error('Reading ' + name + ': a block failed its checksum.')
@@ -225,6 +245,7 @@ export class ZoomLink {
     await this.write(file, bytes)
     this.progress('Adding ' + file + ' to the effect list', 0, 0)
     try { await this.write(EFFECT_LIST, updated) } catch (error) {
+      await this.drain()   // a late reply to the failed write must not answer the rollback's requests
       try { await this.write(EFFECT_LIST, list) } catch (again) { throw new Error((error as Error).message + ' Writing the original effect list back also failed (' + (again as Error).message + '): restore it from your backup before power-cycling.', { cause: again }) }
       throw new Error((error as Error).message + ' The original effect list was written back.', { cause: error })
     }

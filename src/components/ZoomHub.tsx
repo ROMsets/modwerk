@@ -125,15 +125,14 @@ export function ZoomHub({ device, view, link, header }: { device: DeviceProfile;
             <h3 id="zoom-firmware-title">Firmware</h3>
             <p>{connected ? <>Your {model} runs firmware <b>{identity?.firmware || 'unknown'}</b>.</> : 'Connect your pedal to see its firmware.'} Effects here are tested on the MS-70CDR with Zoom’s firmware 2.10.</p>
             <table className="zoom-firmware">
-              <caption>Two routes: keep Zoom’s firmware and add files, or replace the firmware.</caption>
-              <thead><tr><th scope="col">Firmware</th><th scope="col">What you get</th><th scope="col">To install, and to go back</th></tr></thead>
+              <caption>Two routes, as on the Octatrack: effect files on Zoom’s firmware, or a base underneath them.</caption>
+              <thead><tr><th scope="col">Route</th><th scope="col">What you get</th><th scope="col">State</th></tr></thead>
               <tbody>
-                <tr><th scope="row">Zoom’s firmware (2.10) with added effects</th><td>Zoom’s pedal as it is, plus effects, NAM captures and cabs added as files.</td><td>No reflash. Remove a file to undo it.</td></tr>
-                <tr><th scope="row"><a href="https://github.com/matujuice/zoom-ms-midistomp" target="_blank" rel="noreferrer">MIDISTOMP</a> 2.0, by Luca Matturro</th><td>Zoom’s effects, plus routing on two buses, PERFORM mode, a looper, metering and a DSP limit of 300 (MS-70CDR 2.10).</td><td>A reflash with its own updater. Back with Zoom’s 2.10 updater.</td></tr>
-                <tr><th scope="row">A fully custom firmware (in development)</th><td>Its own audio engine: USB audio, the pedal as a USB disk, ZDL and ZD2 effects and its own effect format.</td><td>A reflash. Details once its author releases it.</td></tr>
+                <tr><th scope="row">Zoom’s firmware (2.10) with effect files</th><td>Zoom’s pedal as it is, plus effects, NAM captures and cabs added as files. No reflash: remove a file to undo it.</td><td>Works today.</td></tr>
+                <tr><th scope="row"><a href="https://github.com/matujuice/zoom-ms-midistomp" target="_blank" rel="noreferrer">MIDISTOMP</a> as the base, by Luca Matturro</th><td>The firmware underneath, like the Octatrack’s base: routing on two buses, PERFORM mode, a looper, metering, a DSP limit of 300, and the shared tempo and transport the effects use. Built from your own Zoom updater and flashed through Modwerk.</td><td>Coming. Until then, use MIDISTOMP’s own updater; Zoom’s 2.10 updater goes back.</td></tr>
               </tbody>
             </table>
-            <p>This page never flashes firmware: each firmware has its own updater. Back up all files first (Backups).</p>
+            <p>This page doesn’t flash firmware yet. Back up all files first (Backups).</p>
           </section>
           <section className="hub-section" aria-labelledby="zoom-connect-title">
             <h3 id="zoom-connect-title">Can’t connect?</h3>

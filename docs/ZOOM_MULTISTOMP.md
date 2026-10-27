@@ -172,13 +172,22 @@ Before any browser write, in this order:
 3. A first write on the maintainer's own pedal with the stock updater ready
    for recovery, then a documented recovery path for users.
 
-What this means for the Octatrack interface ([ADD_A_MACHINE.md](ADD_A_MACHINE.md#aim-for-the-octatracks-interface)):
-stock Zoom firmware has no way to load an effect into RAM, so there is no
-trial, Keep or Undo; installs write persistent storage. That is a resource
-reason for the exception, for owner review. A Modwerk base firmware for these
-pedals, which could load and flash differently and need no stock updater, is
-an option for later (owner, 23 October 2026), not the current priority: the
-first effects ship safely through Effect Manager and are documented first.
+What this means for the Octatrack interface ([ADD_A_MACHINE.md](ADD_A_MACHINE.md#aim-for-the-octatracks-interface)),
+the owner's plan (27 October 2026, on #956), like the Octatrack beta:
+**MIDISTOMP becomes the base** underneath, the way the base is on the Octatrack,
+and the ZDL effects are the modules; its author is on board. MIDISTOMP's patches
+are applied in the browser to the user's own Zoom updater (as the Octatrack base
+is built from the user's own OS file) and flashed in update mode, the bootloader
+never touched. The link is Web MIDI SysEx (the pedal page's `ZoomLink`, plus
+Modwerk commands the base answers); MIDISTOMP's transport block becomes the one
+tempo and transport contract. Zoom's firmware with effect files stays the route
+without a base, like the Octatrack's card build: installs write persistent
+storage and load after a power cycle, with no RAM load, trial, Keep or Undo.
+Order: the read-only pedal page; a hello base (2.10 plus one patch that answers a
+Modwerk hello, built with `zoomms` and flashed with Zoom's updater); the browser
+builder and flashing; effect sync; the pedal on `OctatrackHub` with module sets;
+the project's own knob handlers and the `zdl` contract. The owner is preparing
+the detailed plan.
 
 ## Proposed sequence
 

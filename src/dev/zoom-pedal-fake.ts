@@ -6,11 +6,17 @@ import type { MidiAccessLike, MidiIn, MidiOut } from '../engine/zoom/zoom-link'
 export type FakePedalFile = { name: string; data: number[] }
 const BLOCK = 512
 
-export function fakeZoomPedal({ deviceId = 0x61, firmware = '2.10', files = [] as FakePedalFile[], free = 400_000, portName = 'ZOOM MS Series', silent = false, failWriteOf = '' } = {}) {
+export function fakeZoomPedal({ deviceId = 0x61, firmware = '2.10', files = [] as FakePedalFile[], free = 400_000, portName = 'ZOOM MS Series', silent = false, slow = undefined as { cmd: number; nth: number; ms: number | null } | undefined, latency = 0, failWriteOf = '' } = {}) {
   const sent: number[][] = []
   let listAt = 0, reading: FakePedalFile | undefined, readAt = 0, step = 0, writing: FakePedalFile | undefined, failing = !!failWriteOf
   const input: MidiIn = { id: 'in', name: portName, state: 'connected', onmidimessage: null }
-  const reply = (m: number[]) => setTimeout(() => input.onmidimessage?.({ data: Uint8Array.from(m) }), 0)
+  // Every reply takes `latency` ms; with `slow`, the nth reply to file command `cmd` comes `ms` later still, or never (null).
+  let seen = 0, current = -1
+  const reply = (m: number[]) => {
+    let ms: number | null = 0
+    if (slow && current === slow.cmd && ++seen === slow.nth) ms = slow.ms
+    if (ms !== null) setTimeout(() => input.onmidimessage?.({ data: Uint8Array.from(m) }), latency + ms)
+  }
   const head = [0xf0, 0x52, 0x00, deviceId, 0x60, 0x04]
   const ack = () => reply([...head, 0, 0xf7])
   const nope = () => reply([0xf0, 0x52, 0x00, deviceId, 0x60, 0x7f, 0xf7])
@@ -34,6 +40,7 @@ export function fakeZoomPedal({ deviceId = 0x61, firmware = '2.10', files = [] a
       if (silent) return
       if (m[0] === 0xf0 && m[1] === 0x7e && m[4] === 0x01) return reply([0xf0, 0x7e, 0x00, 0x06, 0x02, 0x52, deviceId, 0, 0, 0, ...Array.from(firmware.padEnd(4), c => c.charCodeAt(0)), 0xf7])
       if (m[1] !== 0x52 || m[3] !== deviceId || m[4] !== 0x60) return
+      current = m[5]
       const cmd = m[5], name = cmd === 0x20 ? String.fromCharCode(...m.slice(16, m.indexOf(0, 16))) : ''   // read: 9 zero bytes, then the name
       if (cmd === 0x25) { listAt = 0; return files[0] ? entry(files[listAt++]) : nope() }
       if (cmd === 0x26) return listAt < files.length ? entry(files[listAt++]) : nope()
