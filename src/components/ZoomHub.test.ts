@@ -62,7 +62,7 @@ describe('the Zoom pedal page', () => {
     await render('setup', link)
     expect(container.querySelector('[role=alert]')?.textContent).toMatch(/This is an MS-50G, not an MS-70CDR/)
     expect(open().textContent).toMatch(/runs firmware 3\.10/)
-    expect([...open().querySelectorAll('.zoom-firmware tbody th')].map(th => th.textContent)).toEqual(['Zoom’s firmware (2.10) with added effects', 'MIDISTOMP 2.0, by Luca Matturro', 'A fully custom firmware (in development)'])
+    expect([...open().querySelectorAll('.zoom-firmware tbody th')].map(th => th.textContent)).toEqual(['Zoom’s firmware (2.10) with effect files', 'MIDISTOMP as the base, by Luca Matturro'])
   })
 
   it('needs MIDI: without it, it says which browsers work', async () => {

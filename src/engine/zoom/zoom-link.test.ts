@@ -64,4 +64,17 @@ describe('the Zoom link', () => {
     const link = new ZoomLink(() => Promise.resolve(fakeZoomPedal().access))
     await expect(link.listFiles()).rejects.toThrow(/Connect/)
   })
+  it('saves nothing when a reply is lost, and the next operation works', async () => {
+    const files = ['A', 'B', 'C', 'D', 'E'].map((n, i) => fakeEffect(n + '.ZDL', 8, 500 + i, '0.26'))
+    const link = await connected(fakeZoomPedal({ files, slow: { cmd: 0x26, nth: 2, ms: null } }), 60)
+    await expect(link.backup()).rejects.toThrow(/stopped answering/)
+    expect(link.getState().status).toBe('ready')
+    expect((await link.listFiles()).map(f => f.name)).toEqual(['A.ZDL', 'B.ZDL', 'C.ZDL', 'D.ZDL', 'E.ZDL'])
+  })
+  it('never takes a late reply as the answer to the next request', async () => {
+    const files = ['A', 'B', 'C'].map((n, i) => fakeEffect(n + '.ZDL', 8, 500 + i, '0.26'))
+    const link = await connected(fakeZoomPedal({ files, latency: 20, slow: { cmd: 0x26, nth: 1, ms: 70 } }), 60)
+    await expect(link.listFiles()).rejects.toThrow(/stopped answering/)   // the reply comes after the timeout…
+    expect((await link.listFiles()).map(f => f.name)).toEqual(['A.ZDL', 'B.ZDL', 'C.ZDL'])   // …and is swallowed, not read as the next answer
+  })
 })
