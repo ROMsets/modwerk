@@ -13,7 +13,10 @@
   "copied": [],
   "regions": [],
   "storage": [],
-  "claims": [],
+  "claims": [
+    "ui:SAMPLE page LOP value PIPO",
+    "param:LOP range OFF/ON/PIPO and its value text"
+  ],
   "requires": [],
   "derive": null,
   "releases": {

@@ -9,7 +9,7 @@
   "author": {
     "github": "npp1993",
     "credits": [
-      "npp1993"
+      "npp1993 (Nathaniel Pavel) — the mod, its design and code, and this Modwerk module."
     ]
   },
   "maintainers": [
@@ -17,74 +17,169 @@
   ],
   "presentation": {
     "label": "PIPO LOOP",
-    "family": "Replace with the kind of mod",
-    "summary": "Replace with one sentence about what this mod adds.",
-    "overview": "Replace with what the mod does, how it sounds or works, and what it changes on the unit.",
+    "family": "Sample playback",
+    "summary": "LOP gets a third value, PIPO: the sample's loop plays forward, then backward, and so on (ping-pong). ON stays the stock forward loop.",
+    "overview": "Pipo Loop adds PIPO to the SAMPLE page's LOP parameter, after OFF and ON. A sample whose LOP is PIPO plays from STA to END, then back to STA, then forward again, for as long as the note lasts, with no jump at the turns. PIPO is an ordinary LOP value: it saves with the sound and kit, takes parameter locks and scene locks, and comes back after a power cycle. A sound saved with PIPO plays as a normal forward loop (ON) on an OS without the mod. The turn falls on the audio engine's 32-frame block, so it comes up to about one block before STA or END.",
     "highlights": [
-      "Replace with a real highlight."
+      "Ping-pong loops for any sample, from the SAMPLE page's own LOP knob.",
+      "Lock PIPO on a step, or put it in a scene, like any LOP value.",
+      "No jump at the turns; ON and OFF stay stock.",
+      "Saved with the sound; plays as a forward loop on stock OS."
     ],
     "usage": [
-      "Replace with a practical way to use it."
+      "On the SAMPLE page, turn LOP past ON to PIPO and play the sound: the loop between STA and END goes back and forth.",
+      "Set STA and END around a sustained part of the sample (a pad, a vowel, a held note) for a seamless back-and-forth drone.",
+      "Hold a trig in GRID RECORDING and turn LOP to PIPO to ping-pong only on that step; the other steps keep the sound's ON or OFF."
     ]
   },
   "access": {
-    "location": "Replace with where the mod appears on the unit.",
+    "location": "SAMPLE page, LOP (encoder G): OFF, ON, PIPO.",
     "steps": [
-      "Replace with the exact button and menu steps."
+      "Select a track whose sound plays a sample, and press SAMPLE.",
+      "Turn LOP (encoder G) clockwise past ON: the value reads PIPO."
     ],
-    "screenshots": []
+    "screenshots": [
+      "media/lop-pipo.png"
+    ]
   },
-  "controls": [],
+  "controls": [
+    {
+      "name": "LOP",
+      "default": 0,
+      "doc": "SAMPLE page, encoder G. OFF and ON as stock; PIPO plays the loop between STA and END forward, then backward, and so on. Locks per step and per scene. The knob's switch icon shows PIPO like ON; the value text reads PIPO.",
+      "labels": [
+        "OFF",
+        "ON",
+        "PIPO"
+      ]
+    }
+  ],
   "compatibility": {
     "releases": [
       "1.74"
     ],
     "requires": [],
     "conflicts": [],
-    "limitations": []
+    "limitations": [
+      "Built for OS 1.74 only, with core-ar2 0.3.",
+      "Not yet run on a unit: tested in rytm-emu only.",
+      "A turn falls on a 32-frame audio block, up to about one block (plus 8 frames) before STA or END, so a PIPO loop is a few frames shorter at each end than ON's; inaudible on most material, audible on very short loops.",
+      "The LOP knob's switch icon draws PIPO like ON; the value text shows PIPO while you turn it.",
+      "MIDI CC 30 (LOP) writes its value unchanged, as on stock: CC value 2 now gives PIPO, every other nonzero value ON.",
+      "On stock OS, or a build without this mod, PIPO plays as ON."
+    ]
   },
   "platform": {
     "kind": "elemod",
     "core": "0.3",
     "build": "build.json",
     "events": [],
-    "claims": []
+    "claims": [
+      "ui:SAMPLE page LOP value PIPO",
+      "param:LOP range OFF/ON/PIPO and its value text"
+    ]
   },
   "resources": {
-    "memoryBytes": null,
-    "fastBytes": null,
+    "memoryBytes": 764,
+    "fastBytes": 0,
     "load": {
-      "display": "Not measured yet",
-      "method": "unmeasured",
-      "conditions": "Measure with every track playing, parameters modulated and the mod at its heaviest setting."
+      "display": "About 0.2 % of an audio block idle, about 0.7 % with eight voices in PIPO (static estimate)",
+      "method": "static",
+      "conditions": "Static count of the compiled handler, run once an audio block before the sample engine: about 27 instructions a voice not in PIPO and about 115 for a voice in PIPO (four 32-bit divisions), so about 220 a block with nothing in PIPO and about 950 with all eight voices in PIPO; at the Rytm guide's 0.023 % of a block per instruction a frame, about 0.2 % and 0.7 %. Divisions cost more cycles than the average instruction. Not measured on a unit."
     }
   },
   "evidence": {
-    "tier": "none",
+    "tier": "emulator",
     "moduleVersion": "0.1.0-experimental",
-    "sourceSha256": null,
-    "reports": [],
+    "sourceSha256": "840fefdb91d33d4f6bc3261fdf3d5dbacb8d15b4a88d8de9be9f573671acedc8",
+    "reports": [
+      "TESTING.md"
+    ],
     "hardware": null,
     "verifiedBy": null
   },
   "tests": {
     "report": "TESTING.md",
-    "summary": "Not tested yet."
+    "summary": "rytm-emu c5732f0, OS 1.74, build PP03 (core-ar2 0.3 + 0.1.0), ramp sample on BD: LOP turns OFF/ON/PIPO and shows PIPO; ON plays stock's forward loop, PIPO a click-free triangle (largest sample step 5 of 32767) at -2, 0, +2 and +24 semitones; p-lock and scene lock of PIPO; two voices at once; retrig restarts forward; PIPO kept through power-off; stock 1.74 boots it as LOP 2 and plays a normal loop. Not run on a unit.",
+    "documentation": {
+      "tutorial": {
+        "title": "Quick tutorial",
+        "steps": [
+          "On the SAMPLE page, turn LOP past ON to PIPO and play the sound: the loop between STA and END goes back and forth.",
+          "Set STA and END around a sustained part of the sample (a pad, a vowel, a held note) for a seamless back-and-forth drone.",
+          "Hold a trig in GRID RECORDING and turn LOP to PIPO to ping-pong only on that step; the other steps keep the sound's ON or OFF."
+        ]
+      },
+      "screenshots": [
+        "media/lop-pipo.png",
+        "media/plock-pipo.png",
+        "media/scene-pipo.png"
+      ],
+      "captureRecord": "media/capture.json"
+    }
   },
   "license": {
     "spdx": "GPL-3.0-or-later",
     "file": "LICENSE",
-    "declaration": "Original work by the author. Replace if you choose another GPL-compatible licence."
+    "declaration": "npp1993's original code under GPL-3.0-or-later. Each patch precondition is an address, a length and a SHA-256; no stock bytes are included."
   },
   "media": [
     {
       "path": "media/thumbnail.svg",
       "kind": "thumbnail",
-      "caption": "Pipo Loop thumbnail",
-      "alt": "Placeholder thumbnail for Pipo Loop",
+      "caption": "Pipo Loop",
+      "alt": "Two traces between S and E: with LOP ON the position climbs and jumps back to S; with LOP PIPO it climbs and comes back down, a triangle.",
       "credit": "npp1993",
       "license": "GPL-3.0-or-later",
-      "source": "Original placeholder from the Modwerk SDK template; replace with your own artwork."
+      "source": "Original conceptual illustration in the shared signal-art style; not a device screenshot."
+    },
+    {
+      "path": "media/lop-pipo.png",
+      "kind": "screenshot",
+      "caption": "Turn LOP past ON: the value reads PIPO, and the sample's loop plays back and forth.",
+      "alt": "SAMPLE page with TUN, FIN, BR, SMP 1, STA, END, LEV and the LOP knob's value shown as PIPO.",
+      "credit": "npp1993 documentation capture; Elektron interface",
+      "license": "LicenseRef-Rytm-UI-Documentation",
+      "source": "original",
+      "capture": {
+        "type": "emulator",
+        "release": "1.74",
+        "moduleVersion": "0.1.0-experimental",
+        "imageSha256": "7c40259949fbc2b28a00f510afe81f4afc6a6a26ec4a15239aa4eed6d0130554",
+        "setup": "Headless rytm-emu c5732f0 (dtboot) running PP03: the released core-ar2 0.3 and this folder's Pipo Loop 0.1.0, linked by Modwerk on the owner's stock OS 1.74, BD playing a generated ramp sample. Firmware-rendered 128x64 screen at 3x. UI documentation only."
+      }
+    },
+    {
+      "path": "media/plock-pipo.png",
+      "kind": "screenshot",
+      "caption": "In GRID RECORDING, hold a trig and turn LOP to PIPO to lock it on that step.",
+      "alt": "SAMPLE page in GRID RECORDING with the LOP knob highlighted as a lock reading PIPO.",
+      "credit": "npp1993 documentation capture; Elektron interface",
+      "license": "LicenseRef-Rytm-UI-Documentation",
+      "source": "original",
+      "capture": {
+        "type": "emulator",
+        "release": "1.74",
+        "moduleVersion": "0.1.0-experimental",
+        "imageSha256": "7c40259949fbc2b28a00f510afe81f4afc6a6a26ec4a15239aa4eed6d0130554",
+        "setup": "Headless rytm-emu c5732f0 (dtboot) running PP03: the released core-ar2 0.3 and this folder's Pipo Loop 0.1.0, linked by Modwerk on the owner's stock OS 1.74, BD playing a generated ramp sample. Firmware-rendered 128x64 screen at 3x. UI documentation only."
+      }
+    },
+    {
+      "path": "media/scene-pipo.png",
+      "kind": "screenshot",
+      "caption": "In SCENE mode, hold a pad and turn LOP to PIPO to put it in that scene.",
+      "alt": "SAMPLE page with LOP locked to PIPO and the footer reading SCENE: 1 and LOCKS.",
+      "credit": "npp1993 documentation capture; Elektron interface",
+      "license": "LicenseRef-Rytm-UI-Documentation",
+      "source": "original",
+      "capture": {
+        "type": "emulator",
+        "release": "1.74",
+        "moduleVersion": "0.1.0-experimental",
+        "imageSha256": "7c40259949fbc2b28a00f510afe81f4afc6a6a26ec4a15239aa4eed6d0130554",
+        "setup": "Headless rytm-emu c5732f0 (dtboot) running PP03: the released core-ar2 0.3 and this folder's Pipo Loop 0.1.0, linked by Modwerk on the owner's stock OS 1.74, BD playing a generated ramp sample. Firmware-rendered 128x64 screen at 3x. UI documentation only."
+      }
     }
   ]
 }
