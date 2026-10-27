@@ -19,7 +19,9 @@
   "releases": {
     "1.74": {
       "defsym": {
-        "pipo_loop_prefetch": "0x4011c1e0"
+        "pipo_loop_prefetch": "0x4011c1e0",
+        "pipo_loop_text_resume": "0x400fb572",
+        "pipo_loop_sprintf": "0x4009866e"
       },
       "cflags": [
         "-DPARAMS_EFF_AT=0x8000f7a8",
@@ -34,6 +36,21 @@
           "stockSha256": "2e4c18b189c0e55cfb3beeff96e48aa0adee0e73e340c16018c19cc16416b7c8",
           "op": "jsr",
           "target": "pipo_loop_gate"
+        },
+        {
+          "addr": "0x400fb56c",
+          "len": 6,
+          "stockSha256": "26c0ee9154cd0bf0cd340066a9b5799a2b7ecdf768354c05d3439f1044ea7581",
+          "op": "jmp",
+          "target": "pipo_loop_text_gate"
+        },
+        {
+          "addr": "0x401c04f8",
+          "len": 4,
+          "stockSha256": "6b1e73a0094b7b812d3b9e22cffb4f8239319847522c4fa103753b6950020f93",
+          "op": "bytes",
+          "new": "00000200",
+          "kind": "data"
         }
       ]
     }
