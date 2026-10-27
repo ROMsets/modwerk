@@ -106,7 +106,7 @@
   "sdk/machines/octatrack/module-adapters/analog-bd-parts/analog_bd_part_restore.c": "e2b354f38b51f8dd7e84f9b0ecdd9cfddc3fd0bcf17e76608b3383bbfe0f7021",
   "sdk/machines/octatrack/module-adapters/analog-bd-parts/analog_bd_part_restore.h": "a17a708e2fdc7449842163deaccff4026119f1f5d5a9b594aaf520c121d79131",
   "sdk/machines/octatrack/module-adapters/base_usb_functions.py": "a8a2673c39e0a47bac1eabd4507a3aeb4da449bcff97b22c49143aa3bc6b327d",
-  "sdk/machines/octatrack/module-adapters/controller-policies.json": "1c4578bfec1182a6e912909d86c2afc1689ec0cb5d086105f4307ad01cdf18ec",
+  "sdk/machines/octatrack/module-adapters/controller-policies.json": "913bbff0199664b9f24940399cedf4a8ea0450781003670b85af481b50810144",
   "sdk/machines/octatrack/module-adapters/controller-policy/controller_association.c": "f020d3f90d53329ed3124ae0cabaf7c5ed83a3361ea2766ed19284c288f63803",
   "sdk/machines/octatrack/module-adapters/controller-policy/controller_association.h": "350be4076cc795a1fccdb90984029b415ad3b35cc305e74b9504227f2114f865",
   "sdk/machines/octatrack/module-adapters/controller-policy/controller_board.c": "e4b39dfeda68058c3b714a322023760782a2acb4c1167f4a344bf57bcb43bb9a",

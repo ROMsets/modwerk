@@ -78,8 +78,8 @@
  {
   "module": "analog-bassdrum",
   "moduleId": 2883261509,
-  "controllerSha256": "9b536a81404546319ac520d05b39e0bfe508bad03453f2828ec421d046c64a70",
-  "sourcePolicySha256": "21ac5908cb888bbe570299e1b8ca79889e54ab6e9b126a6e62bbc1bbd6606903",
+  "controllerSha256": "f247ac23b827c7c7ffcce83d84af8009773999788446b3060a4e7eb7ac912ea4",
+  "sourcePolicySha256": "d22edddd2b595a22386d4067ca5287db049271335273dd54f3672ab5ffe85212",
   "revisions": [
    1,
    1,
@@ -88,10 +88,10 @@
   "feature": 4,
   "requiredCores": 3,
   "version": 1,
-  "imageBytes": 5956,
+  "imageBytes": 6268,
   "entryName": "ab_render",
-  "entry": 1162,
-  "beginReturn": 1322,
-  "endReturn": 1150
+  "entry": 1106,
+  "beginReturn": 1266,
+  "endReturn": 1094
  }
 ]
