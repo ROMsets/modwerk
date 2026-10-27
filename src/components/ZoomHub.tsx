@@ -26,7 +26,7 @@ const isCapture = (name: string) => /^(NAM|C)\d/i.test(name)
 export function ZoomHub({ device, view, link, header }: { device: DeviceProfile; view: ZoomHubView; link: ZoomLink | null; header?: ReactNode }) {
   const mobile = useMobileWorkspace()
   const state = useZoomLink(link), { status, identity, notice, progress } = state
-  const connected = status === 'ready' || status === 'reading', busy = status === 'reading' || status === 'connecting'
+  const connected = status === 'ready' || status === 'reading' || status === 'writing', busy = status === 'reading' || status === 'writing' || status === 'connecting'
   const expected = ZOOM_DEVICE_IDS[device.id], other = connected && identity && expected !== undefined && identity.deviceId !== expected
   const model = identity?.model ?? device.name
   // What was read belongs to the pedal it was read from: gone when that pedal is.
