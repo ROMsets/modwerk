@@ -1,5 +1,9 @@
 # Beat Slicer testing
 
+## Release run, 27 October 2026
+
+The published package `6650ef77…` ran on the owner's MKII over USB: on a development twin of the beta base, slicing, re-slicing while playing, both BPM sources, NO, self-test and rollback, plus the draw cost while the popup is open; on the exact beta base `903f8ed6…`, a trial, self-test and rollback. Results and what was not run: [evidence/hardware.md](evidence/hardware.md) and [evidence/performance.json](evidence/performance.json).
+
 For the current completion boundary, see [integration readiness](INTEGRATION.md#current-readiness).
 The versioned sections below retain historical research evidence; old Undo
 experiments do not add a player-facing Undo requirement. USB Keep/Undo remains

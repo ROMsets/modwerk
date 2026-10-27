@@ -2,8 +2,8 @@
  * Basic Beat Slicer controller. All instrument access is through the proposed
  * shared base editor API; no stock address, PCM reader or native writer here.
  */
-#include "../../runtime/loader/modwerk_module.h"
-#include "../../machines/octatrack/include/modwerk_sample_editor.h"
+#include "../../../runtime/loader/modwerk_module.h"
+#include "../../../machines/octatrack/include/modwerk_sample_editor.h"
 #include "grid_preview.h"
 #include "device_font.h"
 

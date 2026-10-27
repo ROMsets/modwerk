@@ -10,7 +10,7 @@ import tempfile
 import unittest
 
 HERE = Path(__file__).resolve().parent
-ROOT = HERE.parents[2]
+ROOT = HERE.parents[3]
 ADAPTERS = ROOT / 'sdk/machines/octatrack/module-adapters'
 sys.path.insert(0, str(ROOT / 'sdk/tests'))
 from host_flags import SANITIZE

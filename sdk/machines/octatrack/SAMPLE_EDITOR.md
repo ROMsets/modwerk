@@ -1,33 +1,30 @@
-# Proposed sample-editor base service
+# Sample-editor base service
 
-This is an owner-review proposal, not released capability. It is split from
-[Beat Slicer staging #840](https://github.com/repeat98/modwerk/pull/840).
-Do not merge or publish it until the reuse and event-allocation decisions below
-are resolved. The physical report below applies only to its named private build, not the default beta base.
+The beta base carries this service (`npm run octatrack:base -- --beta` passes
+`--sample-editor`) since the owner accepted it on 27 October 2026. It came from
+[Beat Slicer #840](https://github.com/repeat98/modwerk/pull/840) and
+[#914](https://github.com/repeat98/modwerk/pull/914). The physical report below
+applies only to its named private build, not to the beta base.
 
-## Why it is proposed
+## Why the base owns it
 
 An independently loaded module needs a safe way to propose slice starts without
 retaining instrument pointers or replacing a stock menu another module uses.
-The proposed base copies metadata, owns native confirmation and atomic marker
+The base copies metadata, owns native confirmation and atomic marker
 publication, and admits typed action records against the complete current
 loader owner. Modules retain their own algorithms and controls.
 
-**Beat Slicer is the only confirmed consumer.** Its recording-buffer extension
-would still be the same module and does not establish a second consumer. A
-synthetic test client proves interface behavior, not demand from another module.
-No released catalogue subscriber is declared. Maintainer review must decide
-whether another real module needs this AED SLICE list; otherwise its stock sites
-should remain the module's own declared patch under the module guide's rule.
-Do not invent future consumers to justify base ownership.
+**Beat Slicer is the first consumer.** The owner accepted base ownership so
+that later AED SLICE actions share one menu and one confirmed marker writer
+instead of patching the same stock sites. A synthetic test client proves
+interface behavior, not demand from another module.
 
-## Event allocation is unresolved
+## Event allocation
 
-This snapshot appends `ot_sample_editor_actions` at provisional index 36,
-following main's MIDI events at 32–34 (#857) and `ev_trig_muted` at 35 (#912). No module package may be
-released against the provisional allocation.
+`ot_sample_editor_actions` is index 36, after the MIDI events at 32–34 (#857)
+and `ev_trig_muted` at 35 (#912). Packages built against the earlier
+provisional indices 32 and 35 do not load on the beta base.
 The target descriptor test reads the registry index instead of assuming 32.
-This branch is based on main, not stacked on #857 or another module.
 
 ## Boundary and scope
 
@@ -46,8 +43,9 @@ This branch is based on main, not stacked on #857 or another module.
   count store, with DMA still enabled; physical timing remains unqualified.
   PCM analysis, playback processing and implicit saves remain out of scope.
 - `sample_editor_menu.c` and `sample_editor_hooks.s`: native menu/selection and
-  waveform-worker boundaries, enabled only by the private `--sample-editor` flag.
-  Ordinary beta bases leave the stock editor sites and contribution disabled.
+  waveform-worker boundaries, built with `--sample-editor`. The beta base sets
+  it; a base built without it leaves the stock editor sites alone and refuses
+  contributions.
 - Loader changes carry typed table declarations, source-built C descriptor
   alignment and the machine's reviewed MCF54455 target/code-generation guard.
 
