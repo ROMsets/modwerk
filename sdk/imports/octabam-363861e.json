@@ -79,7 +79,7 @@
       "revision": "363861e31ee963c478fab2b190a0fabe1d7ce37b",
       "sourcePath": "modules/analog-bassdrum/README.md",
       "sourceSha256": "4876d9613e5e65de0aefeef7ddd60ef6d0d5642c61b1fde60b97fc0f72255f68",
-      "vendoredSha256": "d0fd4cb11036231aa4b484baf2c2565ad5082395acd8608829f244de37237b98",
+      "vendoredSha256": "46baac406742f0a9d9e54086dff2d4fca08f855a2f0d3687aa825e5d304dda9f",
       "importedVendoredSha256": "57743ee073204e2a1b51ed7abad7ddf44eae95faddc90d397ca707d30a2bdfed",
       "adaptation": " Octamod 0.1.1 version and native verification evidence appended; imported fingerprint retained.",
       "localDocumentationUpdate": {
@@ -206,7 +206,7 @@
       "revision": "363861e31ee963c478fab2b190a0fabe1d7ce37b",
       "sourcePath": "modules/analog-bassdrum/control.c",
       "sourceSha256": "29f392c7e007aaa695076eff0c897729a941676ff582e4bb17957074d56ceac5",
-      "vendoredSha256": "72c46d8740d20374d9253b81544e6f63afb47675afb16f86afbd927577eac51f",
+      "vendoredSha256": "56e96e79f7f279d17b1919ea2f50af0a3d8c4a052df919fc20ecd05f094cfb38",
       "localUpdates": [
         {
           "moduleVersion": "0.1.6-experimental",
@@ -221,7 +221,7 @@
       "revision": "363861e31ee963c478fab2b190a0fabe1d7ce37b",
       "sourcePath": "modules/analog-bassdrum/control.s",
       "sourceSha256": "644f10fbc534d8351424e55ee96c2d0ff2f39a1b691ad8a695422d1c05e37a3f",
-      "vendoredSha256": "44d69935467bd7f2752546fb6f104703bf592e8d7caa31ad3d2690298263f90c",
+      "vendoredSha256": "463dacf528e4996c7f21e97533391583329a2e3aabda95c87b7cd020dee7adb6",
       "localUpdates": [
         {
           "moduleVersion": "0.1.6-experimental",

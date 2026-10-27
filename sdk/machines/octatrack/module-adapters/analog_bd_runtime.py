@@ -12,8 +12,8 @@ import subprocess
 
 PINS = {
     'manifest.py': '20fa1f744630354b3986a3ad82ac6a41744345796dc783891a4c9f0bd81c787e',
-    'control.c': '72c46d8740d20374d9253b81544e6f63afb47675afb16f86afbd927577eac51f',
-    'control.s': '44d69935467bd7f2752546fb6f104703bf592e8d7caa31ad3d2690298263f90c',
+    'control.c': '56e96e79f7f279d17b1919ea2f50af0a3d8c4a052df919fc20ecd05f094cfb38',
+    'control.s': '463dacf528e4996c7f21e97533391583329a2e3aabda95c87b7cd020dee7adb6',
     'engine.h': '61bc45ef955db23b8f25eb5b0c6bd3dd01d9f71df7933d466845bb30e7c67a2b',
     'engine.s': 'a6ff5f2fe90dbe5570512bbe54dede4c8c8f86c4ef4656fce4c57a9b600c4805',
     'machine.s': 'a33e4d36da6a14e7e856c7c7088be2820a40c7fb7014917983c729931eed55a3',
