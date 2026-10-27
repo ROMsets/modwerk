@@ -3,3 +3,5 @@
 .zoom-files li { display: flex; justify-content: space-between; gap: 8px; padding: 3px 0; break-inside: avoid; font-size: 13px; }
 .zoom-files small { color: var(--muted); }
 .zoom-hub .hub-error { color: var(--danger, #e8868e); margin: 0 0 12px; }
+/* The pedal illustration (ZoomPedalArt, an SVG) in the hero: sized like the Octatrack's photo, which the hero's own rule covers. */
+.zoom-hub .hub-hero .device-art { width: 180px; height: auto; max-height: 120px; flex: none; }
