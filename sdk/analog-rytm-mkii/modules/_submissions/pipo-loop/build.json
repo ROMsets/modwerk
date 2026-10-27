@@ -14,8 +14,8 @@
   "regions": [],
   "storage": [],
   "claims": [
-    "ui:SAMPLE page LOP value PIPO",
-    "param:LOP range OFF/ON/PIPO and its value text"
+    "ui:SAMPLE page LOP value PIPO and its three-position switch",
+    "param:LOP range OFF/ON/PIPO, its value text and icon"
   ],
   "requires": [],
   "derive": null,
@@ -25,7 +25,11 @@
         "pipo_loop_prefetch": "0x4011c1e0",
         "pipo_loop_text_resume": "0x400fb572",
         "pipo_loop_sprintf": "0x4009866e",
-        "pipo_loop_lop_ctx": "0x419a5760"
+        "pipo_loop_lop_ctx": "0x419a5760",
+        "pipo_loop_icon_ctx": "0x419a5770",
+        "pipo_loop_icon3": "0x400fef4a",
+        "pipo_loop_icon_frames": "0x419f03cc",
+        "pipo_loop_icon_resume": "0x400fedfa"
       },
       "cflags": [
         "-DPARAMS_EFF_AT=0x8000f7a8",
@@ -55,6 +59,13 @@
           "op": "bytes",
           "new": "00000200",
           "kind": "data"
+        },
+        {
+          "addr": "0x400fedf4",
+          "len": 6,
+          "stockSha256": "0528305f5347b3808effa560c49adb196e58354efe1c9c8ea8566757ad4ffac3",
+          "op": "jmp",
+          "target": "pipo_loop_icon_gate"
         }
       ]
     }

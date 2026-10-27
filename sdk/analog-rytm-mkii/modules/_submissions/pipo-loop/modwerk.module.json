@@ -19,7 +19,7 @@
     "label": "PIPO LOOP",
     "family": "Sample playback",
     "summary": "LOP gets a third value, PIPO: the sample's loop plays forward, then backward, and so on (ping-pong). ON stays the stock forward loop.",
-    "overview": "Pipo Loop adds PIPO to the SAMPLE page's LOP parameter, after OFF and ON. A sample whose LOP is PIPO plays from STA to END, then back to STA, then forward again, for as long as the note lasts, with no jump at the turns. PIPO is an ordinary LOP value: it saves with the sound and kit, takes parameter locks and scene locks, and comes back after a power cycle. A sound saved with PIPO plays as a normal forward loop (ON) on an OS without the mod. The turn falls on the audio engine's 32-frame block, so it comes up to about one block before STA or END.",
+    "overview": "Pipo Loop adds PIPO to the SAMPLE page's LOP parameter, after OFF and ON. A sample whose LOP is PIPO plays from STA to END, then back to STA, then forward again, for as long as the note lasts, with no jump at the turns. LOP's switch becomes a three-position switch like BD CLASSIC's WAV: OFF on the left, ON in the middle, PIPO on the right. PIPO is an ordinary LOP value: it saves with the sound and kit, takes parameter locks and scene locks, and comes back after a power cycle. A sound saved with PIPO plays as a normal forward loop (ON) on an OS without the mod. The turn falls on the audio engine's 32-frame block, so it comes up to about one block before STA or END.",
     "highlights": [
       "Ping-pong loops for any sample, from the SAMPLE page's own LOP knob.",
       "Lock PIPO on a step, or put it in a scene, like any LOP value.",
@@ -46,7 +46,7 @@
     {
       "name": "LOP",
       "default": 0,
-      "doc": "SAMPLE page, encoder G. OFF and ON as stock; PIPO plays the loop between STA and END forward, then backward, and so on. Locks per step and per scene. The knob's switch icon shows PIPO like ON; the value text reads PIPO.",
+      "doc": "SAMPLE page, encoder G. OFF and ON as stock; PIPO plays the loop between STA and END forward, then backward, and so on. Locks per step and per scene. Drawn as stock's three-position switch, as BD CLASSIC's WAV: OFF left, ON middle, PIPO right.",
       "labels": [
         "OFF",
         "ON",
@@ -64,9 +64,9 @@
       "Built for OS 1.74 only, with core-ar2 0.3.",
       "Not yet run on a unit: tested in rytm-emu only.",
       "A turn falls on a 32-frame audio block, up to about one block (plus 8 frames) before STA or END, so a PIPO loop is a few frames shorter at each end than ON's; inaudible on most material, audible on very short loops.",
-      "The LOP knob's switch icon draws PIPO like ON; the value text shows PIPO while you turn it.",
       "MIDI CC 30 (LOP) writes its value unchanged, as on stock: CC value 2 now gives PIPO, every other nonzero value ON. Other OFF/ON parameters still read ON for 2.",
-      "On stock OS, or a build without this mod, PIPO plays as ON."
+      "On stock OS, or a build without this mod, PIPO plays as ON.",
+      "LOP's switch is drawn with the knob in the middle for ON, where stock draws it on the right; the value text still reads ON."
     ]
   },
   "platform": {
@@ -75,12 +75,12 @@
     "build": "build.json",
     "events": [],
     "claims": [
-      "ui:SAMPLE page LOP value PIPO",
-      "param:LOP range OFF/ON/PIPO and its value text"
+      "ui:SAMPLE page LOP value PIPO and its three-position switch",
+      "param:LOP range OFF/ON/PIPO, its value text and icon"
     ]
   },
   "resources": {
-    "memoryBytes": 1137,
+    "memoryBytes": 1169,
     "fastBytes": 0,
     "load": {
       "display": "About 0.1 % of an audio block with no sample looping, about 0.6 % with eight voices in PIPO (static estimate)",
@@ -91,7 +91,7 @@
   "evidence": {
     "tier": "emulator",
     "moduleVersion": "0.1.0-experimental",
-    "sourceSha256": "a3ec21a5531fabdfcdfd6bd2fcab26643bfbffbd8eedb1bdda6507284bdb65bc",
+    "sourceSha256": "2b82007f7af45b5e8bc2eb5b7835768d4320918e9c93d0098222f67ddcd9acf8",
     "reports": [
       "TESTING.md"
     ],
@@ -100,7 +100,7 @@
   },
   "tests": {
     "report": "TESTING.md",
-    "summary": "rytm-emu c5732f0, OS 1.74, build PP05 (core-ar2 0.3 + 0.1.0), ramp sample on BD: LOP steps OFF/ON/PIPO and shows PIPO; ON plays stock's loop, PIPO a click-free triangle at TUN about -24, 0 and +24; ON to PIPO mid-note; p-lock and scene lock; two voices; retrig; power-off persistence; stock 1.74 plays a saved PIPO as a normal loop. Not run on a unit.",
+    "summary": "rytm-emu c5732f0, OS 1.74, build PP06 (core-ar2 0.3 + 0.1.0), ramp sample on BD: LOP steps OFF/ON/PIPO on a three-position switch like BD CLASSIC's WAV; ON plays stock's loop, PIPO a click-free triangle at TUN about -24, 0 and +24; ON to PIPO mid-note; p-lock and scene lock; two voices; retrig; power-off persistence; stock 1.74 plays a saved PIPO as a normal loop. Not run on a unit.",
     "documentation": {
       "tutorial": {
         "title": "Quick tutorial",
@@ -111,6 +111,8 @@
         ]
       },
       "screenshots": [
+        "media/lop-off.png",
+        "media/lop-on.png",
         "media/lop-pipo.png",
         "media/plock-pipo.png",
         "media/scene-pipo.png"
@@ -134,10 +136,10 @@
       "source": "Original conceptual illustration in the shared signal-art style; not a device screenshot."
     },
     {
-      "path": "media/lop-pipo.png",
+      "path": "media/lop-off.png",
       "kind": "screenshot",
-      "caption": "Turn LOP past ON: the value reads PIPO, and the sample's loop plays back and forth.",
-      "alt": "SAMPLE page with TUN, FIN, BR, SMP 1, STA, END, LEV and the LOP knob's value shown as PIPO.",
+      "caption": "LOP OFF: the switch's knob sits on the left, as stock.",
+      "alt": "SAMPLE page with LOP's three-position switch at the left and the value shown as OFF.",
       "credit": "npp1993 documentation capture; Elektron interface",
       "license": "LicenseRef-Rytm-UI-Documentation",
       "source": "original",
@@ -145,8 +147,40 @@
         "type": "emulator",
         "release": "1.74",
         "moduleVersion": "0.1.0-experimental",
-        "imageSha256": "af1804708fa3c066f63f86697bc9562782fb0a75d0307d110d942fb562392311",
-        "setup": "Headless rytm-emu c5732f0 (dtboot) running PP05: the released core-ar2 0.3 and this folder's Pipo Loop 0.1.0, linked by Modwerk on the owner's stock OS 1.74, BD playing a generated ramp sample. Firmware-rendered 128x64 screen at 3x. UI documentation only."
+        "imageSha256": "0da96191207ddb17ccf2f6b824cf20a968b3375408f7a8071ffc286a269f33c3",
+        "setup": "Headless rytm-emu c5732f0 (dtboot) running PP06: the released core-ar2 0.3 and this folder's Pipo Loop 0.1.0, linked by Modwerk on the owner's stock OS 1.74, BD playing a generated ramp sample. Firmware-rendered 128x64 screen at 3x. UI documentation only."
+      }
+    },
+    {
+      "path": "media/lop-on.png",
+      "kind": "screenshot",
+      "caption": "LOP ON: the switch's knob sits in the middle; the loop plays forward as stock.",
+      "alt": "SAMPLE page with LOP's three-position switch in the middle, LOP label shown.",
+      "credit": "npp1993 documentation capture; Elektron interface",
+      "license": "LicenseRef-Rytm-UI-Documentation",
+      "source": "original",
+      "capture": {
+        "type": "emulator",
+        "release": "1.74",
+        "moduleVersion": "0.1.0-experimental",
+        "imageSha256": "0da96191207ddb17ccf2f6b824cf20a968b3375408f7a8071ffc286a269f33c3",
+        "setup": "Headless rytm-emu c5732f0 (dtboot) running PP06: the released core-ar2 0.3 and this folder's Pipo Loop 0.1.0, linked by Modwerk on the owner's stock OS 1.74, BD playing a generated ramp sample. Firmware-rendered 128x64 screen at 3x. UI documentation only."
+      }
+    },
+    {
+      "path": "media/lop-pipo.png",
+      "kind": "screenshot",
+      "caption": "Turn LOP to PIPO: the switch moves right and the value reads PIPO; the sample's loop plays back and forth.",
+      "alt": "SAMPLE page with LOP's three-position switch at the right and the value shown as PIPO.",
+      "credit": "npp1993 documentation capture; Elektron interface",
+      "license": "LicenseRef-Rytm-UI-Documentation",
+      "source": "original",
+      "capture": {
+        "type": "emulator",
+        "release": "1.74",
+        "moduleVersion": "0.1.0-experimental",
+        "imageSha256": "0da96191207ddb17ccf2f6b824cf20a968b3375408f7a8071ffc286a269f33c3",
+        "setup": "Headless rytm-emu c5732f0 (dtboot) running PP06: the released core-ar2 0.3 and this folder's Pipo Loop 0.1.0, linked by Modwerk on the owner's stock OS 1.74, BD playing a generated ramp sample. Firmware-rendered 128x64 screen at 3x. UI documentation only."
       }
     },
     {
@@ -161,8 +195,8 @@
         "type": "emulator",
         "release": "1.74",
         "moduleVersion": "0.1.0-experimental",
-        "imageSha256": "af1804708fa3c066f63f86697bc9562782fb0a75d0307d110d942fb562392311",
-        "setup": "Headless rytm-emu c5732f0 (dtboot) running PP05: the released core-ar2 0.3 and this folder's Pipo Loop 0.1.0, linked by Modwerk on the owner's stock OS 1.74, BD playing a generated ramp sample. Firmware-rendered 128x64 screen at 3x. UI documentation only."
+        "imageSha256": "0da96191207ddb17ccf2f6b824cf20a968b3375408f7a8071ffc286a269f33c3",
+        "setup": "Headless rytm-emu c5732f0 (dtboot) running PP06: the released core-ar2 0.3 and this folder's Pipo Loop 0.1.0, linked by Modwerk on the owner's stock OS 1.74, BD playing a generated ramp sample. Firmware-rendered 128x64 screen at 3x. UI documentation only."
       }
     },
     {
@@ -177,8 +211,8 @@
         "type": "emulator",
         "release": "1.74",
         "moduleVersion": "0.1.0-experimental",
-        "imageSha256": "af1804708fa3c066f63f86697bc9562782fb0a75d0307d110d942fb562392311",
-        "setup": "Headless rytm-emu c5732f0 (dtboot) running PP05: the released core-ar2 0.3 and this folder's Pipo Loop 0.1.0, linked by Modwerk on the owner's stock OS 1.74, BD playing a generated ramp sample. Firmware-rendered 128x64 screen at 3x. UI documentation only."
+        "imageSha256": "0da96191207ddb17ccf2f6b824cf20a968b3375408f7a8071ffc286a269f33c3",
+        "setup": "Headless rytm-emu c5732f0 (dtboot) running PP06: the released core-ar2 0.3 and this folder's Pipo Loop 0.1.0, linked by Modwerk on the owner's stock OS 1.74, BD playing a generated ramp sample. Firmware-rendered 128x64 screen at 3x. UI documentation only."
       }
     }
   ]

@@ -42,6 +42,23 @@ pipo_loop_text_gate:
         move.l  %a0,8(%sp)
         jmp     pipo_loop_sprintf
 
+| Stock's OFF/ON switch icon, icon(ctx, value 8.8, ...), draws frame 0 or 1
+| of a two-frame switch; BD CLASSIC's WAV (0..2) is drawn by the same routine
+| with a three-frame switch. For LOP's record only (ctx is its record + 36),
+| the gate tail-jumps to WAV's routine with the arguments untouched, so LOP's
+| OFF, ON and PIPO show as stock's three-position switch. Every other OFF/ON
+| switch replays the displaced load of its frame list and resumes stock.
+
+        .globl  pipo_loop_icon_gate
+
+pipo_loop_icon_gate:
+        lea     pipo_loop_icon_ctx,%a0
+        cmpa.l  4(%sp),%a0
+        bne.s   1f
+        jmp     pipo_loop_icon3
+1:      movea.l pipo_loop_icon_frames,%a0       | displaced
+        jmp     pipo_loop_icon_resume
+
         .section .rodata
 pipo_loop_pipo:
         .asciz  "PIPO"

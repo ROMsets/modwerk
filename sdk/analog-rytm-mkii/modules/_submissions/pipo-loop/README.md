@@ -10,15 +10,15 @@ PIPO is an ordinary LOP value. It saves with the sound and the kit, takes parame
 
 The turns are smooth (no jump in the waveform). Each turn falls on the audio engine's 32-frame block, so it comes up to about one block, plus 8 frames, before STA or END.
 
-![LOP reads PIPO on the SAMPLE page](media/lop-pipo.png)
+![LOP OFF, ON and PIPO](media/lop-off.png) ![](media/lop-on.png) ![](media/lop-pipo.png)
 
 ## Controls
 
 | Control | Where | Values |
 | --- | --- | --- |
-| LOP | SAMPLE page, encoder G | OFF, ON, PIPO. OFF and ON are stock. PIPO plays the loop between STA and END forward, then backward. |
+| LOP | SAMPLE page, encoder G | OFF, ON, PIPO, on a three-position switch. OFF and ON play as stock. PIPO plays the loop between STA and END forward, then backward. |
 
-The knob's switch icon draws PIPO like ON; the value text shows PIPO while you turn it. PIPO applies only to the sample layer of a sound, as LOP does.
+LOP's switch is drawn as stock's three-position switch, the one BD CLASSIC's WAV uses: OFF on the left, ON in the middle, PIPO on the right. PIPO applies only to the sample layer of a sound, as LOP does.
 
 ## Usage
 
@@ -36,13 +36,13 @@ Use a build containing Pipo Loop, select a track whose sound plays a sample, and
 
 ### Changes to stock flows
 
-- **LOP has a third value.** What changes: turning LOP clockwise past ON now reaches PIPO; locks and scenes can hold PIPO. Why: a musician looks for loop behaviour on LOP, and a third value needs no new page, key gesture or menu row (a FUNC gesture on the SAMPLE page was considered, but FUNC + STA, END and LOP are stock's coarse steps and FUNC + TUN and FIN belong to Loop Sync). What you see: the value text reads PIPO; the switch icon draws it like ON. It applies only in a build with this mod; leave LOP on OFF or ON for stock behaviour. Checked beside it: OFF and ON play exactly as stock, LOP's p-locks and scene locks, kit save through power-off, MIDI CC 30.
+- **LOP has a third value.** What changes: turning LOP clockwise past ON now reaches PIPO; locks and scenes can hold PIPO. Why: a musician looks for loop behaviour on LOP, and a third value needs no new page, key gesture or menu row (a FUNC gesture on the SAMPLE page was considered, but FUNC + STA, END and LOP are stock's coarse steps and FUNC + TUN and FIN belong to Loop Sync). What you see: the value text reads PIPO, and LOP's switch has three positions like BD CLASSIC's WAV, so ON now shows the knob in the middle (stock: on the right). It applies only in a build with this mod; leave LOP on OFF or ON for stock behaviour. Checked beside it: OFF and ON play exactly as stock, LOP's p-locks and scene locks, kit save through power-off, MIDI CC 30.
 - **MIDI CC 30 (LOP).** Stock writes CC 30's value into LOP unchanged (0 is OFF, anything else ON). With this mod a CC value of exactly 2 gives PIPO; every other value does what it did, and other OFF/ON parameters are unchanged.
 
 ## Compatibility and limitations
 
 - OS 1.74 only, with core-ar2 0.3. No other module is needed, and it builds beside Silent Pad+Trig, Filter Hz and Loop Sync (no shared sites).
-- Sites: the audio interrupt's call to the voice 0 sample prefetch at 0x40121134 (a `jsr`, through a gate that tail-calls stock), the shared OFF/ON value-text routine at 0x400fb56c (prints PIPO for 2 on LOP's own record, stock text otherwise, so another OFF/ON parameter set to 2 over MIDI still reads ON), and LOP's maximum in stock's parameter table at 0x401c04f8 (data, 1.0 to 2.0). Loop Sync's audio hook at 0x40121020 runs earlier in the same interrupt; Pipo Loop swaps STA and END after it.
+- Sites: the audio interrupt's call to the voice 0 sample prefetch at 0x40121134 (a `jsr`, through a gate that tail-calls stock), the shared OFF/ON value-text routine at 0x400fb56c (prints PIPO for 2 on LOP's own record, stock text otherwise, so another OFF/ON parameter set to 2 over MIDI still reads ON), LOP's maximum in stock's parameter table at 0x401c04f8 (data, 1.0 to 2.0), and the shared OFF/ON switch icon at 0x400fedf4 (for LOP's record only it tail-calls the three-position switch routine BD CLASSIC's WAV uses, with stock's own frames; every other switch stays stock). Loop Sync's audio hook at 0x40121020 runs earlier in the same interrupt; Pipo Loop swaps STA and END after it.
 - A PIPO loop is a few frames shorter at each end than ON's (the turn comes up to one block early). Inaudible on most material, audible on very short loops.
 - Stock plays a loop of at least 141 frames; Pipo Loop leaves loops shorter than 160 frames to stock's forward loop.
 - A new trig always starts forward from STA, as stock does.
@@ -51,7 +51,7 @@ Use a build containing Pipo Loop, select a track whose sound plays a sample, and
 
 ## Tests and measurements
 
-rytm-emu (c5732f0) on OS 1.74, build PP05, with a generated ramp sample on BD: the value steps OFF/ON/PIPO and reads PIPO; ON plays stock's forward loop and PIPO a click-free triangle from TUN -24 to +24; switching ON to PIPO mid-note; p-locks and scene locks of PIPO; two voices at once; retrig; persistence through power-off; and stock 1.74 loading the saved PIPO state as a normal loop. CPU is a static estimate: about 0.1 % of an audio block with nothing looping and about 0.6 % with all eight voices in PIPO. See [TESTING.md](TESTING.md).
+rytm-emu (c5732f0) on OS 1.74, build PP06, with a generated ramp sample on BD: the value steps OFF/ON/PIPO and reads PIPO; ON plays stock's forward loop and PIPO a click-free triangle from TUN -24 to +24; switching ON to PIPO mid-note; p-locks and scene locks of PIPO; two voices at once; retrig; persistence through power-off; and stock 1.74 loading the saved PIPO state as a normal loop. CPU is a static estimate: about 0.1 % of an audio block with nothing looping and about 0.6 % with all eight voices in PIPO. See [TESTING.md](TESTING.md).
 
 ## Authorship and licences
 
@@ -59,4 +59,4 @@ Original code by npp1993 (Nathaniel Pavel), GPL-3.0-or-later ([LICENSE](LICENSE)
 
 ## Screens and audio
 
-Screenshots are rytm-emu captures of build PP05 ([media/capture.json](media/capture.json)). No audio preview yet.
+Screenshots are rytm-emu captures of build PP06 ([media/capture.json](media/capture.json)). No audio preview yet.
