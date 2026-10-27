@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "sources": [
+    "src/pipo.c",
+    "src/audio.s"
+  ],
+  "defsym": {},
+  "cflags": [],
+  "weak": [],
+  "subscribe": [],
+  "contribute": [],
+  "collections": {},
+  "copied": [],
+  "regions": [],
+  "storage": [],
+  "claims": [],
+  "requires": [],
+  "derive": null,
+  "releases": {
+    "1.74": {
+      "defsym": {
+        "pipo_loop_prefetch": "0x4011c1e0"
+      },
+      "cflags": [
+        "-DPARAMS_EFF_AT=0x8000f7a8",
+        "-DVOICE_REC_AT=0x80005b30",
+        "-DVOICE_OWNER_AT=0x40291138",
+        "-DTRIG_NEXT_AT=0x8000586c"
+      ],
+      "sites": [
+        {
+          "addr": "0x40121134",
+          "len": 6,
+          "stockSha256": "2e4c18b189c0e55cfb3beeff96e48aa0adee0e73e340c16018c19cc16416b7c8",
+          "op": "jsr",
+          "target": "pipo_loop_gate"
+        }
+      ]
+    }
+  }
+}
