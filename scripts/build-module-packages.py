@@ -375,12 +375,19 @@ def main():
             for tag in sorted(module.dsp.payloads):
                 source = module.dsp.source_for(tag, text)
                 validate_source(source)
-                words, symbols = native.assemble_syms(source.replace(native.PTABLE_LITERAL, '$0'), len(module.dsp.ptable), label=module.key)
-                words = list(module.dsp.ptable) + words
+                # The ptable2 (its own $fab2e0 literal) follows the ptable, as the native build places it.
+                tables = list(module.dsp.ptable) + list(getattr(module.dsp, 'ptable2', ()) or ())
+                def at(base):
+                    text = source.replace(native.PTABLE_LITERAL, '$'+format(base,'x'))
+                    if getattr(module.dsp, 'ptable2', ()): text = text.replace('$fab2e0', '$'+format(base + len(module.dsp.ptable),'x'))
+                    if '$fab2e0' in text: raise ValueError(id + ': a $fab2e0 literal without a ptable2')
+                    return text
+                words, symbols = native.assemble_syms(at(0), len(tables), label=module.key)
+                words = tables + words
                 relocations = None; proofs = []
                 for base in (0x1000, 0x1400, 0x1801, 0x2407):
-                    fresh, _ = native.assemble_syms(source.replace(native.PTABLE_LITERAL, '$'+format(base,'x')), base + len(module.dsp.ptable), label=module.key)
-                    fresh = list(module.dsp.ptable) + fresh
+                    fresh, _ = native.assemble_syms(at(base), base + len(tables), label=module.key)
+                    fresh = tables + fresh
                     changed = [i for i, (a,b) in enumerate(zip(words,fresh)) if a != b]
                     if len(fresh) != len(words) or any(fresh[i] != words[i] + base or not 0 <= words[i] < len(words) for i in changed):
                         raise ValueError(id + ': unsupported relocation')

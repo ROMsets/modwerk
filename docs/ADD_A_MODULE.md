@@ -246,7 +246,6 @@ the [loader compatibility guide](../sdk/machines/octatrack/elekloader/README.md#
    - Add a hardware report from a real unit, stating its model, how long it ran, what was tested and the limitations. There is no minimum duration or track count.
    - A fix for a stock bug can be regressed in the emulator: `ot_emu`'s `call <address> [args]` runs a stock routine on a booted image, after `poke` has set up the state (Direct Jump Kyoti's `verify.py`, part 6, runs the MIDI Plays-Free stall on the original OS and on the module image).
    - If you could not test on hardware, say so in the pull request. Only the owner can waive this, for one exact version.
-   - Hardware tests are planned to run automatically over USB with a customised test firmware ([decision](DECISIONS.md#5-october-2026--a-faster-module-workflow)).
 4. **List it and compile the packages without firmware.** The build compiles every module in `sdk/catalog.json`, so add an entry for yours first: `id`, `version` and `addedAt`, the UTC time it was first added (for example `2026-10-05T12:00:00Z`). From then on, `modules:check` also requires the complete qualification record, documentation and screenshots. Commit, then run this from the clean checkout. The output folder must not exist yet.
    ```sh
    image=$(docker image inspect modwerk-source-tools --format '{{.Id}}')
@@ -254,13 +253,8 @@ the [loader compatibility guide](../sdk/machines/octatrack/elekloader/README.md#
    npm run modules:import -- ../module-packages/packages --development
    ```
    Commit what the import changes. CI compiles the same packages again and fails if they differ.
-   On macOS with colima, Docker sees only your home folder, and the script stages the source with `mktemp -d`, which on macOS makes it under `/var/folders` and ignores `TMPDIR`. Put a `mktemp` shim first on `PATH` for that run so the staging folder lands under `$HOME`:
-   ```sh
-   mkdir -p ~/.cache/mktemp-shim ~/.cache/tmp-isolated
-   printf '#!/bin/sh\nexec /usr/bin/mktemp -d "$HOME/.cache/tmp-isolated/tmp.XXXXXXXX"\n' > ~/.cache/mktemp-shim/mktemp
-   chmod +x ~/.cache/mktemp-shim/mktemp
-   PATH=~/.cache/mktemp-shim:$PATH bash scripts/build-modules-isolated.sh . ../module-packages "$image"
-   ```
+   On macOS with colima, mount `/var/folders` as [elemod source builds](ELEMOD_SOURCE_BUILDS.md) says: the script stages there.
+   A new ColdFire USB module also needs its id in `REQUESTED` in `scripts/build-module-packages.py` and in the id lists of `scripts/module-release-scope.test.mjs`, `scripts/module-source.test.mjs` and `src/engine/elekloader/module-set.test.ts`; unit labels no other module links (two `unit`s clash); an entry in `src/engine/assets/octatrack-module-packages.json` with `id`, `version` and `path`, which `octatrack:module-packages` completes; and Analog BD's proofs re-exported for the new source tree (`scripts/export-composition-proofs.py --suite analog-bd --static-stock --vendored-sdk`).
 5. **Compare with native octabam** on your own 1.40C update file:
    ```sh
    npm run module:verify -- <id> --os ~/path/to/OCTATRACK_OS1.40C.bin
@@ -295,7 +289,7 @@ Firmware for these machines is built by elekloader's builder, vendored unchanged
 4. Build it in `npm run dev` with your own stock OS file, flash it and test it. Then set `evidence.tier` to what you actually did ([tiers](SDK.md#evidence-tiers)).
 
 **Writing a new mod:** `npm run module:new -- my-mod --machine digitakt --author <github-login>` creates the folder (`--machine digitone` for Digitone).
-- Write `src/`, and subscribe to core events in `build.json` ([events and budgets](../sdk/machines/digitakt/README.md)). Look at the core's events and newer upstream core releases first. A stock site several mods will need is proposed as an event before the mod ([propose an event](module-guides/README.md#propose-an-event-on-the-digitakt-digitone-or-digitakt-ii)); a site only this mod needs, it patches and claims ([choose how a module hooks in](module-guides/README.md#choose-how-a-module-hooks-in)).
+- Write `src/`, and subscribe to core hooks in `build.json` ([hooks and budgets](../sdk/machines/digitakt/README.md)). Look at the core's hooks and newer upstream core releases first. A stock site several mods will need is proposed as a core hook before the mod ([propose a hook](module-guides/README.md#propose-a-hook-on-the-digitakt-digitone-or-digitakt-ii)); a site only this mod needs, it patches and claims ([choose how a module hooks in](module-guides/README.md#choose-how-a-module-hooks-in)).
 - Modwerk compiles the source in its pinned toolchain ([source builds](ELEMOD_SOURCE_BUILDS.md)).
 - The browser builds only from the `.elemod` files in elekloader's catalog, so to appear in the configurator a new mod needs an `.elemod` release pinned in its own record, `sdk/imports/elekloader-<id>-<date>.json`, and downloaded with `npm run elekloader:update -- --overlay <that record>`. Never edit `vendor/elekloader/catalog/catalog.json`: it is generated from the upstream catalog and the records.
 - `npm run module:doctor -- <id>` checks the module's manifest, category guide, catalog pin and module rules.
