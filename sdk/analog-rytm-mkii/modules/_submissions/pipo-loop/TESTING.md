@@ -308,6 +308,16 @@ parameter ids 34-37, 45 (LOP), 224, 248 and 463; the switch icon by twelve param
   voices in PIPO. rytm-emu's breakpoints and profiler do not reach the audio interrupt's mod code, so
   it was not measured. Not measured on a unit.
 
+## The STA and END lines on SMPL WAVEFORM (2026-10-28)
+
+npp1993 sent a photo (PIPO_SLOW, both points snapped): the END line sat about a column left of where
+the waveform crosses zero. rytm-emu, PP10, PIPO_SLOW on BD, STA snapped to 5061 (rising) and END to
+16581 (rising), SMPL WAVEFORM read pixel by pixel (128 columns, 225 frames a column): the STA line is
+in column 23, the column where the drawn waveform changes sign; the END line is in column 72, and the
+waveform changes sign in column 73. The same as the photo. The module draws nothing on this view;
+the lines are stock's rendering of the STA and END values, and the frames played are the crossings
+(checked earlier from the voice position and the audio).
+
 ## Open items
 
 - Possible later improvement (npp1993, 2026-10-28): FUNC snaps could skip stock's STA/END glide and
