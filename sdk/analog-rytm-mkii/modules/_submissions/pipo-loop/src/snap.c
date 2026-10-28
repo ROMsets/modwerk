@@ -115,7 +115,7 @@ static int snap_from(int cur, int other, int slot, int steps, int lop)
 {
     volatile short *data;
     unsigned frames;
-    int dir = steps > 0 ? 1 : -1, f, lim, s, i, n, v = cur, want = 0;
+    int dir = steps > 0 ? 1 : -1, f, lim, s, i, k, n, v = cur, want = 0;
     if (slot <= 0 || slot > SLOT_LAST || !steps)
         return SNAP_NONE;
     data = SLOT_DATA(slot);
@@ -137,6 +137,7 @@ static int snap_from(int cur, int other, int slot, int steps, int lop)
         // Scan from f the way the turn goes for the next sign change; the
         // crossing's frame is the first sample of the new sign.
         s = sign_of(data[f]);
+        k = f;                           // the last signed sample the scan passed
         for (i = f + dir, n = 0; ; i += dir, n++) {
             int t;
             if ((dir > 0 ? i > lim : i < lim) || n >= REACH)
@@ -145,7 +146,7 @@ static int snap_from(int cur, int other, int slot, int steps, int lop)
             if (!t)
                 continue;
             if (s && t != s) {
-                int c = dir > 0 ? i : i - dir;     // the first sample of the new sign, in time
+                int c = dir > 0 ? i : k;           // the first signed sample of the new sign, in time
                 int w = value_of(frames, c);
                 int kind = dir > 0 ? t : s;          // the new sign, in time: +1 rising
                 if ((!want || kind == want) && (dir > 0 ? w > v : w < v)) {
@@ -154,6 +155,7 @@ static int snap_from(int cur, int other, int slot, int steps, int lop)
                 }
             }
             s = t;
+            k = i;
         }
     }
     return v - cur;
