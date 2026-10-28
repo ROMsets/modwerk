@@ -1,6 +1,6 @@
-/* Adapted from Digi Matrix's kitstore.h (MIT, the digi1_mods authors; see NOTICE). Digi Perform keeps
- * Digi Matrix's bytes (0..2 of each track) and marker slot, because the two declare a conflict and are
- * never installed together.
+/* Adapted from Digi Matrix's kitstore.h (MIT, the digi1_mods authors; see NOTICE). Digi Perform keeps its pool
+ * in the bytes nothing else on main claims: tracks 5..8's bytes 3 (bits 0..6), 4 and 5, with its marker in
+ * parameter slot 49 of those four tracks (tracks 1..4 use slots 48 and 49 for the master EQ's live values).
  *
  * Where the mods keep their per-pattern settings so that they survive a power cycle.
  *
@@ -27,6 +27,8 @@
  *                    Digi EQ       bits 0..6 (tracks 1..4 only): band t's type | Q << 3
  *   6t + 4, 6t + 5   Digi EQ       (tracks 1..4 only) band t: bit 15 stored, bit 14 (band 1 only) global,
  *                                  bits 7..12 level, bits 0..6 frequency
+ *   6t + 3 (bits 0..6), 6t + 4, 6t + 5, tracks 5..8
+ *                    Digi Perform  the macro pool (perf.c)
  *
  * Loading a sound onto a track replaces that sound's six bytes with the loaded sound's (zero). A load
  * also zeroes all 53 parameter slots of the sound first, RAM-only 46..52 included, which tells the two
@@ -58,8 +60,9 @@ struct kstore {
 enum { KS_SAME, KS_LOADED, KS_OTHER };
 
 /* Once per UI frame. mask(n) gives the bits of byte n this mod owns. Returns KS_OTHER for another
- * pattern's kit, KS_LOADED when the whole kit was just loaded in place, else KS_SAME. */
-static int kstore_tick(struct kstore *s, unsigned char *kit, int slot, unsigned char (*mask)(int))
+ * pattern's kit, KS_LOADED when the whole kit was just loaded in place, else KS_SAME. tmask: bit t is set
+ * for each track whose marker slot this mod owns (the others are not looked at). */
+static int kstore_tick(struct kstore *s, unsigned char *kit, int slot, unsigned char tmask, unsigned char (*mask)(int))
 {
     int t, n, lost = 0, r = KS_SAME;
     if (!kit) {
@@ -67,11 +70,11 @@ static int kstore_tick(struct kstore *s, unsigned char *kit, int slot, unsigned 
         return KS_SAME;
     }
     for (t = 0; t < 8; t++)
-        if (KS_MARKW(kit, t, slot) != KS_MARK)
+        if (((tmask >> t) & 1) && KS_MARKW(kit, t, slot) != KS_MARK)
             lost |= 1 << t;
     if (kit != s->kit)
         r = KS_OTHER;
-    else if (lost == 0xff)
+    else if (lost == tmask)
         r = KS_LOADED;
     else if (lost)                                   /* single sounds loaded: this mod's bytes go back */
         for (n = 0; n < XB_N; n++) {

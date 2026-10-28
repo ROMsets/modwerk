@@ -18,10 +18,13 @@
  * leaving the page, or opening the EDIT view, returns every parameter to what the sound has stored,
  * the way the Analog Rytm's macros let go of a parameter when the pad is released.
  *
- * Storage: the pool belongs to the pattern. 12 entries of 16 bits live in bytes 0..2 of every track's
- * six spare bytes (kitstore.h), 24 bytes in all, the bytes Digi Matrix uses; the two mods conflict.
+ * Storage: the pool belongs to the pattern. Eight entries of 11 bits and a 2-bit version live in the bytes of
+ * tracks 5..8's sounds that nothing else claims (kitstore.h): per track, byte 3 bits 0..6, byte 4 and byte 5,
+ * 23 bits, 92 in all, read as one stream from track 5 on:
  *
- *      bits 15..13 knob    12..10 track    9..4 param (0 = empty)    3 negative    2..0 reserved
+ *      bits 0..87 eight entries of 11 bits, the top bit first: all tracks, track (3), param (6, 0 = empty), negative
+ *      bits 88..89 version, 1 = this layout, 0 = nothing stored (anything else is read as empty)
+ *      bits 90..91 reserved, left as they are
  *
  * The macro knobs' own values are not stored: they are picked up from the parameters when the page opens.
  *
@@ -203,7 +206,8 @@ static int sel_steps(int sel, int delta)
 #define NKNOB      8
 #define DEST_FIRST 1
 #define DEST_LAST  45
-#define KS_SLOT_PERF KS_SLOT_MATRIX         /* Digi Matrix's marker slot: the two never coexist */
+#define KS_SLOT_PERF 49                     /* the marker, kept on tracks 5..8 only: tracks 1..4 use slots 48 and 49 for the EQ */
+#define KS_TRACKS    0xf0                   /* tracks 5..8 */
 
 /* ---- the pool ----------------------------------------------------------------------------------- */
 
@@ -215,14 +219,54 @@ static int sel_steps(int sel, int delta)
 #define ENTRY(t, p, neg) \
     ((u16)(((t) << 10) | ((p) << 4) | ((neg) ? 8 : 0)))
 
-/* byte j of the pool: bytes 0..2 of track j / 3 */
-#define PB(j) (6 * ((j) / 3) + (j) % 3)
-static unsigned char pmask(int n) { return n % 6 < 3 ? 0xff : 0; }
+/* the pool is one stream of PBITS bits: track 5's 23 bits, then track 6's, and so on. Bit r of a track's 23:
+ * 0..6 are bits 0..6 of byte 3, 7..14 byte 4, 15..22 byte 5 */
+#define PBITS      92
+#define ENT_BITS   11
+#define VER_BIT    (NENT * ENT_BITS)        /* 88: the 2-bit version */
+#define VER_NOW    1
+static volatile unsigned char *pbyte(unsigned char *kit, int n, int *bit)
+{
+    int t = 4 + n / 23, r = n % 23;
+    if (r < 7) {
+        *bit = r;
+        return &XB(kit, 6 * t + 3);
+    }
+    *bit = (r - 7) % 8;
+    return &XB(kit, 6 * t + 4 + (r - 7) / 8);
+}
+static int pget(unsigned char *kit, int n)
+{
+    int bit;
+    volatile unsigned char *p = pbyte(kit, n, &bit);
+    return (*p >> bit) & 1;
+}
+static void pput(unsigned char *kit, int n, int v)
+{
+    int bit;
+    volatile unsigned char *p = pbyte(kit, n, &bit);
+    *p = (unsigned char)((*p & ~(1 << bit)) | ((v & 1) << bit));
+}
+static unsigned char pmask(int n)           /* the bits of byte n the pool owns */
+{
+    int t = n / 6, r = n % 6;
+    if (t < 4)
+        return 0;
+    return r == 3 ? 0x7f : (r == 4 || r == 5) ? 0xff : 0;
+}
 static struct kstore store;
 
+static int pver(unsigned char *kit) { return pget(kit, VER_BIT) | pget(kit, VER_BIT + 1) << 1; }
+
+/* an entry as the rest of the code reads it: bits 15..13 are unused here, see E_ALL and friends */
 static u16 entry(unsigned char *kit, int i)
 {
-    return (u16)((XB(kit, PB(2 * i)) << 8) | XB(kit, PB(2 * i + 1)));
+    int b, v = 0;
+    if (pver(kit) != VER_NOW)
+        return 0;
+    for (b = 0; b < ENT_BITS; b++)
+        v = (v << 1) | pget(kit, i * ENT_BITS + b);
+    return (u16)(((v >> 10 & 1) << 13) | ((v >> 7 & 7) << 10) | ((v >> 1 & 63) << 4) | ((v & 1) << 3));
 }
 
 static u32 lock(void)
@@ -234,12 +278,20 @@ static u32 lock(void)
 
 static void unlock(u32 sr) { __asm__ volatile("move.w %0,%%sr" : : "d"(sr) : "memory"); }
 
-/* both bytes change with interrupts off, so the engine never reads half of an old entry */
+/* the bytes change with interrupts off, so the engine never reads half of an old entry. A pool with no
+ * version of ours is cleared first, and the version set; the reserved bits are never written. */
 static void put_entry(unsigned char *kit, int i, u16 e)
 {
+    int b, v = ((e >> 13 & 1) << 10) | ((e >> 10 & 7) << 7) | ((e >> 4 & 63) << 1) | (e >> 3 & 1);
     u32 sr = lock();
-    XB(kit, PB(2 * i)) = (unsigned char)(e >> 8);
-    XB(kit, PB(2 * i + 1)) = (unsigned char)e;
+    if (pver(kit) != VER_NOW) {
+        for (b = 0; b < VER_BIT; b++)
+            pput(kit, b, 0);
+        pput(kit, VER_BIT, VER_NOW & 1);
+        pput(kit, VER_BIT + 1, VER_NOW >> 1);
+    }
+    for (b = 0; b < ENT_BITS; b++)
+        pput(kit, i * ENT_BITS + b, v >> (ENT_BITS - 1 - b));
     unlock(sr);
 }
 
@@ -734,7 +786,7 @@ void digiperform_draw(void *bmp, void *ctrl)
 
 void digiperform_tick(void *ctrl)           /* keep the frame coming while the page is up */
 {
-    kstore_tick(&store, UI_KIT, KS_SLOT_PERF, pmask);   /* a sound load keeps the pool */
+    kstore_tick(&store, UI_KIT, KS_SLOT_PERF, KS_TRACKS, pmask);   /* a sound load keeps the pool */
     if (digiperform_open) {
         int k;
         for (k = 0; k < NKNOB; k++)
@@ -1189,10 +1241,10 @@ int digiperform_enc(void *brain, void *ev)
     return 1;
 }
 
-/* The key handler of the audio TRIG page (ParametersSeqNoteView) and of the MIDI tracks' pages
- * (MidiParameterPageView), vtable slot 2, run first by perf_glue.s. A page view keeps the key it belongs
- * to at +0x88; on the TRIG page a second press of TRIG does nothing stock, so it opens this page. Every
- * other key, and TRIG on the MIDI CC pages, goes on to the stock handler. */
+/* The key handler of the audio TRIG page (ParametersSeqNoteView), vtable slot 2, run first by perf_glue.s.
+ * A page view keeps the key it belongs to at +0x88; on the TRIG page a second press of TRIG does nothing
+ * stock, so it opens this page. Every other key goes on to the stock handler. The MIDI tracks' pages are
+ * not hooked. */
 int digiperform_trigkey(void *view, void *ev, int (*stock)(void *, void *))
 {
     if (KEYID(ev) != KEY_TRIG || !KEYPRESS(ev) || *(int *)((char *)view + 0x88) != KEY_TRIG || KEYHELD(KEY_FUNC))

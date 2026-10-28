@@ -63,13 +63,11 @@ str_perform:
         .asciz  "PERFORM EDIT"
         .balign 2
 
-| ---------------- the TRIG pages' key handlers: TRIG again opens the page ------------------------
-| ParametersSeqNoteView (the audio tracks' TRIG page) and MidiParameterPageView (the MIDI tracks') both
-| keep their key handler in vtable slot 2: (this, event) -> nonzero when it took the key. digiperform_trigkey
-| (perf.c) takes a second press of TRIG; anything else goes to the stock handler, whose own arguments are
-| still on the stack. Both stock handlers sit at the same address on OS 1.53 and 1.54.
+| ---------------- the audio TRIG page's key handler: TRIG again opens the page ------------------------
+| ParametersSeqNoteView (the audio tracks' TRIG page) keeps its key handler in vtable slot 2: (this, event) ->
+| nonzero when it took the key. digiperform_trigkey (perf.c) takes a second press of TRIG; anything else goes
+| to the stock handler, whose own arguments are still on the stack. The MIDI tracks' pages are not touched.
         .equ    STOCK_AUDIO_TRIG_KEY, 0x40033076
-        .equ    STOCK_MIDI_TRIG_KEY,  0x400304de
 
         .balign 2
         .globl  digiperform_trigview_audio
@@ -84,21 +82,8 @@ digiperform_trigview_audio:
         jmp     STOCK_AUDIO_TRIG_KEY
 1:      rts
 
-        .balign 2
-        .globl  digiperform_trigview_midi
-digiperform_trigview_midi:
-        pea     STOCK_MIDI_TRIG_KEY                | the stock handler, for a replayed press
-        move.l  12(%sp), -(%sp)                 | event
-        move.l  12(%sp), -(%sp)                 | this
-        jsr     digiperform_trigkey
-        lea     12(%sp), %sp
-        tst.l   %d0
-        bne.s   1f
-        jmp     STOCK_MIDI_TRIG_KEY
-1:      rts
-
-| ---------------- the TRIG pages' title: "Perform mode" while the page is open ------------------------
-| Slot 19 of both views' vtables builds the page's title: (this), the std::string goes to a0. While the page
+| ---------------- the TRIG page's title: "Perform mode" while the page is open ------------------------
+| Slot 19 of the audio view's vtable builds the page's title: (this), the std::string goes to a0. While the page
 | is open from the TRIG page the title is ours, and the firmware's own header animation shows it; every other
 | time the stock builder runs, its arguments untouched.
         .equ    STOCK_PAGE_TITLE, 0x40030930
