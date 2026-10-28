@@ -205,7 +205,12 @@ void *pipo_loop_mirror(int v, int which, int ws_al, int wrap_al, int len)
             m[i] = data[n < 0 ? 0 : n >= frames ? frames - 1 : n];
         }
     }
-    for (i = 0; i < len * 2; i += 16)   // the DMA reads memory, not the data cache
-        __asm__ volatile ("cpushl %%dc,(%0)" : : "a" ((char *)m + i) : "memory");
+    for (i = 0; i < len * 2; i += 16) { // the DMA reads memory, not the data cache: push the
+        char *l = (char *)m + i;        // line from every way of its set (the address's low bits
+        int w;                          // pick the way, as in poly8)
+        for (w = 0; w < 4; w++)
+            __asm__ volatile ("cpushl %%dc,(%0)" : : "a" (l + w) : "memory");
+    }
+    __asm__ volatile ("nop" : : : "memory");   // the pushes reach memory before the DMA starts
     return m;
 }
