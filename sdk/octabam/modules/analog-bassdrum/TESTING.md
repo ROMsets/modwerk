@@ -1,6 +1,6 @@
 # Analog BD 0.1.6 — TYPE and FIXD switches
 
-Current as of 28 October 2026. This pull request now publishes package `f83c7f81` on beta base `06bdc59e`, rebuilt after `main` took #943 and a new base (#1017); the module source is the one tested on 27 October as package `a2def725` on base `64ce4825` (below), and only the base link differs. This rebuild is not yet tested on hardware; every result below names the build it ran on.
+Current as of 28 October 2026. This pull request now publishes package `f83c7f81` on beta base `6483508a`, rebuilt after `main` took #943 and new bases (#1017, #1026, #1030); the module source is the one tested on 27 October as package `a2def725` on base `64ce4825` (below), and only the base link differs. This rebuild is not yet tested on hardware; every result below names the build it ran on.
 
 ## What changed and how it was checked (software)
 
