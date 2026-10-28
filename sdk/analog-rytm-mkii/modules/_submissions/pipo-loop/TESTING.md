@@ -254,9 +254,9 @@ test samples PIPO_SLOW, PIPO_110 and PIPO_SQR and reported:
 
 npp1993 flashed the build with the S and E labels (PD05/PC11 code) and reported: the labels look
 great; STA and END can sit on top of each other and change places (END before STA), with both labels
-showing; a lock set with FUNC + turn while a trig is held shows its position when that trig is held
-again; "I think that's everything good". Not reported on this build: moderate-speed turns after the
-skip fix, PIPO turn clicks, the unmirrored counter.
+showing; the loop plays; a lock set with FUNC + turn while a trig is held lands on a crossing and shows
+its position when that trig is held again; "I think that's everything good". PD05 is PC11's code plus
+the readout; PC11 and PP13 themselves were not flashed.
 
 ## PD04 report; S and E labels (2026-10-28)
 
@@ -427,9 +427,17 @@ above.
 
 ## Not tested
 
-- On a unit, beyond the PC03, PD01, PD03, PD04 and PD05 reports above: PC11 and PP13 have not been flashed.
-- KIT SAVE and KIT RELOAD from the KIT menu, the sound browser, sound SysEx dumps and Overbridge.
-- Eight voices in PIPO at once, LFO or velocity modulation of STA and END while in PIPO, and Loop
-  Sync and Pipo Loop on the same track.
-- PX07 booted.
-- Several trigs held at once while snapping locks; the lock-editor path (0x4003a19c).
+On a unit (everything below was run in rytm-emu only, or not at all):
+
+- PC11 and PP13 themselves (PD05, the same code plus the readout, was flashed).
+- Moderate-speed FUNC turns after the skip fix (one crossing for up to two values); PIPO turn clicks
+  after the four-way cache push; the unmirrored counter staying 0 over a long PIPO note.
+- Several voices in PIPO at once (eight), retrig, and LFO or velocity modulation of STA and END
+  while in PIPO.
+- LOP's PIPO as a p-lock and in scenes, LOP set over MIDI CC 30 (including values above 2).
+- Kit save and reload (KIT menu), the sound browser, sound SysEx dumps, Overbridge, power cycle with
+  PIPO saved, and a saved PIPO kit on stock 1.74 (plays as ON there in rytm-emu).
+- Silent Pad+Trig's rows and pads used together with Pipo Loop in one session (PC11 builds both;
+  PD05 carried both but only Pipo Loop was exercised); Loop Sync and Pipo Loop on the same track.
+- Several trigs held at once while snapping locks.
+- Samples longer than 0.64 s (zero snap lands on the nearest step there).

@@ -38,6 +38,10 @@ Use a build containing Pipo Loop, select a track whose sound plays a sample, and
 
 ![LOP locked to PIPO in scene 1](media/scene-pipo.png)
 
+![STA and END snapped to zero crossings, labelled S and E](media/snap-markers.png) ![A held trig's STA lock snapped to a crossing](media/snap-lock.png)
+
+![STA and END sharing a crossing](media/markers-shared.png) ![END before STA](media/markers-reversed.png) ![Playing, with the playhead](media/markers-playing.png)
+
 ### Changes to stock flows
 
 - **LOP has a third value.** What changes: turning LOP clockwise past ON now reaches PIPO; locks and scenes can hold PIPO. Why: a musician looks for loop behaviour on LOP, and a third value needs no new page, key gesture or menu row (a FUNC gesture on the SAMPLE page was considered, but FUNC + STA, END and LOP are stock's coarse steps and FUNC + TUN and FIN belong to Loop Sync). What you see: the value text reads PIPO, and LOP's switch has three positions like BD CLASSIC's WAV, so ON now shows the knob in the middle (stock: on the right). It applies only in a build with this mod; leave LOP on OFF or ON for stock behaviour. Checked beside it: OFF and ON play exactly as stock, LOP's p-locks and scene locks, kit save through power-off, MIDI CC 30.
@@ -59,16 +63,16 @@ Use a build containing Pipo Loop, select a track whose sound plays a sample, and
 - A PIPO turn on a crossing can still give a soft knock on a pure tone: the waveform's slope reverses at the turn, which no choice of frame avoids. A forward loop (LOP ON) between two crossings of one direction joins smoothly.
 - The STA and END lines on the SMPL WAVEFORM view are stock's drawing: one column covers many frames (about 225 for a 0.6 s sample), and stock spaces the lines over 123 columns but the waveform over 124, so a line can sit one column left of the crossing it is on, more often towards the right of the screen. The frame stock plays from is the one the snap set.
 - On stock OS, PIPO plays as ON. Sounds and kits keep the value, so loading them again with the mod brings PIPO back.
-- On a unit only as test builds so far (PC03 and the diagnostic PD01, both reported in [TESTING.md](TESTING.md)).
+- Run on a unit by the author as test builds (PC03 and the diagnostics PD01 to PD05, reported in [TESTING.md](TESTING.md)); what is not yet tested on a unit is listed there.
 
 ## Tests and measurements
 
-rytm-emu (c5732f0) on OS 1.74, build PP07, with a generated ramp sample on BD: the value steps OFF/ON/PIPO and reads PIPO; ON plays stock's forward loop and PIPO a click-free triangle from TUN -24 to +24; switching ON to PIPO mid-note; FUNC + STA and END stepping crossing by crossing on a test sine with silence and DC in it; p-locks and scene locks of PIPO; two voices at once; retrig; persistence through power-off; and stock 1.74 loading the saved PIPO state as a normal loop. CPU is a static estimate: about 0.1 % of an audio block with nothing looping and about 0.6 % with all eight voices in PIPO. See [TESTING.md](TESTING.md).
+rytm-emu (c5732f0) on OS 1.74, build PP13, with generated ramp and sine samples on BD: the value steps OFF/ON/PIPO and reads PIPO; ON plays stock's forward loop and PIPO turns exactly at STA and END from TUN -24 to +24; switching ON to PIPO mid-note; FUNC + STA and END stepping crossing by crossing (sound, lock editor, per-trig and live recording), holding at the sample's edges, passing and sharing crossings; p-locks and scene locks of PIPO; two voices at once; retrig; persistence through power-off; stock 1.74 loading the saved PIPO state as a normal loop; the S and E labels. On a unit (author's reports, test builds up to PD05): the switch, PIPO, zero snap on the sound and on held trigs' locks, edges, passing and sharing, clean snapped LOP ON loops, the labels. CPU is a static estimate: about 0.1 % of an audio block with nothing looping and about 0.6 % with all eight voices in PIPO. See [TESTING.md](TESTING.md).
 
 ## Authorship and licences
 
-Original code by npp1993 (Nathaniel Pavel), GPL-3.0-or-later ([LICENSE](LICENSE)). The OS 1.74 addresses were read by the author from his own stock firmware; the build carries addresses, lengths and SHA-256 guards only, no stock bytes. Screenshots: [media/LICENSE.md](media/LICENSE.md).
+Original code by npp1993 (Nathaniel Pavel), GPL-3.0-or-later ([LICENSE](LICENSE)). The OS 1.74 addresses were read by the author from their own stock firmware; the build carries addresses, lengths and SHA-256 guards only, no stock bytes. Screenshots: [media/LICENSE.md](media/LICENSE.md).
 
 ## Screens and audio
 
-Screenshots are rytm-emu captures of build PP06 ([media/capture.json](media/capture.json)). No audio preview yet.
+Screenshots are rytm-emu captures of build PP13 ([media/capture.json](media/capture.json)), the zero-snap and label ones on a generated slow sine. No audio preview yet.
