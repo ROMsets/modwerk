@@ -7,7 +7,7 @@
   "mods": [
     {
       "file": "digiperform-0.1.0-experimental-os1.53.elemod",
-      "sha256": "a3990578925ddb563c5eb30990c1fba624ec4ce2a0a404c8b4627598f6e3ff04",
+      "sha256": "2ad8bdc1dd676e2b38ce474dcee1b85a16cdcb34364b9b5d77f3a840c9c6dd8a",
       "id": "digiperform",
       "version": "0.1.0-experimental",
       "device": "digitakt-mk1",
@@ -15,7 +15,7 @@
       "license": "GPL-3.0-or-later",
       "source": {
         "repo": "repeat98/modwerk",
-        "commit": "e2e0db88ddc8c6c78ece73c73c9d4a7f31c08ff6",
+        "commit": "da4d96e41d3b34a7edf2940e189db19c14fa7725",
         "path": "sdk/imports/packages/digiperform/digiperform-0.1.0-experimental-os1.53.elemod"
       },
       "title": "Digi Perform",
@@ -34,7 +34,7 @@
     },
     {
       "file": "digiperform-0.1.0-experimental-os1.54.elemod",
-      "sha256": "79fa69be3004351de59d7b049f29ab38a2206797921bd0cb291424c4973e806c",
+      "sha256": "0609ca6128005e1ea33dcdfcd445cbc8de6123a0cf928c45d1f0fdeb9c8dd16c",
       "id": "digiperform",
       "version": "0.1.0-experimental",
       "device": "digitakt-mk1",
@@ -42,7 +42,7 @@
       "license": "GPL-3.0-or-later",
       "source": {
         "repo": "repeat98/modwerk",
-        "commit": "e2e0db88ddc8c6c78ece73c73c9d4a7f31c08ff6",
+        "commit": "da4d96e41d3b34a7edf2940e189db19c14fa7725",
         "path": "sdk/imports/packages/digiperform/digiperform-0.1.0-experimental-os1.54.elemod"
       },
       "title": "Digi Perform",
