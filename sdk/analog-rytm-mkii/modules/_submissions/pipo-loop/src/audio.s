@@ -47,7 +47,8 @@ pipo_loop_text_gate:
 | with a three-frame switch. For LOP's record only (ctx is its record + 36),
 | the gate tail-jumps to WAV's routine with the arguments untouched, so LOP's
 | OFF, ON and PIPO show as stock's three-position switch. Every other OFF/ON
-| switch replays the displaced load of its frame list and resumes stock.
+| switch replays the displaced load of its frame list and resumes stock, and
+| so does LOP above 2 (MIDI CC 30 can set it; it plays as ON).
 
         .globl  pipo_loop_icon_gate
 
@@ -55,6 +56,11 @@ pipo_loop_icon_gate:
         lea     pipo_loop_icon_ctx,%a0
         cmpa.l  4(%sp),%a0
         bne.s   1f
+        move.l  8(%sp),%d0                      | above PIPO (MIDI CC 30 is unclamped) plays
+        asr.l   #8,%d0                          | as ON: stock's switch, as ON draws
+        moveq   #2,%d1
+        cmp.l   %d1,%d0
+        bhi.s   1f
         jmp     pipo_loop_icon3
 1:      movea.l pipo_loop_icon_frames,%a0       | displaced
         jmp     pipo_loop_icon_resume
@@ -66,8 +72,8 @@ pipo_loop_icon_gate:
 | a0 the view's vtable). For STA and END with FUNC held, pipo_loop_snap gives
 | the delta to the next zero crossing the way the turn went; the call then
 | goes out as an ordinary fine turn of that size, so stock's own path clamps,
-| draws and stores it. With no crossing in reach it returns SNAP_NONE and the
-| turn stays stock's whole-number step.
+| draws and stores it. With no crossing that way it returns 0 and the point
+| holds. Stock's d0-d1/a1 are put back for the rest of the handler.
 
         .equ    SNAP_NONE, 0x7fffffff
         .globl  pipo_loop_func_gate
@@ -77,23 +83,25 @@ pipo_loop_func_gate:
         mvz.b   %d6,%d6                         | displaced
         tst.l   %d6
         beq.s   9f
-        moveq   #43,%d0                         | STA
-        cmp.l   %d2,%d0
+        cmpi.l  #43,%d2                         | STA
         beq.s   1f
-        moveq   #44,%d0                         | END
-        cmp.l   %d2,%d0
+        cmpi.l  #44,%d2                         | END
         bne.s   9f
-1:      clr.l   -(%sp)                          | not a lock
+1:      lea     -12(%sp),%sp                    | stock's d0-d1/a1 come back as they were
+        movem.l %d0-%d1/%a1,(%sp)
+        clr.l   -(%sp)                          | not a lock
         move.l  %d4,-(%sp)
         move.l  %d2,-(%sp)
         move.l  %a2,-(%sp)
         jsr     pipo_loop_snap
         lea     16(%sp),%sp
-        movea.l (%a2),%a0                       | the view's vtable, as stock had it
         cmp.l   #SNAP_NONE,%d0
-        beq.s   9f
+        beq.s   2f
         move.l  %d0,%d4                         | the step to the crossing
         moveq   #0,%d6                          | applied as a fine turn
+2:      movem.l (%sp),%d0-%d1/%a1
+        lea     12(%sp),%sp
+        movea.l (%a2),%a0                       | the view's vtable, as stock had it
 9:      pea     -34(%fp)                        | displaced
         jmp     pipo_loop_func_resume
 
@@ -111,22 +119,24 @@ pipo_loop_func_gate:
 pipo_loop_lock_gate:
         tst.b   %d6
         beq.s   9f
-        moveq   #43,%d0                         | STA
-        cmp.l   %d2,%d0
+        cmpi.l  #43,%d2                         | STA
         beq.s   1f
-        moveq   #44,%d0                         | END
-        cmp.l   %d2,%d0
+        cmpi.l  #44,%d2                         | END
         bne.s   9f
-1:      pea     1                               | a lock
+1:      lea     -12(%sp),%sp                    | stock's d0-d1/a1 come back as they were
+        movem.l %d0-%d1/%a1,(%sp)
+        pea     1                               | a lock
         move.l  %d4,-(%sp)
         move.l  %d2,-(%sp)
         move.l  %a2,-(%sp)
         jsr     pipo_loop_snap
         lea     16(%sp),%sp
-        movea.l (%a2),%a0                       | the view's vtable, as stock had it
         cmp.l   #SNAP_NONE,%d0
-        beq.s   9f
+        beq.s   2f
         move.l  %d0,%d4
+2:      movem.l (%sp),%d0-%d1/%a1
+        lea     12(%sp),%sp
+        movea.l (%a2),%a0                       | the view's vtable, as stock had it
 9:      move.l  %d4,-(%sp)                      | displaced
         move.l  %d2,-(%sp)                      | displaced
         move.l  %a2,-(%sp)                      | displaced
@@ -142,6 +152,8 @@ pipo_loop_lock_gate:
         .extern pipo_loop_snap_trig
 
 pipo_loop_trig_gate:
+        lea     -8(%sp),%sp                     | stock's d0 (the delta) and d1
+        movem.l %d0-%d1,(%sp)
         move.l  %d0,-(%sp)                      | delta
         move.l  4(%a2),-(%sp)                   | id
         move.l  %d2,-(%sp)                      | trig
@@ -150,8 +162,10 @@ pipo_loop_trig_gate:
         lea     16(%sp),%sp
         cmp.l   #SNAP_NONE,%d0
         bne.s   1f
-        move.l  8(%a2),%d0                      | stock's delta
-1:      movea.l (%a2),%a0                       | displaced
+        move.l  (%sp),%d0                       | stock's delta, as it came
+1:      move.l  4(%sp),%d1
+        lea     8(%sp),%sp
+        movea.l (%a2),%a0                       | displaced
         movea.l (%a0),%a1                       | displaced
         move.l  %d0,-(%sp)                      | displaced
         jmp     pipo_loop_trig_resume
@@ -210,17 +224,17 @@ pipo_loop_v0w_gate:
 pipo_loop_v0m_gate:
         tst.l   LEN1
         ble.s   9f
-        lea     -8(%sp),%sp
-        movem.l %a0-%a1,(%sp)
+        lea     -12(%sp),%sp
+        movem.l %d1/%a0-%a1,(%sp)
         movea.l %d4,%a0
         moveq   #0,%d0
         moveq   #2,%d1
         bsr.w   mirror
         tst.l   %d0
         beq.s   1f
-        move.l  %d0,4(%sp)
-1:      movem.l (%sp),%a0-%a1
-        lea     8(%sp),%sp
+        move.l  %d0,8(%sp)                      | the source: the buffer
+1:      movem.l (%sp),%d1/%a0-%a1
+        lea     12(%sp),%sp
 9:      moveq   #1,%d0                          | displaced
         move.l  %a1,(%a0)                       | displaced
         move.l  %d6,16(%a0)                     | displaced
@@ -253,18 +267,18 @@ pipo_loop_vnw_gate:
 pipo_loop_vnm_gate:
         tst.l   LEN1
         ble.s   9f
-        lea     -8(%sp),%sp
-        movem.l %a0-%a1,(%sp)
-        move.l  100(%sp),%d0                    | the loop counter (88 + return + saves)
+        lea     -12(%sp),%sp
+        movem.l %d1/%a0-%a1,(%sp)
+        move.l  104(%sp),%d0                    | the loop counter (88 + return + saves)
         addq.l  #1,%d0
         movea.l LEN2,%a0
         moveq   #2,%d1
         bsr.w   mirror
         tst.l   %d0
         beq.s   1f
-        move.l  %d0,4(%sp)
-1:      movem.l (%sp),%a0-%a1
-        lea     8(%sp),%sp
+        move.l  %d0,8(%sp)                      | the source: the buffer
+1:      movem.l (%sp),%d1/%a0-%a1
+        lea     12(%sp),%sp
 9:      moveq   #1,%d0                          | displaced
         move.l  %a1,(%a0)                       | displaced
         movea.l 64(%sp),%a1                     | displaced (60 + return)
