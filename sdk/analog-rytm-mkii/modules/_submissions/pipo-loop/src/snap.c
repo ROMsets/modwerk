@@ -108,54 +108,60 @@ static int crossing_at(volatile short *data, int frames, int f)
     return 0;
 }
 
-// The step from cur to the steps-th next zero crossing the way steps goes,
-// or SNAP_NONE. lop: LOP's integer part (1, ON: match the other point's
-// crossing direction).
+// The step from cur to the steps-th next zero crossing the way steps goes.
+// Once FUNC + STA or END is turned the value only ever moves to a crossing:
+// with none that way (or no sample) the step is 0 and the point holds. STA
+// and END may pass each other (stock plays END below STA backward) but never
+// land on the same frame. The sample's first frame and its end count as
+// crossings only where the sample is at zero there. lop: LOP's integer part
+// (1, ON: only crossings of the other point's direction).
 static int snap_from(int cur, int other, int slot, int steps, int lop)
 {
     volatile short *data;
     unsigned frames;
-    int dir = steps > 0 ? 1 : -1, f, lim, s, i, k, n, v = cur, want = 0;
+    int dir = steps > 0 ? 1 : -1, f, fo, s, i, k, n, v = cur, want = 0;
     if (slot <= 0 || slot > SLOT_LAST || !steps)
-        return SNAP_NONE;
+        return 0;
     data = SLOT_DATA(slot);
     frames = SLOT_FRAMES(slot);
     if (!data || frames < 2)
-        return SNAP_NONE;
+        return 0;
+    fo = frame_of(frames, other);
     if (lop == 1)
-        want = crossing_at(data, (int)frames, frame_of(frames, other));
-    lim = dir > 0 ? (int)frames - 1 : 1;   // the sample's edge, or the other point when it lies that way
-    if (dir > 0 ? other > cur : other < cur) {
-        int o = frame_of(frames, other) - dir;
-        if (dir > 0 ? o < lim : o > lim)
-            lim = o;
-    }
+        want = crossing_at(data, (int)frames, fo);
     for (; steps; steps -= dir) {
+        int found = 0;
         f = frame_of(frames, v);
         if (f > (int)frames - 1)
             f = (int)frames - 1;
         // Scan from f the way the turn goes for the next sign change; the
-        // crossing's frame is the first sample of the new sign.
+        // crossing's frame is the first signed sample of the new sign.
         s = sign_of(data[f]);
         k = f;                           // the last signed sample the scan passed
-        for (i = f + dir, n = 0; ; i += dir, n++) {
-            int t;
-            if ((dir > 0 ? i > lim : i < lim) || n >= REACH)
-                return v != cur ? v - cur : SNAP_NONE;
-            t = sign_of(data[i]);
+        for (i = f + dir, n = 0; i >= 0 && i < (int)frames && n < REACH; i += dir, n++) {
+            int t = sign_of(data[i]);
             if (!t)
                 continue;
             if (s && t != s) {
-                int c = dir > 0 ? i : k;           // the first signed sample of the new sign, in time
+                int c = dir > 0 ? i : k;
                 int w = value_of(frames, c);
                 int kind = dir > 0 ? t : s;          // the new sign, in time: +1 rising
-                if ((!want || kind == want) && (dir > 0 ? w > v : w < v)) {
+                if ((!want || kind == want) && (dir > 0 ? w > v : w < v) && frame_of(frames, w) != fo) {
                     v = w;
+                    found = 1;
                     break;
                 }
             }
             s = t;
             k = i;
+        }
+        if (!found) {                    // the sample's edge, where it is at zero
+            int e = dir > 0 ? FULL : 0, ef = frame_of(frames, e);
+            int at = dir > 0 ? data[frames - 1] : data[0];
+            if ((at < 0 ? -at : at) <= SILENT && (dir > 0 ? e > v : e < v) && ef != fo && !want)
+                v = e;
+            else
+                break;                   // nothing further that way: hold
         }
     }
     return v - cur;
