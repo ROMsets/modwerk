@@ -179,14 +179,15 @@ static int editor_value(void *ed, int track, int id, void *view)
     return (int)(short)vcall3(view, VT_VALUE, id, -1);
 }
 
-// The steps in stock's delta for a turn read through LOP's profile: a whole
-// value a step (8.8), at least one, at most MAX_STEPS.
+// The steps in stock's delta for a turn read through LOP's profile (a whole
+// value a step, 8.8): one crossing for up to two values, so a moderately
+// quick turn, which LOP's profile already gives two, never skips a crossing
+// (PD04); past that one fewer than the values, at most MAX_STEPS.
 #define MAX_STEPS 16
 static int steps_of(int delta)
 {
     int n = (delta < 0 ? -delta : delta) >> 8;
-    if (n < 1)
-        n = 1;
+    n = n <= 2 ? 1 : n - 1;
     if (n > MAX_STEPS)
         n = MAX_STEPS;
     return delta < 0 ? -n : n;
