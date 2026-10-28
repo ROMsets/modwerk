@@ -18,7 +18,7 @@ The local images carry the build label `2.3c`. Both are build checks, not hardwa
 
 ## Combinations
 
-`modules:check` flags the overlaps the manifests declare: Digi Perform and Digi Matrix use the same hook site and kit bytes, and Digi Perform and cc-names replace the same pointer in the MIDI track page's view, so both are declared in `compatibility.conflicts`. The elekloader combination matrix with every other Modwerk mod was not run. Not tested.
+`modules:check` flags the overlaps the manifests declare: Digi Perform and Digi Matrix patch the same render site, so it is declared in `compatibility.conflicts`. Digi Perform and cc-names no longer share a patch site. The elekloader combination matrix with every other Modwerk mod was not run. Not tested.
 
 ## Emulator checks (author)
 

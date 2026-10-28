@@ -58,12 +58,12 @@ TRIG page, press TRIG again; Perform Edit in SETTINGS > PERFORM EDIT
 
 Digi Perform needs core 2.1 and is built for OS 1.53 and 1.54.
 
-- It cannot be installed with Digi Matrix: both keep their data in the same bytes of the pattern’s kit and use the same hook site.
-- It cannot be installed with cc-names: both replace the same pointer in the MIDI track page’s view (0x4018351c on OS 1.53, 0x4018381c on OS 1.54), so the configurator never offers them together.
+- It cannot be installed with Digi Matrix: both patch the render site after the LFOs (0x40077eb2), so the configurator never offers them together.
 - Parameters are the sound’s slots 1–45, named as the Digitakt’s pages name them; ranges come from the firmware’s own table. FLT.DEL to FLT.ROUT are the filter’s second page.
-- One assignment for each knob A–H, and a track’s parameter can belong to one knob only. Other mods that keep data in the same bytes of the kit (Digi EQ, Digi Poly) use only bytes this mod leaves alone.
+- One assignment for each knob A–H, and a track’s parameter can belong to one knob only. The assignments are kept in bits of tracks 5 to 8’s spare sound bytes that no other mod here uses.
 - Selecting another pattern while the sequencer is stopped reloads the offsets at once; while it plays, the new pattern’s knobs take over when it starts. This is detected from the audio engine’s own pattern bytes; the author has seen it work on a unit.
 - After the stock chord, metronome, scale, microtiming or retrig screens, press TRIG twice to open the Perform page again.
+- The Perform page opens from an audio track’s TRIG page. On a MIDI track the second press does nothing; SETTINGS > PERFORM EDIT works from any track.
 - The assignments are kept in bytes of each sound record that the firmware saves and loads but does not use itself. Whether they survive a power cycle on a unit is not yet recorded in TESTING.md.
 
 ### Changes to stock behaviour
@@ -73,7 +73,7 @@ With Digi Perform installed every stock flow works as before, except for these l
 - **TRIG pressed again on the TRIG page** (stock: nothing happens) opens the Perform page. This is needed because the page replaces no stock screen; a new key or an own top-level page would have taken a key the Digitakt already uses. TRIG again, or any other page key, leaves it. It is hooked on the TRIG page of the audio tracks and on the MIDI tracks’ pages that carry the same TRIG key; on the MIDI CC pages TRIG keeps its stock job.
 - **A PERFORM EDIT row in SETTINGS**, after the stock rows. YES opens Perform Edit; NO goes back to the SETTINGS list.
 - **Inside the Perform page** the knobs A–H, FUNC and a knob’s push, and hold TRIG + REC / STOP / PLAY work as described above. FUNC + TRK, FUNC + PTN, FUNC + PAGE and a held step with an arrow leave the page, so the stock chord setup, metronome, scale, microtiming and retrig screens are the stock ones, unchanged.
-- **Saved projects:** the assignments are kept in bytes of each sound record that the firmware saves and loads but does not use itself. A project saved with assignments and loaded on a build without Digi Perform should ignore them; this is not yet tested.
+- **Saved projects:** the assignments are kept in spare bits of the sounds on tracks 5 to 8 (byte 3 bits 0–6, bytes 4 and 5), which the firmware saves and loads but does not use itself. These bytes travel with the sound: a sound saved from track 5–8 to the pool, or copied onto another track, carries the bits along. Loading a sound onto tracks 5–8 puts the pattern’s assignments back, and the module checks its own marker before it trusts the bits; on tracks 1–4 Digi EQ and Digi Poly guard their own bytes the same way. A project saved with assignments and loaded on a build without Digi Perform should ignore them. Neither the copy case nor the build change is tested yet.
 
 The effect on a parameter is never stored: removing the module or leaving the page puts every parameter back to what the sound stores.
 
