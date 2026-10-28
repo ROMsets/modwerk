@@ -17,8 +17,8 @@
 // a loop's wrap from END - 1 to STA meets the sample as a crossing does.
 // With LOP ON, a point steps only through crossings of the same direction as
 // the other point's, when that one sits on a crossing: the forward loop's
-// wrap then joins two crossings of one slope. The search is bounded; with
-// nothing in reach the turn stays stock's.
+// wrap then joins two crossings of one slope. With FUNC held the value only
+// ever moves to a crossing: with none in reach the point holds.
 
 #include <stdint.h>
 
@@ -111,24 +111,23 @@ static int crossing_at(volatile short *data, int frames, int f)
 // The step from cur to the steps-th next zero crossing the way steps goes.
 // Once FUNC + STA or END is turned the value only ever moves to a crossing:
 // with none that way (or no sample) the step is 0 and the point holds. STA
-// and END may pass each other (stock plays END below STA backward) but never
-// land on the same frame. The sample's first frame and its end count as
-// crossings only where the sample is at zero there. lop: LOP's integer part
+// and END step past each other freely (stock plays END below STA backward)
+// and may share a crossing (a loop of no length: silence). The sample's first
+// frame and its end count as crossings only where the sample is at zero there. lop: LOP's integer part
 // (1, ON: only crossings of the other point's direction).
 static int snap_from(int cur, int other, int slot, int steps, int lop)
 {
     volatile short *data;
     unsigned frames;
-    int dir = steps > 0 ? 1 : -1, f, fo, s, i, k, n, v = cur, want = 0;
+    int dir = steps > 0 ? 1 : -1, f, s, i, k, n, v = cur, want = 0;
     if (slot <= 0 || slot > SLOT_LAST || !steps)
         return 0;
     data = SLOT_DATA(slot);
     frames = SLOT_FRAMES(slot);
     if (!data || frames < 2)
         return 0;
-    fo = frame_of(frames, other);
     if (lop == 1)
-        want = crossing_at(data, (int)frames, fo);
+        want = crossing_at(data, (int)frames, frame_of(frames, other));
     for (; steps; steps -= dir) {
         int found = 0;
         f = frame_of(frames, v);
@@ -146,7 +145,7 @@ static int snap_from(int cur, int other, int slot, int steps, int lop)
                 int c = dir > 0 ? i : k;
                 int w = value_of(frames, c);
                 int kind = dir > 0 ? t : s;          // the new sign, in time: +1 rising
-                if ((!want || kind == want) && (dir > 0 ? w > v : w < v) && frame_of(frames, w) != fo) {
+                if ((!want || kind == want) && (dir > 0 ? w > v : w < v)) {
                     v = w;
                     found = 1;
                     break;
@@ -156,9 +155,9 @@ static int snap_from(int cur, int other, int slot, int steps, int lop)
             k = i;
         }
         if (!found) {                    // the sample's edge, where it is at zero
-            int e = dir > 0 ? FULL : 0, ef = frame_of(frames, e);
+            int e = dir > 0 ? FULL : 0;
             int at = dir > 0 ? data[frames - 1] : data[0];
-            if ((at < 0 ? -at : at) <= SILENT && (dir > 0 ? e > v : e < v) && ef != fo && !want)
+            if ((at < 0 ? -at : at) <= SILENT && (dir > 0 ? e > v : e < v) && !want)
                 v = e;
             else
                 break;                   // nothing further that way: hold
