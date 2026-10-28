@@ -42,6 +42,8 @@
 #define TRACKS 12
 #define MIN_SPAN 160        // stock plays a loop of at least 141 frames
 #define MIRROR 160          // frames in a DMA segment at most (stock: 140 + alignment)
+#define TURN_LAG 8          // frames the play position runs ahead of the frames heard (stock's
+                            // filter history), measured in rytm-emu: the same at every pitch
 #define VDATA(v) (*(volatile short *volatile *)(VREC(v) + 0))
 
 enum { ARM_NONE, ARM_UP, ARM_DOWN };
@@ -113,25 +115,30 @@ void pipo_loop_audio(void)
         } else if (p->fresh)
             p->fresh = 0;
         else if (p->seen && p->arm) {  // did the voice pass the turn the DMA carried?
-            int x = -1, r = 0;
+            int x = 0, r = 0, turned = 1;
             if (p->arm == ARM_UP) {      // past hi, or wrapped by stock to lo + (x - hi)
                 if (pos >= p->hi)
                     x = pos;
                 else if (pos < p->last_pos)
                     x = pos - p->lo + p->hi;
-                r = 2 * p->hi - 1 - x;
+                else
+                    turned = 0;
+                r = 2 * p->hi - 1 - x + TURN_LAG;
             } else {                     // below lo, or wrapped by stock to hi - (lo - x)
                 if (pos < p->lo)
                     x = pos;
                 else if (pos > p->last_pos)
                     x = pos - p->hi + p->lo;
-                r = 2 * p->lo - 1 - x;
+                else
+                    turned = 0;
+                r = 2 * p->lo - 1 - x + TURN_LAG;
             }
-            if (x >= 0) {                // where the mirrored frames put it, the way back
-                if (r < p->lo)
-                    r = p->lo;
-                if (r > p->hi - 1)
-                    r = p->hi - 1;
+            if (turned) {                // where the mirrored frames put it, the way back
+                int fr = (int)VFRAMES(v);
+                if (r < 0)
+                    r = 0;
+                if (r > fr - 1)
+                    r = fr - 1;
                 VPOS(v) = r;
                 pos = r;
                 p->back ^= 1;
