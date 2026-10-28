@@ -172,7 +172,7 @@ static int editor_value(void *ed, int track, int id, void *view)
 // detent's, as stock's encoder sends them), the rest kept for the next event;
 // each event's steps are worked out once, for every path stock takes it by
 // (one held trig after another).
-#define COUNTS 8
+#define COUNTS 1            // a slow detent on a unit sends 1 count (PD01: 1-3 counts, as many events)
 #define ENC_STA 4
 #define ENC_END 5
 static int enc_acc, enc_last = -1, enc_serial, used_serial = -1, used_steps;
@@ -197,10 +197,9 @@ int pipo_loop_enc(void *brain, char *ev)
 static int steps_now(void)
 {
     if (used_serial != enc_serial) {
-        // One crossing once a detent's counts are in, never more for one
-        // event: the counts come after stock's acceleration, and a fast or
-        // FUNC-held turn sends more than a detent's (PC07 on a unit stepped
-        // several crossings a detent). What is left over is dropped.
+        // One crossing an encoder event, whatever its count: on a unit a
+        // slow detent sends 1 count, and a fast turn sends events of 15 or
+        // more (stock's acceleration, PD01). What is left over is dropped.
         used_steps = enc_acc >= COUNTS ? 1 : enc_acc <= -COUNTS ? -1 : 0;
         if (used_steps)
             enc_acc = 0;
