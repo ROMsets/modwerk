@@ -93,6 +93,23 @@ pipo_loop_prof_gate:
         move.l  %d5,-(%sp)                      | displaced
         jmp     pipo_loop_prof_resume
 
+| S and E labels (marks.c). The site is the last two instructions of stock's
+| waveform widget draw routine before it restores its registers: d2 the
+| bitmap, a2 the widget. The gate draws the labels over everything the
+| routine drew and replays them.
+
+        .globl  pipo_loop_marks_gate
+        .extern pipo_loop_marks
+
+pipo_loop_marks_gate:
+        move.l  %a2,-(%sp)
+        move.l  %d2,-(%sp)
+        jsr     pipo_loop_marks
+        addq.l  #8,%sp
+        clr.b   %d0                             | displaced
+        move.b  %d0,49(%a2)                     | displaced
+        jmp     pipo_loop_marks_resume
+
 | Zero snap: FUNC + turn on the SAMPLE page's STA or END. Stock's encoder
 | handler ends by calling the view's apply-delta with FUNC held, which steps
 | STA and END by whole numbers. The site replaces the first two instructions

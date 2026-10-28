@@ -251,6 +251,24 @@ test samples PIPO_SLOW, PIPO_110 and PIPO_SQR and reported:
   was clean; PIPO gave a soft knock at the turns. At a turn the waveform's slope reverses, which no
   choice of frame avoids on a pure tone, so this is expected (README).
 
+## PD04 report; S and E labels (2026-10-28)
+
+**PD04 on an Analog Rytm MKII, as reported by npp1993.** FUNC + STA/END feels better. A very slow
+turn registers no change, the same as LOP with or without FUNC (stock). Once the marker skipped
+between two non-adjacent crossings and would not land on the one between; not reproduced. With LOP
+ON every other crossing is skipped by design (same direction as the other point); otherwise a
+moderately quick turn, for which LOP's profile gives two values, stepped two crossings. Fixed after
+PD04: up to two values step one crossing, past that one fewer than the values.
+
+**Labels (emulator only, PM01 test build).** Stock's waveform widget (draw routine 0x4006cb16, only
+caller 0x400d211c) keeps the lines' columns at +4 and +8 (value x 123 / 30720, from x0 = 2), draws
+them dotted from y0 + 1 to y0 + height - 2 (y0 16, height 32) and draws the waveform over 124
+columns, which is why a line can sit a column left of its crossing. As the routine ends (site
+0x4006ce72) the module draws a boxed S at the bottom of STA's line and a boxed E at the top of
+END's: a 3 x 5 letter, a black pixel round it, a white box round that (7 x 9), kept on screen at the
+edges. rytm-emu, PIPO_SLOW: points at the sample's ends, mid-sample, sharing a column (stock draws
+one line; both labels show), END before STA, and playing (the playhead runs under the labels).
+
 ## FUNC turns step like LOP (2026-10-28)
 
 **PD03 on an Analog Rytm MKII, as reported by npp1993.** Test E passed: STA held at PIPO_SLOW's first

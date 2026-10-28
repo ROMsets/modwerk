@@ -91,7 +91,8 @@
       "param:LOP range OFF/ON/PIPO, its value text and icon",
       "ui:FUNC + SAMPLE STA turn",
       "ui:FUNC + SAMPLE END turn",
-      "ui:FUNC + SAMPLE STA/END turn with a trig held"
+      "ui:FUNC + SAMPLE STA/END turn with a trig held",
+      "ui:SMPL WAVEFORM S and E labels on the STA and END lines"
     ]
   },
   "resources": {
