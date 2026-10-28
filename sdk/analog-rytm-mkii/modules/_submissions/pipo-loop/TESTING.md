@@ -2,21 +2,21 @@
 
 Everything below was observed in rytm-emu on the named build, except the Hardware section, which records what npp1993 reported from a unit.
 
-- Source (0.1.0-experimental): `build.json` `a6f8f799…82cd`, `src/audio.s` `b7ef777e…27f7`, `src/pipo.c` `5f1a2efd…9dbf`,
-  `src/snap.c` `16eae916…e1bf`. Fingerprint (`sha256` of `sha256sum build.json src/audio.s src/pipo.c src/snap.c`):
-  `f5d3bbb8…24b8` (`evidence.sourceSha256`).
+- Source (0.1.0-experimental): `build.json` `a6f8f799…82cd`, `src/audio.s` `08d76ab4…76c3`, `src/pipo.c` `bd1e8dc2…a9d8`,
+  `src/snap.c` `17d5df7c…db2d`. Fingerprint (`sha256` of `sha256sum build.json src/audio.s src/pipo.c src/snap.c`):
+  `ba06b6d0…2b52` (`evidence.sourceSha256`).
 - Stock OS 1.74: `.syx` `cb0f99d6…e123`, the owner's file.
 - Core: elekloader core-ar2 0.3 (`core-ar2-0.3.elemod` `6b97dfb3…3e58`, as vendored).
-- Build PP10 (core-ar2 0.3 + Pipo Loop 0.1.0-experimental, `--version PP10`), from that source: `.syx`
-  `1107d5ec0e18e6e710044c8b7d5a3066cc24d9d1f3dd1a0cbccd32ec965bd62f`.
-- Build PC08 (core-ar2 0.3 + Silent Pad+Trig 0.5.1 + Pipo Loop 0.1.0, `--version PC08`): `.syx`
-  `e706dcf3af4544f340b373001cadd749d14a5bbaff6fccc33d1e6f5170cf85b8`.
-- Diagnostic PD02 (PC08's code plus an on-screen readout, branch `diag/pipo-snap`; not for release): `.syx`
-  `d2f3c51f0c495ed821ee2bcda7b4e6f068a5b8f75d69e93d30925c8b52e47a5e`.
+- Build PP11 (core-ar2 0.3 + Pipo Loop 0.1.0-experimental, `--version PP11`), from that source: `.syx`
+  `470e6617c655b74dd7c7593b822bb38a910d5b7eacc739fc0255aba98be1e6b8`.
+- Build PC09 (core-ar2 0.3 + Silent Pad+Trig 0.5.1 + Pipo Loop 0.1.0, `--version PC09`): `.syx`
+  `7b1d79237a5412e544e04719f81e657446daad6b688262fb3b228c925380f131`.
+- Diagnostic PD03 (PC09's code plus an on-screen readout, branch `diag/pipo-snap`; not for release): `.syx`
+  `3489512b44de8110aef4e68f28e1a1c7b7a94c2cdb0188da50d924016e5d5caa`.
 - Build PX07 (with Filter Hz, Loop Sync and Silent Pad+Trig): `.syx` `7dc637fc…`. Linked only, not booted.
 - Earlier builds: PP03 and PC01 (before the code review), PP05 and PC03 (after it), PP06 and PC04 (the
-  three-position switch), PP07 and PC05 (zero snap on the sound), PP08 and PC06 (locks), PP09 and PC07 (exact turns);
-  each passed the battery below. PP10 gave the same results as PP09 on every row of it.
+  three-position switch), PP07 and PC05 (zero snap on the sound), PP08 and PC06 (locks), PP09 and PC07 (exact turns), PP10, PC08 and PD02 (snap holds);
+  each passed the battery below. PP10 and PP11 gave the same results as PP09 on every row of it.
 - Emulator: rytm-emu `c5732f0`, headless `dtboot`, JIT on. A card image holds one generated sample,
   RAMP (24,000 frames, a straight rise from -26,000 to +26,000), loaded to the project and set on
   BD with LOP ON on the SAMPLE page (the setup in [media/capture.json](media/capture.json)). Audio is
@@ -251,6 +251,38 @@ test samples PIPO_SLOW, PIPO_110 and PIPO_SQR and reported:
   was clean; PIPO gave a soft knock at the turns. At a turn the waveform's slope reverses, which no
   choice of frame avoids on a pure tone, so this is expected (README).
 
+## Code review (2026-10-28)
+
+A second `/code-review` (high), of everything since the first, raised ten points. Each was checked
+against the code and, where it could be, in rytm-emu; PP11, PC09 and PD03 carry the fixes:
+
+- **Fixed:** the cache push before the mirrored DMA pushed only way 0 of each line's set. It now
+  pushes ways 0-3 and ends with a `nop`, as poly8 does. rytm-emu models no cache, so only the unit
+  can show the difference; nothing changed in the emulator.
+- **Fixed:** the block after a turn, the voice's new position was worked out from STA and END as
+  they are now, not as they were when the DMA was mirrored. It now uses the loop as armed.
+  PIPO with END turned through the note gave the same output on PP10 and PP11 (stock's own glide
+  dominates there); the battery is unchanged.
+- **Fixed:** the encoder, lock and per-trig gates now hand stock back d0, d1 and a1 (the per-trig
+  gate the delta exactly as it came), and the main-segment DMA gates keep d1. No symptom was seen
+  in the emulator; this removes the dependence on stock not reading them.
+- **Fixed:** LOP set above 2 over MIDI CC 30 plays and reads as ON but drew on the three-position
+  switch. It now draws stock's ON switch (CC 1 middle, CC 2 right, CC 64 stock ON; rytm-emu).
+- **Fixed:** the snap's direction came from the encoder count; it now comes from stock's delta, so a
+  stale count cannot step the wrong way. A trig lock's "none" is tested as an int and as 8.8,
+  `frame_of` clamps negatives in snap.c too, and LOP ON's direction filter runs before the value
+  search.
+- **Not a bug:** TURN_LAG with one sign at both ends. With END inside the sample every turn's largest
+  step on the ramp is 1, at both ends, so neither end repeats or skips frames.
+- **Kept:** a turn is still taken when the DMA was not mirrored (the window was not the one the
+  module expects); not taking it would play stock's forward wrap instead, a click either way.
+  PD02/PD03's third counter shows when it happens; it stayed 0 in rytm-emu, also while STA was
+  snapped during PIPO.
+
+After the fixes, on PP11: the full battery as PP10; the snap edge, shared-crossing, pass and p-lock
+runs as PP10 (sound, lock editor and per-trig paths); live recording records the snapped crossings;
+PC09's quick check as PC08.
+
 ## Code review (2026-10-27)
 
 A `/code-review` of the branch raised ten points. What was done with each:
@@ -338,7 +370,7 @@ above.
 
 ## Not tested
 
-- On a unit, beyond the PC03 and PD01 reports above: PC08, PP10 and PD02 have not been flashed.
+- On a unit, beyond the PC03 and PD01 reports above: PC09, PP11 and PD03 have not been flashed.
 - KIT SAVE and KIT RELOAD from the KIT menu, the sound browser, sound SysEx dumps and Overbridge.
 - Eight voices in PIPO at once, LFO or velocity modulation of STA and END while in PIPO, and Loop
   Sync and Pipo Loop on the same track.
