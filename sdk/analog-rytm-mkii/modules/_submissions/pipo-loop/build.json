@@ -8,7 +8,13 @@
   "defsym": {},
   "cflags": [],
   "weak": [],
-  "subscribe": [],
+  "subscribe": [
+    {
+      "event": "ev_enc",
+      "fn": "pipo_loop_enc",
+      "order": 50
+    }
+  ],
   "contribute": [],
   "collections": {},
   "copied": [],

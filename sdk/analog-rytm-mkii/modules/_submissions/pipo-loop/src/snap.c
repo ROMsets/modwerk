@@ -1,18 +1,24 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Pipo Loop: zero snap. FUNC + turn on the SAMPLE page's STA or END moves
-// that point to the next zero crossing of the sample, one crossing a detent,
-// in the direction of the turn (audio.s hands the turn over).
+// that point to the next zero crossing of the sample in the direction of the
+// turn, one crossing for each detent's worth of encoder counts (COUNTS, as
+// pipo_loop_enc counts them), on the sound or on held trigs' locks (audio.s
+// hands the turn over).
 //
-// STA and END are 8.8 values of 120, a 1/30720 of the sample: the engine
-// plays from frame frames * value / 30720. Up to 30720 frames every frame
-// has a value, and the snap lands on the crossing's frame exactly; past it
-// the nearest value is used, at most frames / 61440 frames from the
-// crossing (half a step).
+// STA and END are 8.8 values of 120, 1/30720 of the sample: stock's prefetch
+// plays from frame ceil(frames * value / 30720) (its EMAC multiply by 8/15,
+// worked through for every value). Up to 30720 frames every frame has a
+// value, and the snap lands on the crossing's frame exactly; past it the
+// nearest value is used, at most frames / 61440 frames from the crossing.
 //
 // A crossing is where the sample changes sign; samples within SILENT of zero
-// count as neither sign, so silence and DC near zero are passed over, and
-// the point lands on whichever sample of the pair is nearer zero. The search
-// is bounded; with nothing in reach the turn stays stock's.
+// count as neither sign, so silence and DC near zero are passed over. The
+// point lands on the first sample of the new sign, for STA and END alike, so
+// a loop's wrap from END - 1 to STA meets the sample as a crossing does.
+// With LOP ON, a point steps only through crossings of the same direction as
+// the other point's, when that one sits on a crossing: the forward loop's
+// wrap then joins two crossings of one slope. The search is bounded; with
+// nothing in reach the turn stays stock's.
 
 #include <stdint.h>
 
@@ -22,6 +28,7 @@ typedef unsigned long word_t;   // stock returns pointers in d0 (README trap)
 #define ID_SMP 41
 #define ID_STA 43
 #define ID_END 44
+#define ID_LOP 45
 #define VT_PAGE_SET 0xa0        // page view: the parameter set of a track (-1: the selected one)
 #define VT_READ 0x28            // set: read(set, id), 8.8
 #define VT_VALUE 0x54           // page view: value(view, id, ctx), 8.8 (ctx -1: the sound's)
@@ -44,9 +51,9 @@ static word_t vcall3(void *obj, int slot, int a, int b)
     return f(obj, a, b);
 }
 
-static int frame_of(unsigned frames, int v)
+static int frame_of(unsigned frames, int v)   // stock's start or end frame for a value
 {
-    return (int)((frames / FULL) * (unsigned)v + ((frames % FULL) * (unsigned)v) / FULL);
+    return (int)((frames / FULL) * (unsigned)v + ((frames % FULL) * (unsigned)v + FULL - 1) / FULL);
 }
 
 static int value_of(unsigned frames, int f)   // the value whose frame is f, or the nearest
@@ -86,49 +93,70 @@ typedef unsigned (*is_key_held_t)(int key);
 #define VT_TRIG_LOCK 0x70       // page view: lock(view, trig, id), 8.8, below 0 when none
 #define VT_TRIG_CTX 0x84        // page view: the trig's context for VT_VALUE
 
-// The step from cur to the next zero crossing the way dir goes, or SNAP_NONE.
-static int snap_from(int cur, int other, int slot, int dir)
+// +1 a rising crossing (the sample goes from below zero to above), -1 a
+// falling one, 0 none: at frame f, against the last signed sample before it.
+static int crossing_at(volatile short *data, int frames, int f)
+{
+    int t, i;
+    if (f <= 0 || f >= frames || !(t = sign_of(data[f])))
+        return 0;
+    for (i = f - 1; i >= 0 && f - i < 64; i--) {
+        int u = sign_of(data[i]);
+        if (u)
+            return u != t ? t : 0;
+    }
+    return 0;
+}
+
+// The step from cur to the steps-th next zero crossing the way steps goes,
+// or SNAP_NONE. lop: LOP's integer part (1, ON: match the other point's
+// crossing direction).
+static int snap_from(int cur, int other, int slot, int steps, int lop)
 {
     volatile short *data;
     unsigned frames;
-    int f, lim, s, i, n, v;
-    if (slot <= 0 || slot > SLOT_LAST)
+    int dir = steps > 0 ? 1 : -1, f, lim, s, i, n, v = cur, want = 0;
+    if (slot <= 0 || slot > SLOT_LAST || !steps)
         return SNAP_NONE;
     data = SLOT_DATA(slot);
     frames = SLOT_FRAMES(slot);
     if (!data || frames < 2)
         return SNAP_NONE;
-    f = frame_of(frames, cur);
-    lim = dir > 0 ? (int)frames - 1 : 0;   // the sample's edge, or the other point when it lies that way
+    if (lop == 1)
+        want = crossing_at(data, (int)frames, frame_of(frames, other));
+    lim = dir > 0 ? (int)frames - 1 : 1;   // the sample's edge, or the other point when it lies that way
     if (dir > 0 ? other > cur : other < cur) {
         int o = frame_of(frames, other) - dir;
         if (dir > 0 ? o < lim : o > lim)
             lim = o;
     }
-    if (f > (int)frames - 1)
-        f = (int)frames - 1;
-    // A point on a crossing sits on either sample of the pair: the pair from
-    // f the way the turn goes is that crossing, not the next one.
-    i = f + dir;
-    if (dir > 0 ? i > lim : i < lim)
-        return SNAP_NONE;
-    s = sign_of(data[i]);
-    if (!s)
+    for (; steps; steps -= dir) {
+        f = frame_of(frames, v);
+        if (f > (int)frames - 1)
+            f = (int)frames - 1;
+        // Scan from f the way the turn goes for the next sign change; the
+        // crossing's frame is the first sample of the new sign.
         s = sign_of(data[f]);
-    for (i += dir, n = 0; (dir > 0 ? i <= lim : i >= lim) && n < REACH; i += dir, n++) {
-        int t = sign_of(data[i]);
-        if (!t)
-            continue;
-        if (s && t != s) {           // the sign changed between i - dir and i
-            int a = data[i] < 0 ? -data[i] : data[i];
-            int p = i - dir, b = data[p] < 0 ? -data[p] : data[p];
-            v = value_of(frames, b < a ? p : i);
-            if (dir > 0 ? v > cur : v < cur)
-                return v - cur;
+        for (i = f + dir, n = 0; ; i += dir, n++) {
+            int t;
+            if ((dir > 0 ? i > lim : i < lim) || n >= REACH)
+                return v != cur ? v - cur : SNAP_NONE;
+            t = sign_of(data[i]);
+            if (!t)
+                continue;
+            if (s && t != s) {
+                int c = dir > 0 ? i : i - dir;     // the first sample of the new sign, in time
+                int w = value_of(frames, c);
+                int kind = dir > 0 ? t : s;          // the new sign, in time: +1 rising
+                if ((!want || kind == want) && (dir > 0 ? w > v : w < v)) {
+                    v = w;
+                    break;
+                }
+            }
+            s = t;
         }
-        s = t;
     }
-    return SNAP_NONE;
+    return v - cur;
 }
 
 static int editor_value(void *ed, int track, int id, void *view)
@@ -139,13 +167,56 @@ static int editor_value(void *ed, int track, int id, void *view)
     return (int)(short)vcall3(view, VT_VALUE, id, -1);
 }
 
+// Encoder counts, from core-ar2's ev_enc: FUNC + E or F on any page (only
+// STA and END's turns use them). One crossing for each COUNTS counts (a
+// detent's, as stock's encoder sends them), the rest kept for the next event;
+// each event's steps are worked out once, for every path stock takes it by
+// (one held trig after another).
+#define COUNTS 8
+#define ENC_STA 4
+#define ENC_END 5
+static int enc_acc, enc_last = -1, enc_serial, used_serial = -1, used_steps;
+
+int pipo_loop_enc(void *brain, char *ev)
+{
+    int enc = *(int *)(ev + 12), count = *(int *)(ev + 16);
+    (void)brain;
+    if ((enc != ENC_STA && enc != ENC_END) || !IS_KEY_HELD(KEY_FUNC)) {
+        enc_acc = 0;
+        enc_last = -1;
+        return 0;
+    }
+    if (enc != enc_last || (count > 0) != (enc_acc > 0))
+        enc_acc = 0;                 // another knob or the other way: start the count again
+    enc_last = enc;
+    enc_acc += count;
+    enc_serial++;
+    return 0;                        // stock goes on with the turn
+}
+
+static int steps_now(void)
+{
+    if (used_serial != enc_serial) {
+        used_steps = enc_acc / COUNTS;
+        if (used_steps > 8)
+            used_steps = 8;
+        if (used_steps < -8)
+            used_steps = -8;
+        enc_acc -= used_steps * COUNTS;
+        used_serial = enc_serial;
+    }
+    return used_steps;
+}
+
 // From audio.s, FUNC + turn on STA or END: the sound's value (lock 0), or a
 // held trig's lock through the lock editor (lock 1).
 int pipo_loop_snap(void *view, int id, int delta, int lock)
 {
-    int other = id == ID_STA ? ID_END : ID_STA;
+    int other = id == ID_STA ? ID_END : ID_STA, steps = steps_now();
     if (!delta)
         return SNAP_NONE;
+    if (!steps)
+        return 0;                    // less than a detent yet: hold the point
     if (lock) {
         void *ed = (void *)LOCK_EDITOR(*(word_t *)((char *)view + 108));
         int track;
@@ -153,13 +224,13 @@ int pipo_loop_snap(void *view, int id, int delta, int lock)
             return SNAP_NONE;        // stock goes trig by trig: pipo_loop_snap_trig
         track = (int)TRACK_OF(*(word_t *)((char *)view + 116));
         return snap_from(editor_value(ed, track, id, view), editor_value(ed, track, other, view),
-                         editor_value(ed, track, ID_SMP, view) >> 8, delta > 0 ? 1 : -1);
+                         editor_value(ed, track, ID_SMP, view) >> 8, steps, editor_value(ed, track, ID_LOP, view) >> 8);
     } else {
         void *set = (void *)vcall2(view, VT_PAGE_SET, -1);
         if (!set)
             return SNAP_NONE;
         return snap_from((int)vcall2(set, VT_READ, id), (int)vcall2(set, VT_READ, other),
-                         (int)vcall2(set, VT_READ, ID_SMP) >> 8, delta > 0 ? 1 : -1);
+                         (int)vcall2(set, VT_READ, ID_SMP) >> 8, steps, (int)vcall2(set, VT_READ, ID_LOP) >> 8);
     }
 }
 
@@ -175,12 +246,14 @@ static int trig_value(void *view, int trig, int id)
 // FUNC held on STA or END, the step from that trig's own lock.
 int pipo_loop_snap_trig(void *view, int trig, int id, int delta)
 {
-    int lock;
+    int lock, steps;
     if (!delta || (id != ID_STA && id != ID_END) || !IS_KEY_HELD(KEY_FUNC))
         return SNAP_NONE;
     lock = (int)vcall3(view, VT_TRIG_LOCK, trig, id);
     if (lock < 0)
         return SNAP_NONE;
+    if (!(steps = steps_now()))
+        return 0;
     return snap_from((int)(short)lock, trig_value(view, trig, id == ID_STA ? ID_END : ID_STA),
-                     trig_value(view, trig, ID_SMP) >> 8, delta > 0 ? 1 : -1);
+                     trig_value(view, trig, ID_SMP) >> 8, steps, trig_value(view, trig, ID_LOP) >> 8);
 }

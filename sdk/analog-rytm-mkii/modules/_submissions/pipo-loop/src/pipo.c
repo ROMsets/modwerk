@@ -56,11 +56,11 @@ struct voice {
 
 static struct voice voices[VOICES];
 
-static int frame_of(unsigned frames, int v8)   // STA/END (8.8, of 120) to a frame
+static int frame_of(unsigned frames, int v8)   // STA/END (8.8, of 120) to stock's frame: ceil(frames * v8 / 30720)
 {
     if (v8 < 0)
         v8 = 0;
-    return (int)((frames / 30720u) * (unsigned)v8 + ((frames % 30720u) * (unsigned)v8) / 30720u);
+    return (int)((frames / 30720u) * (unsigned)v8 + ((frames % 30720u) * (unsigned)v8 + 30719u) / 30720u);
 }
 
 void pipo_loop_audio(void)

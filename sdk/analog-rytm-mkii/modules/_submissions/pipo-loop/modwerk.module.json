@@ -84,7 +84,9 @@
     "kind": "elemod",
     "core": "0.3",
     "build": "build.json",
-    "events": [],
+    "events": [
+      "ev_enc"
+    ],
     "claims": [
       "ui:SAMPLE page LOP value PIPO and its three-position switch",
       "param:LOP range OFF/ON/PIPO, its value text and icon",
