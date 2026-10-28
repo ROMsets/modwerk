@@ -19,19 +19,19 @@
     "label": "PIPO LOOP",
     "family": "Sample playback",
     "summary": "LOP gets a third value, PIPO: the sample's loop plays forward, then backward (ping-pong). FUNC + turn on STA or END steps to the next zero crossing.",
-    "overview": "Pipo Loop adds PIPO to the SAMPLE page's LOP parameter, after OFF and ON. A sample whose LOP is PIPO plays from STA to END, then back to STA, then forward again, for as long as the note lasts, with no jump at the turns. LOP's switch becomes a three-position switch like BD CLASSIC's WAV: OFF on the left, ON in the middle, PIPO on the right. PIPO is an ordinary LOP value: it saves with the sound and kit, takes parameter locks and scene locks, and comes back after a power cycle. A sound saved with PIPO plays as a normal forward loop (ON) on an OS without the mod. Each turn lands exactly on STA or END, at every pitch. On the SAMPLE page, FUNC + turn on STA or END now moves that point to the next zero crossing of the sample in the direction you turn, one crossing a detent, instead of stock's whole-number step; plain turns stay stock.",
+    "overview": "Pipo Loop adds PIPO to the SAMPLE page's LOP parameter, after OFF and ON. A sample whose LOP is PIPO plays from STA to END, then back to STA, then forward again, for as long as the note lasts, with no jump at the turns. LOP's switch becomes a three-position switch like BD CLASSIC's WAV: OFF on the left, ON in the middle, PIPO on the right. PIPO is an ordinary LOP value: it saves with the sound and kit, takes parameter locks and scene locks, and comes back after a power cycle. A sound saved with PIPO plays as a normal forward loop (ON) on an OS without the mod. Each turn lands exactly on STA or END, at every pitch. On the SAMPLE page, FUNC + turn on STA or END now moves that point to the next zero crossing of the sample in the direction you turn, stepping as LOP steps through its values, instead of stock's whole-number step; plain turns stay stock.",
     "highlights": [
       "Ping-pong loops for any sample, from the SAMPLE page's own LOP knob.",
       "Lock PIPO on a step, or put it in a scene, like any LOP value.",
       "No jump at the turns; ON and OFF stay stock.",
       "Saved with the sound; plays as a forward loop on stock OS.",
-      "FUNC + STA or END walks through the sample's zero crossings, one a detent, for click-free start and loop points."
+      "FUNC + STA or END steps through the sample's zero crossings, as LOP steps through its values, for click-free start and loop points."
     ],
     "usage": [
       "On the SAMPLE page, turn LOP past ON to PIPO and play the sound: the loop between STA and END goes back and forth.",
       "Set STA and END around a sustained part of the sample (a pad, a vowel, a held note) for a seamless back-and-forth drone.",
       "Hold a trig in GRID RECORDING and turn LOP to PIPO to ping-pong only on that step; the other steps keep the sound's ON or OFF.",
-      "Hold FUNC and turn STA (or END) a detent at a time: the point moves to the next zero crossing each time, so the loop starts and ends where the waveform crosses zero."
+      "Hold FUNC and turn STA (or END): the point steps from zero crossing to zero crossing, as LOP steps through its values, so the loop starts and ends where the waveform crosses zero."
     ]
   },
   "access": {
@@ -39,7 +39,7 @@
     "steps": [
       "Select a track whose sound plays a sample, and press SAMPLE.",
       "Turn LOP (encoder G) clockwise past ON: the value reads PIPO.",
-      "Hold FUNC and turn STA (encoder E) or END (encoder F): each detent moves the point to the next zero crossing."
+      "Hold FUNC and turn STA (encoder E) or END (encoder F): the point steps from zero crossing to zero crossing."
     ],
     "screenshots": [
       "media/lop-pipo.png"
@@ -59,7 +59,7 @@
     {
       "name": "FUNC + STA / END",
       "default": null,
-      "doc": "SAMPLE page, FUNC held, encoder E or F: each detent moves STA or END to the next zero crossing the way you turn, the frame stock plays from; with none further it holds. STA and END may pass each other or share a crossing. With LOP ON only crossings of the other point's direction. With a trig held in GRID RECORDING it steps that trig's lock. Exact up to 30,720 frames (0.64 s); longer samples take the nearest step. Plain turns are stock.",
+      "doc": "SAMPLE page, FUNC held, encoder E or F: STA or END steps to the next zero crossing the way you turn, as often as LOP would step a value (more on a fast turn), the frame stock plays from; with none further it holds. STA and END may pass each other or share a crossing. With LOP ON only crossings of the other point's direction. With a trig held in GRID RECORDING it steps that trig's lock. Exact up to 30,720 frames (0.64 s); longer samples take the nearest step. Plain turns are stock.",
       "labels": null
     }
   ],
@@ -106,7 +106,7 @@
   "evidence": {
     "tier": "emulator",
     "moduleVersion": "0.1.0-experimental",
-    "sourceSha256": "ba06b6d04a799702d91b4ee84d32ba88a3e6381ca9145b38faa6718adb220b52",
+    "sourceSha256": "680e44929a32f9c1a5cb329bf2d6b0f35b82f35b8d0703d72c9295c99096c737",
     "reports": [
       "TESTING.md"
     ],
@@ -115,7 +115,7 @@
   },
   "tests": {
     "report": "TESTING.md",
-    "summary": "rytm-emu c5732f0, OS 1.74, build PP11: LOP OFF/ON/PIPO on a three-position switch; PIPO turns exactly at STA and END (period 2x the loop at TUN -24, 0, +24); p-lock, scene, two voices, retrig, power-off; stock plays a saved PIPO as a loop; zero snap one crossing a detent on stock's own frames, on the sound and on locks, holding at the sample's edges, STA and END passing or sharing a crossing. Hardware, as reported: PC03, and diagnostic PD01 (snap on crossings, clean LOP ON loops when snapped).",
+    "summary": "rytm-emu c5732f0, OS 1.74, build PP12: LOP OFF/ON/PIPO on a three-position switch; PIPO turns exactly at STA and END (period 2x the loop at TUN -24, 0, +24); p-lock, scene, two voices, retrig, power-off; stock plays a saved PIPO as a loop; zero snap stepping like LOP onto stock's own frames, on the sound and on locks, holding at the sample's edges, STA and END passing or sharing a crossing. Hardware, as reported: PC03; diagnostics PD01 and PD03 (snap holds at edges, clean LOP ON loops when snapped).",
     "documentation": {
       "tutorial": {
         "title": "Quick tutorial",
@@ -123,7 +123,7 @@
           "On the SAMPLE page, turn LOP past ON to PIPO and play the sound: the loop between STA and END goes back and forth.",
           "Set STA and END around a sustained part of the sample (a pad, a vowel, a held note) for a seamless back-and-forth drone.",
           "Hold a trig in GRID RECORDING and turn LOP to PIPO to ping-pong only on that step; the other steps keep the sound's ON or OFF.",
-          "Hold FUNC and turn STA (or END) a detent at a time: the point moves to the next zero crossing each time, so the loop starts and ends where the waveform crosses zero."
+          "Hold FUNC and turn STA (or END): the point steps from zero crossing to zero crossing, as LOP steps through its values, so the loop starts and ends where the waveform crosses zero."
         ]
       },
       "screenshots": [

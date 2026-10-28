@@ -2,21 +2,21 @@
 
 Everything below was observed in rytm-emu on the named build, except the Hardware section, which records what npp1993 reported from a unit.
 
-- Source (0.1.0-experimental): `build.json` `a6f8f799…82cd`, `src/audio.s` `08d76ab4…76c3`, `src/pipo.c` `bd1e8dc2…a9d8`,
-  `src/snap.c` `17d5df7c…db2d`. Fingerprint (`sha256` of `sha256sum build.json src/audio.s src/pipo.c src/snap.c`):
-  `ba06b6d0…2b52` (`evidence.sourceSha256`).
+- Source (0.1.0-experimental): `build.json` `b710e6e1…064c`, `src/audio.s` `a0294d1a…3612`, `src/pipo.c` `bd1e8dc2…a9d8`,
+  `src/snap.c` `1e8555c1…c91e`. Fingerprint (`sha256` of `sha256sum build.json src/audio.s src/pipo.c src/snap.c`):
+  `680e4492…c737` (`evidence.sourceSha256`).
 - Stock OS 1.74: `.syx` `cb0f99d6…e123`, the owner's file.
 - Core: elekloader core-ar2 0.3 (`core-ar2-0.3.elemod` `6b97dfb3…3e58`, as vendored).
-- Build PP11 (core-ar2 0.3 + Pipo Loop 0.1.0-experimental, `--version PP11`), from that source: `.syx`
-  `470e6617c655b74dd7c7593b822bb38a910d5b7eacc739fc0255aba98be1e6b8`.
-- Build PC09 (core-ar2 0.3 + Silent Pad+Trig 0.5.1 + Pipo Loop 0.1.0, `--version PC09`): `.syx`
-  `7b1d79237a5412e544e04719f81e657446daad6b688262fb3b228c925380f131`.
-- Diagnostic PD03 (PC09's code plus an on-screen readout, branch `diag/pipo-snap`; not for release): `.syx`
-  `3489512b44de8110aef4e68f28e1a1c7b7a94c2cdb0188da50d924016e5d5caa`.
+- Build PP12 (core-ar2 0.3 + Pipo Loop 0.1.0-experimental, `--version PP12`), from that source: `.syx`
+  `803274e5d0eee06e99c18ab3f9c1f5345f831f1ba4339a7c1f9523f2423f976a`.
+- Build PC10 (core-ar2 0.3 + Silent Pad+Trig 0.5.1 + Pipo Loop 0.1.0, `--version PC10`): `.syx`
+  `e1975b4f940376fda07c277824224b3de296bb196980dc3ff82c746e839fe0a7`.
+- Diagnostic PD04 (PC10's code plus an on-screen readout, branch `diag/pipo-snap`; not for release): `.syx`
+  `179722fb77ee3f0189162d91ae929c541659906e3ae224c2af8e3a69c8acf7a9`.
 - Build PX07 (with Filter Hz, Loop Sync and Silent Pad+Trig): `.syx` `7dc637fc…`. Linked only, not booted.
 - Earlier builds: PP03 and PC01 (before the code review), PP05 and PC03 (after it), PP06 and PC04 (the
-  three-position switch), PP07 and PC05 (zero snap on the sound), PP08 and PC06 (locks), PP09 and PC07 (exact turns), PP10, PC08 and PD02 (snap holds);
-  each passed the battery below. PP10 and PP11 gave the same results as PP09 on every row of it.
+  three-position switch), PP07 and PC05 (zero snap on the sound), PP08 and PC06 (locks), PP09 and PC07 (exact turns), PP10, PC08 and PD02 (snap holds), PP11, PC09 and PD03 (code review);
+  each passed the battery below. PP10, PP11 and PP12 gave the same results as PP09 on every row of it.
 - Emulator: rytm-emu `c5732f0`, headless `dtboot`, JIT on. A card image holds one generated sample,
   RAMP (24,000 frames, a straight rise from -26,000 to +26,000), loaded to the project and set on
   BD with LOP ON on the SAMPLE page (the setup in [media/capture.json](media/capture.json)). Audio is
@@ -251,6 +251,35 @@ test samples PIPO_SLOW, PIPO_110 and PIPO_SQR and reported:
   was clean; PIPO gave a soft knock at the turns. At a turn the waveform's slope reverses, which no
   choice of frame avoids on a pure tone, so this is expected (README).
 
+## FUNC turns step like LOP (2026-10-28)
+
+**PD03 on an Analog Rytm MKII, as reported by npp1993.** Test E passed: STA held at PIPO_SLOW's first
+crossing and END at its last; they passed each other and landed on the same crossing. With LOP ON,
+plain points clicked and snapped points were clean. Test F: during untouched PIPO playback the
+unmirrored counter stayed at 1 (it had reached 1 earlier, while points were being moved). A very
+slow FUNC + STA turn did not step: readout -337 1077 -67 22341 / 260 931 1 before, -335 1079 -67
+22341 / 260 931 1 after, so two 1-count encoder events arrived and no crossing went by.
+
+**Cause.** Stock's encoder handler turns an event's counts into a value delta with its encoder
+engine (0x4006efca, 0x4006f1fa), using the parameter's encoder profile (a pointer at its record +
+16, records at 0x419a4888 + 84 x id) and two count factors (record + 4, + 8), and returns before the
+edit when the delta is 0. STA and END use a fine profile (factors 1 and 64) whose delta stays 0 for
+slow single counts, so the snap never ran; PD01 and PD02 behaved the same. Stock has four profiles:
+the default (381 parameters), SMP's list profile (SMP and one other), STA and END's, and a stepped
+profile shared by 32 parameters, among them LOP, BD CLASSIC's WAV, the OFF/ON switches and
+parameter 33 (0-64).
+
+**Change (PP12, PC10, PD04).** With FUNC held, a turn on STA or END is read through LOP's profile and
+count factors (site 0x4003a0de, where the handler's two paths meet before the engine), and the snap
+steps one crossing for each whole value in the delta (at most 16): a crossing goes by when LOP would
+step a value, several on a fast turn through stock's acceleration. The encoder-count hook is gone.
+rytm-emu, ZSIN on BD: FUNC + STA's first step came on the same event as FUNC + LOP's (8-count events
+120M apart, 16-count 120M apart, 8-count 40M apart; LOP's range of two steps shows no more);
+stock drops the first FUNC-held event or two after FUNC goes down, for any FUNC turn; edges held,
+STA and END passed and shared crossings, grid locks and live recording landed on crossings; the full
+battery as PP11. rytm-emu's encoder counts do not match a unit's (single counts never move stock's
+own stepped or list controls there), so how it feels is for the unit to show.
+
 ## Code review (2026-10-28)
 
 A second `/code-review` (high), of everything since the first, raised ten points. Each was checked
@@ -322,11 +351,12 @@ A `/code-review` of the branch raised ten points. What was done with each:
 | 0x4011cb2e / 0x4011cb98 | 10 / 8 | the same in the voices 1-7 prefetch | stock guards in build.json |
 | 0x4003a19c | 6 | the setup of the edit handler's lock call (a held trig, with a lock editor): for STA and END with FUNC held, the step from the lock to the next crossing | `8b2ff131…1acf` |
 | 0x40037f6c | 6 | in stock's per-trig lock edit, the setup of the call that adds the turn to a trig's lock: for STA and END with FUNC held, the step from that trig's lock to its next crossing | `6bec112e…370e` |
+| 0x4003a0de | 6 | in stock's encoder handler, the three pushes before its encoder engine, where both paths meet: for STA and END with FUNC held, LOP's encoder profile and count factors instead of theirs | `e88c5d87…48e0` |
 | 0x4003a240 | 6 | in stock's encoder handler, the setup of the view's apply-delta call; for STA and END with FUNC held it replaces the whole-number step by the step to the next zero crossing, sent as a fine turn | `87377367…3e20` |
 | 0x400fedf4 | 6 | the first instruction of stock's shared OFF/ON switch icon; for LOP's record (ctx 0x419a5770, seen on a breakpoint on stock) it tail-calls BD CLASSIC WAV's three-position icon routine 0x400fef4a with the same arguments, else stock | `0528305f…fac3` |
 
 Modwerk's linker links Pipo Loop beside Filter Hz, Loop Sync and Silent Pad+Trig together (PX07).
-None of the eleven sites is patched by Silent Pad+Trig (0x400c772e, 0x400c7a3e, 0x400c7e90,
+None of the twelve sites is patched by Silent Pad+Trig (0x400c772e, 0x400c7a3e, 0x400c7e90,
 0x400c7950, 0x400ec184), Loop Sync (0x40121020) or Filter Hz. The OFF/ON text routine is shared by
 parameter ids 34-37, 45 (LOP), 224, 248 and 463; the switch icon by twelve parameters (those and 73, 414, 415, 434).
 
@@ -370,7 +400,7 @@ above.
 
 ## Not tested
 
-- On a unit, beyond the PC03 and PD01 reports above: PC09, PP11 and PD03 have not been flashed.
+- On a unit, beyond the PC03, PD01 and PD03 reports above: PC10, PP12 and PD04 have not been flashed.
 - KIT SAVE and KIT RELOAD from the KIT menu, the sound browser, sound SysEx dumps and Overbridge.
 - Eight voices in PIPO at once, LFO or velocity modulation of STA and END while in PIPO, and Loop
   Sync and Pipo Loop on the same track.
