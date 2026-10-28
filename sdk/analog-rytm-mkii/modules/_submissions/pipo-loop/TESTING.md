@@ -2,21 +2,20 @@
 
 Everything below was observed in rytm-emu on the named build, except the Hardware section, which records what npp1993 reported from a unit.
 
-- Source (0.1.0-experimental): `build.json` `b710e6e1…064c`, `src/audio.s` `a0294d1a…3612`, `src/pipo.c` `bd1e8dc2…a9d8`,
-  `src/snap.c` `1e8555c1…c91e`. Fingerprint (`sha256` of `sha256sum build.json src/audio.s src/pipo.c src/snap.c`):
-  `680e4492…c737` (`evidence.sourceSha256`).
+- Source (0.1.0-experimental, on main 7ad765b0): `build.json` `1c7f575a…09d8`, `src/audio.s` `4cc9d5e4…78d6`,
+  `src/pipo.c` `bd1e8dc2…a9d8`, `src/snap.c` `af812459…7bfb`, `src/marks.c` `d2994d5d…79a9`. Fingerprint (`sha256`
+  of `sha256sum build.json src/audio.s src/pipo.c src/snap.c src/marks.c`): `1a344049…96b7` (`evidence.sourceSha256`).
 - Stock OS 1.74: `.syx` `cb0f99d6…e123`, the owner's file.
 - Core: elekloader core-ar2 0.3 (`core-ar2-0.3.elemod` `6b97dfb3…3e58`, as vendored).
-- Build PP12 (core-ar2 0.3 + Pipo Loop 0.1.0-experimental, `--version PP12`), from that source: `.syx`
-  `803274e5d0eee06e99c18ab3f9c1f5345f831f1ba4339a7c1f9523f2423f976a`.
-- Build PC10 (core-ar2 0.3 + Silent Pad+Trig 0.5.1 + Pipo Loop 0.1.0, `--version PC10`): `.syx`
-  `e1975b4f940376fda07c277824224b3de296bb196980dc3ff82c746e839fe0a7`.
-- Diagnostic PD04 (PC10's code plus an on-screen readout, branch `diag/pipo-snap`; not for release): `.syx`
-  `179722fb77ee3f0189162d91ae929c541659906e3ae224c2af8e3a69c8acf7a9`.
-- Build PX07 (with Filter Hz, Loop Sync and Silent Pad+Trig): `.syx` `7dc637fc…`. Linked only, not booted.
+- Build PP13 (core-ar2 0.3 + Pipo Loop 0.1.0-experimental, `--version PP13`), from that source: `.syx`
+  `ae15d8b52b4485e0216a4416dd809334b07cdfde0529ca69e8fcd9b59ca58147`.
+- Build PC11 (core-ar2 0.3 + Silent Pad+Trig 0.5.1 as on main + Pipo Loop 0.1.0, `--version PC11`): `.syx`
+  `f6e59b8fca126ec3bbc173e5617e30ade67dfe430693bc936a2d2d0495adb5c5`.
+- Diagnostic PD05 (PC11's code plus an on-screen readout, branch `diag/pipo-loop`; not for release): `.syx`
+  `c0ea404ef4aac79334f1513a4a81953997a405f7811f45426bd6d484efc3ccb4`.
 - Earlier builds: PP03 and PC01 (before the code review), PP05 and PC03 (after it), PP06 and PC04 (the
-  three-position switch), PP07 and PC05 (zero snap on the sound), PP08 and PC06 (locks), PP09 and PC07 (exact turns), PP10, PC08 and PD02 (snap holds), PP11, PC09 and PD03 (code review);
-  each passed the battery below. PP10, PP11 and PP12 gave the same results as PP09 on every row of it.
+  three-position switch), PP07 and PC05 (zero snap on the sound), PP08 and PC06 (locks), PP09 and PC07 (exact turns), PP10, PC08 and PD02 (snap holds), PP11, PC09 and PD03 (code review), PP12, PC10 and PD04 (LOP's feel);
+  each passed the battery below. PP10 to PP13 gave the same results as PP09 on every row of it.
 - Emulator: rytm-emu `c5732f0`, headless `dtboot`, JIT on. A card image holds one generated sample,
   RAMP (24,000 frames, a straight rise from -26,000 to +26,000), loaded to the project and set on
   BD with LOP ON on the SAMPLE page (the setup in [media/capture.json](media/capture.json)). Audio is
@@ -260,14 +259,15 @@ ON every other crossing is skipped by design (same direction as the other point)
 moderately quick turn, for which LOP's profile gives two values, stepped two crossings. Fixed after
 PD04: up to two values step one crossing, past that one fewer than the values.
 
-**Labels (emulator only, PM01 test build).** Stock's waveform widget (draw routine 0x4006cb16, only
+**Labels (PM01 test build, then PP13, PC11 and PD05).** npp1993 approved the look from the emulator screenshots ("looking great"). Stock's waveform widget (draw routine 0x4006cb16, only
 caller 0x400d211c) keeps the lines' columns at +4 and +8 (value x 123 / 30720, from x0 = 2), draws
 them dotted from y0 + 1 to y0 + height - 2 (y0 16, height 32) and draws the waveform over 124
 columns, which is why a line can sit a column left of its crossing. As the routine ends (site
 0x4006ce72) the module draws a boxed S at the bottom of STA's line and a boxed E at the top of
 END's: a 3 x 5 letter, a black pixel round it, a white box round that (7 x 9), kept on screen at the
 edges. rytm-emu, PIPO_SLOW: points at the sample's ends, mid-sample, sharing a column (stock draws
-one line; both labels show), END before STA, and playing (the playhead runs under the labels).
+one line; both labels show), END before STA, and playing (the playhead runs under the labels). PP13:
+the full battery as PP12, the labels and snap as PM01; PC11's quick check as PC10.
 
 ## FUNC turns step like LOP (2026-10-28)
 
@@ -369,12 +369,13 @@ A `/code-review` of the branch raised ten points. What was done with each:
 | 0x4011cb2e / 0x4011cb98 | 10 / 8 | the same in the voices 1-7 prefetch | stock guards in build.json |
 | 0x4003a19c | 6 | the setup of the edit handler's lock call (a held trig, with a lock editor): for STA and END with FUNC held, the step from the lock to the next crossing | `8b2ff131…1acf` |
 | 0x40037f6c | 6 | in stock's per-trig lock edit, the setup of the call that adds the turn to a trig's lock: for STA and END with FUNC held, the step from that trig's lock to its next crossing | `6bec112e…370e` |
+| 0x4006ce72 | 6 | the end of stock's waveform widget draw routine (only caller: SMPL WAVEFORM), after the lines and playheads: the S and E labels | `fd3a7a09…b4f0` |
 | 0x4003a0de | 6 | in stock's encoder handler, the three pushes before its encoder engine, where both paths meet: for STA and END with FUNC held, LOP's encoder profile and count factors instead of theirs | `e88c5d87…48e0` |
 | 0x4003a240 | 6 | in stock's encoder handler, the setup of the view's apply-delta call; for STA and END with FUNC held it replaces the whole-number step by the step to the next zero crossing, sent as a fine turn | `87377367…3e20` |
 | 0x400fedf4 | 6 | the first instruction of stock's shared OFF/ON switch icon; for LOP's record (ctx 0x419a5770, seen on a breakpoint on stock) it tail-calls BD CLASSIC WAV's three-position icon routine 0x400fef4a with the same arguments, else stock | `0528305f…fac3` |
 
 Modwerk's linker links Pipo Loop beside Filter Hz, Loop Sync and Silent Pad+Trig together (PX07).
-None of the twelve sites is patched by Silent Pad+Trig (0x400c772e, 0x400c7a3e, 0x400c7e90,
+None of the thirteen sites is patched by Silent Pad+Trig (0x400c772e, 0x400c7a3e, 0x400c7e90,
 0x400c7950, 0x400ec184), Loop Sync (0x40121020) or Filter Hz. The OFF/ON text routine is shared by
 parameter ids 34-37, 45 (LOP), 224, 248 and 463; the switch icon by twelve parameters (those and 73, 414, 415, 434).
 
@@ -418,7 +419,7 @@ above.
 
 ## Not tested
 
-- On a unit, beyond the PC03, PD01 and PD03 reports above: PC10, PP12 and PD04 have not been flashed.
+- On a unit, beyond the PC03, PD01, PD03 and PD04 reports above: PC11, PP13 and PD05 have not been flashed.
 - KIT SAVE and KIT RELOAD from the KIT menu, the sound browser, sound SysEx dumps and Overbridge.
 - Eight voices in PIPO at once, LFO or velocity modulation of STA and END while in PIPO, and Loop
   Sync and Pipo Loop on the same track.
