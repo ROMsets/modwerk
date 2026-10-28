@@ -102,7 +102,7 @@
     "load": {
       "display": "About 0.1 % of a block idle, 0.6 % with eight voices in PIPO (static estimate)",
       "method": "static",
-      "conditions": "Static count of the compiled handler, run once an audio block before the sample engine: about 15 instructions for a voice with LOP OFF or no track, about 70 for one looping with ON, about 105 for one in PIPO, plus four 32-bit divisions for a voice whose STA, END or sample just changed. With the Rytm guide's 0.023 % of a block per instruction a frame: about 0.1 % with nothing looping and about 0.6 % with all eight voices in PIPO. Not measured on a unit. Zero snap runs only on a FUNC + STA or END turn, in the UI task: a scan of up to 262,144 samples, not in the audio path. Exact turns: on a block whose DMA carries a turn, the voice's mirrored frames (up to 160) are copied and their cache lines pushed, once a turn."
+      "conditions": "Static count of the compiled audio handler, run once a block before the sample engine: about 15 instructions for a voice with LOP OFF, 70 looping with ON, 105 in PIPO; at the Rytm guide's 0.023 % of a block per instruction a frame, about 0.1 % with nothing looping and 0.6 % with eight voices in PIPO. A turn adds one copy of up to 160 frames on its block. Zero snap and the icon gate run in the UI task only. Not measured on a unit."
     }
   },
   "evidence": {
