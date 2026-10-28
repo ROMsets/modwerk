@@ -19,7 +19,7 @@ Each turn lands exactly on STA or END, at every pitch, with no jump in the wavef
 | Control | Where | Values |
 | --- | --- | --- |
 | LOP | SAMPLE page, encoder G | OFF, ON, PIPO, on a three-position switch. OFF and ON play as stock. PIPO plays the loop between STA and END forward, then backward. |
-| FUNC + STA / END | SAMPLE page or its SMPL WAVEFORM view, FUNC held, encoder E or F | Each detent moves the point to the next zero crossing the way you turn (exactly the frame stock plays from), never past the other point; with LOP ON only crossings of the other point's direction. With a trig held in GRID RECORDING it steps that trig's lock (the first detent makes the lock, as stock). Plain turns are stock. |
+| FUNC + STA / END | SAMPLE page or its SMPL WAVEFORM view, FUNC held, encoder E or F | Each detent moves the point to the next zero crossing the way you turn (exactly the frame stock plays from), and only ever to a crossing: with none further that way the point holds. STA and END step past each other freely (END below STA plays backward, as stock) and may share a crossing (a loop of no length: silence). With LOP ON only crossings of the other point's direction. With a trig held in GRID RECORDING it steps that trig's lock (the first detent makes the lock, as stock). Plain turns are stock. |
 
 LOP's switch is drawn as stock's three-position switch, the one BD CLASSIC's WAV uses: OFF on the left, ON in the middle, PIPO on the right. PIPO applies only to the sample layer of a sound, as LOP does.
 
@@ -52,9 +52,12 @@ Use a build containing Pipo Loop, select a track whose sound plays a sample, and
 - Stock plays a loop of at least 141 frames; Pipo Loop leaves loops shorter than 160 frames to stock's forward loop.
 - A new trig always starts forward from STA, as stock does.
 - Zero snap is exact for samples up to 30,720 frames (0.64 s at 48 kHz). STA and END are steps of 1/30,720 of the sample, so on a longer sample the point lands on the nearest step, at most frames / 61,440 frames from the crossing: 1 frame at 1 s, about 4 at 5 s, 8 at 10 s, 47 at 60 s.
-- Silence and near-zero DC (within 8 of zero, about -72 dB) count as neither sign: a snap passes over them and lands at their edge. The search reaches about 5.5 s of sample a detent; with nothing found, the turn stays stock's whole-number step.
+- Silence and near-zero DC (within 8 of zero, about -72 dB) count as neither sign: a snap passes over them and lands at their edge. The search reaches about 5.5 s of sample a detent; with nothing found, the point holds.
+- The sample's first frame and its end count as crossings only where the sample is at zero there; otherwise the first and last crossings are as far as FUNC turns go.
+- A PIPO turn on a crossing can still give a soft knock on a pure tone: the waveform's slope reverses at the turn, which no choice of frame avoids. A forward loop (LOP ON) between two crossings of one direction joins smoothly.
+- The STA and END lines on the SMPL WAVEFORM view are stock's drawing: one column covers many frames (about 225 for a 0.6 s sample), so a line can sit one column off the crossing it is on. The frame stock plays from is the one the snap set.
 - On stock OS, PIPO plays as ON. Sounds and kits keep the value, so loading them again with the mod brings PIPO back.
-- Not yet run on a unit.
+- On a unit only as test builds so far (PC03 and the diagnostic PD01, both reported in [TESTING.md](TESTING.md)).
 
 ## Tests and measurements
 

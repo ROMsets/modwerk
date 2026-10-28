@@ -59,7 +59,7 @@
     {
       "name": "FUNC + STA / END",
       "default": null,
-      "doc": "SAMPLE page, FUNC held, encoder E or F: each detent (8 encoder counts) moves STA or END to the next zero crossing the way you turn, exactly the frame stock plays from, never past the other point. With LOP ON only crossings of the other point's direction. With a trig held in GRID RECORDING it steps that trig's lock. Exact up to 30,720 frames (0.64 s); longer samples take the nearest step. Plain turns are stock.",
+      "doc": "SAMPLE page, FUNC held, encoder E or F: each detent moves STA or END to the next zero crossing the way you turn, the frame stock plays from; with none further it holds. STA and END may pass each other or share a crossing. With LOP ON only crossings of the other point's direction. With a trig held in GRID RECORDING it steps that trig's lock. Exact up to 30,720 frames (0.64 s); longer samples take the nearest step. Plain turns are stock.",
       "labels": null
     }
   ],
@@ -108,7 +108,7 @@
   "evidence": {
     "tier": "emulator",
     "moduleVersion": "0.1.0-experimental",
-    "sourceSha256": "da15f46f110c7b86dd44a145dc0997c6293f24edb4b143c2e39e04c8c7fa9e0b",
+    "sourceSha256": "f5d3bbb8a80b95355584c7a684f91f85a51938fc2459e33071cf1e14124d24b8",
     "reports": [
       "TESTING.md"
     ],
@@ -117,7 +117,7 @@
   },
   "tests": {
     "report": "TESTING.md",
-    "summary": "rytm-emu c5732f0, OS 1.74, build PP09: LOP OFF/ON/PIPO on a three-position switch; PIPO turns exactly at STA and END (period 2x the loop at TUN -24, 0, +24); p-lock, scene, two voices, retrig, power-off; stock plays a saved PIPO as a loop; zero snap one crossing a detent on stock's own frames, on the sound and on locks. Hardware: PC03 only.",
+    "summary": "rytm-emu c5732f0, OS 1.74, build PP10: LOP OFF/ON/PIPO on a three-position switch; PIPO turns exactly at STA and END (period 2x the loop at TUN -24, 0, +24); p-lock, scene, two voices, retrig, power-off; stock plays a saved PIPO as a loop; zero snap one crossing a detent on stock's own frames, on the sound and on locks, holding at the sample's edges, STA and END passing or sharing a crossing. Hardware, as reported: PC03, and diagnostic PD01 (snap on crossings, clean LOP ON loops when snapped).",
     "documentation": {
       "tutorial": {
         "title": "Quick tutorial",

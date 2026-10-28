@@ -1,19 +1,22 @@
 # Pipo Loop — test report
 
-Everything below was observed in rytm-emu on the named build. Nothing has run on a unit yet.
+Everything below was observed in rytm-emu on the named build, except the Hardware section, which records what npp1993 reported from a unit.
 
 - Source (0.1.0-experimental): `build.json` `a6f8f799…82cd`, `src/audio.s` `b7ef777e…27f7`, `src/pipo.c` `5f1a2efd…9dbf`,
-  `src/snap.c` `9536a496…1736`. Fingerprint (`sha256` of `sha256sum build.json src/audio.s src/pipo.c src/snap.c`):
-  `da15f46f…9e0b` (`evidence.sourceSha256`).
+  `src/snap.c` `16eae916…e1bf`. Fingerprint (`sha256` of `sha256sum build.json src/audio.s src/pipo.c src/snap.c`):
+  `f5d3bbb8…24b8` (`evidence.sourceSha256`).
 - Stock OS 1.74: `.syx` `cb0f99d6…e123`, the owner's file.
 - Core: elekloader core-ar2 0.3 (`core-ar2-0.3.elemod` `6b97dfb3…3e58`, as vendored).
-- Build PP09 (core-ar2 0.3 + Pipo Loop 0.1.0-experimental, `--version PP09`), from that source: `.syx`
-  `5fd8c571b3dce0d1819f49285e1ac4fda34c1bc16cb6f00fc3558d221ae8d980`.
-- Build PC07 (core-ar2 0.3 + Silent Pad+Trig 0.5.1 + Pipo Loop 0.1.0, `--version PC07`): `.syx`
-  `8a46b67164ec0d561a3e6c024856235154ce165d75b20736a438a3b3e720cbe3`.
+- Build PP10 (core-ar2 0.3 + Pipo Loop 0.1.0-experimental, `--version PP10`), from that source: `.syx`
+  `PP10SHA`.
+- Build PC08 (core-ar2 0.3 + Silent Pad+Trig 0.5.1 + Pipo Loop 0.1.0, `--version PC08`): `.syx`
+  `PC08SHA`.
+- Diagnostic PD02 (PC08's code plus an on-screen readout, branch `diag/pipo-snap`; not for release): `.syx`
+  `PD02SHA`.
 - Build PX07 (with Filter Hz, Loop Sync and Silent Pad+Trig): `.syx` `7dc637fc…`. Linked only, not booted.
 - Earlier builds: PP03 and PC01 (before the code review), PP05 and PC03 (after it), PP06 and PC04 (the
-  three-position switch), PP07 and PC05 (zero snap on the sound), PP08 and PC06 (locks); each passed the battery below.
+  three-position switch), PP07 and PC05 (zero snap on the sound), PP08 and PC06 (locks), PP09 and PC07 (exact turns);
+  each passed the battery below. PP10 gave the same results as PP09 on every row of it.
 - Emulator: rytm-emu `c5732f0`, headless `dtboot`, JIT on. A card image holds one generated sample,
   RAMP (24,000 frames, a straight rise from -26,000 to +26,000), loaded to the project and set on
   BD with LOP ON on the SAMPLE page (the setup in [media/capture.json](media/capture.json)). Audio is
@@ -161,6 +164,34 @@ crossing a detent: core-ar2's ev_enc counts the encoder (8 counts a detent); fou
 one crossing, as one 8-count event does. With LOP ON, END stepped from 23,647 down by whole periods
 (rising crossings only), matching STA's rising crossing.
 
+## Zero snap holds; shared crossings and edges (2026-10-28)
+
+With FUNC held a turn on STA or END only ever lands on a crossing: where none is left the way it
+goes, the point holds (PD01 had passed such a turn to stock, which stepped off the crossings). STA
+and END may pass each other and may share a crossing (npp1993's rule). rytm-emu, PP10, ZSIN on BD
+(24,000 frames, not at zero at its first or last frame), settled values as frames, `d`/`u` the
+crossing's direction:
+
+- STA, LOP ON, END at 120: right 54d 125u 196d 267u 337d, left back to 54d, then held at 54 for the
+  remaining detents (frame 0 is not at zero, so it is no crossing).
+- END: left 23931u 23860d 23789u 23718d 23647u, right back to 23931u, then held (the sample's end is
+  not at zero).
+- END at 0, STA on 196d, LOP ON: END right 54d 196d 337d 479d …: only falling crossings (STA's
+  direction), onto STA's own crossing, then past it.
+- A trig's lock (GRID RECORDING, sound STA = END = 196d, LOP ON): the lock's STA left to 54d and held
+  there; right from 54d to 196d (END's crossing), 337d, 479d, 621d.
+- A loop of no length (STA = END = 196) with LOP ON and with PIPO, BD hit twice: plays without a fault
+  for the whole run; the voice stays parked around frame 196, LOP ON and PIPO alike (PIPO leaves
+  loops under 160 frames to stock).
+
+The emulator drops the first two to four encoder events after FUNC goes down or the turn changes
+direction (stock's encoder smoothing in rytm-emu), so the step counts above are not one a turn.
+
+PD02's counters (rytm-emu, ZSIN on BD in PIPO, STA 0 and END 120, after one hit): PIPO turns 4,
+mirrored segments 16, unmirrored turns 0 500M instructions after the hit; 17, 68 and 0 after 1,800M.
+Counting idle voices too had shown thousands of unmirrored "turns": before its first trig a voice
+reads stock's silence buffer and its position wanders, so PD02 counts playing voices only.
+
 ## Hardware
 
 ### PC03 on an Analog Rytm MKII (2026-10-27), as reported
@@ -186,6 +217,29 @@ The switch icon is drawn from a two-frame sprite (17 x 9 pixels; OFF, ON) shared
 parameters; stock clamps any value above 1 to the last frame, so PIPO drew as ON. npp1993 chose LOP to
 look like BD CLASSIC's WAV switch: PP06 draws LOP, and only LOP, through the routine and frames stock
 uses for that WAV (three positions), so the module carries no picture of its own.
+
+### PD01 on an Analog Rytm MKII (2026-10-28), as reported
+
+npp1993 flashed PD01 (`6ba6b5cc…9134`; PC07's code with one crossing an encoder event, plus a readout
+of encoder counts, events, crossings moved and the last snapped frame while FUNC is held), loaded the
+test samples PIPO_SLOW, PIPO_110 and PIPO_SQR and reported:
+
+- A, detents: a slow detent gave one tick. FUNC + STA snapped onto PIPO_SLOW's zero crossings well.
+  FUNC + END near the sample's end sat near two crossings but not exactly on them. Readouts (counts,
+  events, crossings, frame), END turned left one slow detent at a time: -104 711 1 22340; -107 714 1
+  22340; -108 715 1 22340; -110 717 1 22340; one fast flick: -170 721 1 22340; another: -303 731 -4
+  10820. Frame 22340 is one before PIPO_SLOW's crossing at 22341: a backward snap took the last
+  quiet sample, not the first signed one, and the next left turn found the same crossing again.
+  Fixed after PD01 (the backward snap lands on the first signed sample, as the forward one does).
+- B, line against frame: the STA and END lines on SMPL WAVEFORM sat about one column off at times.
+  At the left edge, FUNC + turn left moved STA off the crossing; STA and END moved toward each other
+  on neighbouring crossings went off the crossings. Both were the module passing a turn with no
+  crossing to stock's whole-number step; fixed (see above). The line is stock's drawing: the module
+  never draws it, and one column covers about 225 frames of a 0.6 s sample, so a line on a crossing
+  can sit a column off; the frame readout is what plays.
+- C, clicks (PIPO_110): LOP ON with STA and END not snapped clicked on every pass; snapped, LOP ON
+  was clean; PIPO gave a soft knock at the turns. At a turn the waveform's slope reverses, which no
+  choice of frame avoids on a pure tone, so this is expected (README).
 
 ## Code review (2026-10-27)
 
@@ -246,7 +300,7 @@ parameter ids 34-37, 45 (LOP), 224, 248 and 463; the switch icon by twelve param
 
 ## Not tested
 
-- On a unit, beyond the PC03 report above.
+- On a unit, beyond the PC03 and PD01 reports above: PC08, PP10 and PD02 have not been flashed.
 - KIT SAVE and KIT RELOAD from the KIT menu, the sound browser, sound SysEx dumps and Overbridge.
 - Eight voices in PIPO at once, LFO or velocity modulation of STA and END while in PIPO, and Loop
   Sync and Pipo Loop on the same track.
