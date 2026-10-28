@@ -258,39 +258,54 @@ static struct kstore store;
 
 static int pver(unsigned char *kit) { return pget(kit, VER_BIT) | pget(kit, VER_BIT + 1) << 1; }
 
-/* The engine reads every entry on every audio block, so the pool is decoded only when its 92 bits have changed:
- * the four 23-bit words are compared with the last ones decoded. */
-static u32 pool_w[4];
-static u16 pool_e[NENT];
-static int pool_ok;
+/* The engine reads every entry on every audio block, so a pool is decoded only when its 92 bits have changed:
+ * the four 23-bit words are compared with the last ones decoded. The UI (the page, the keys) and the engine
+ * (the audio block) each keep a copy of their own: they run at different times, often on different kits while a
+ * pattern change is pending, and neither may overwrite the other's half-made decode. */
+struct pool {
+    u32 w[4];
+    u16 e[NENT];
+    int ok;
+};
+static struct pool pool_ui, pool_eng;
+
+/* the 23 pool bits of track t (a constant 4..7): bits 0..6 of byte 3, bytes 4 and 5 */
+#define PW(kit, t) ((u32)(XB(kit, 6 * (t) + 3) & 0x7f) | (u32)XB(kit, 6 * (t) + 4) << 7 | (u32)XB(kit, 6 * (t) + 5) << 15)
+
+static void pool_sync(struct pool *pl, unsigned char *kit)
+{
+    u32 w[4];
+    int t, b, n, r = 0, ver;
+    w[0] = PW(kit, 4);
+    w[1] = PW(kit, 5);
+    w[2] = PW(kit, 6);
+    w[3] = PW(kit, 7);
+    if (pl->ok && w[0] == pl->w[0] && w[1] == pl->w[1] && w[2] == pl->w[2] && w[3] == pl->w[3])
+        return;
+    ver = (int)(w[3] >> 19 & 3);                 /* stream bits 88, 89 */
+    t = 0;
+    for (n = 0; n < NENT; n++) {
+        int v = 0;
+        for (b = 0; b < ENT_BITS; b++) {
+            v = (v << 1) | (int)(w[t] >> r & 1);
+            if (++r == 23) {
+                r = 0;
+                t++;
+            }
+        }
+        pl->e[n] = ver != VER_NOW ? 0 :
+            (u16)(((v >> 10 & 1) << 13) | ((v >> 7 & 7) << 10) | ((v >> 1 & 63) << 4) | ((v & 1) << 3));
+    }
+    for (t = 0; t < 4; t++)
+        pl->w[t] = w[t];
+    pl->ok = 1;
+}
 
 /* an entry as the rest of the code reads it: bits 15..13 are unused here, see E_ALL and friends */
 static u16 entry(unsigned char *kit, int i)
 {
-    u32 w[4];
-    int t, b, n, r = 0, ver;
-    for (t = 0; t < 4; t++)
-        w[t] = (u32)(XB(kit, 6 * (t + 4) + 3) & 0x7f) | (u32)XB(kit, 6 * (t + 4) + 4) << 7 | (u32)XB(kit, 6 * (t + 4) + 5) << 15;
-    if (!pool_ok || w[0] != pool_w[0] || w[1] != pool_w[1] || w[2] != pool_w[2] || w[3] != pool_w[3]) {
-        ver = (int)(w[3] >> 19 & 3);             /* stream bits 88, 89 */
-        t = 0;
-        for (n = 0; n < NENT; n++) {
-            int v = 0;
-            for (b = 0; b < ENT_BITS; b++) {
-                v = (v << 1) | (int)(w[t] >> r & 1);
-                if (++r == 23) {
-                    r = 0;
-                    t++;
-                }
-            }
-            pool_e[n] = ver != VER_NOW ? 0 :
-                (u16)(((v >> 10 & 1) << 13) | ((v >> 7 & 7) << 10) | ((v >> 1 & 63) << 4) | ((v & 1) << 3));
-        }
-        for (t = 0; t < 4; t++)
-            pool_w[t] = w[t];
-        pool_ok = 1;
-    }
-    return pool_e[i];
+    pool_sync(&pool_ui, kit);
+    return pool_ui.e[i];
 }
 
 static u32 lock(void)
@@ -349,7 +364,7 @@ static volatile unsigned char capmask;      /* ... or only these knobs (bit k: k
  * the old pattern's assignments (a copy taken just before) until the new pattern plays, so the knobs let go then. */
 static volatile u16 shadow[NENT];
 static volatile unsigned char pending;
-static u16 peng(unsigned char *kit, int k) { return pending ? shadow[k] : entry(kit, k); }
+static u16 peng(int k) { return pending ? shadow[k] : pool_eng.e[k]; }   /* after pool_sync(&pool_eng) */
 static volatile unsigned char trackt;       /* ticks left after a pattern change in which a knob nobody has turned follows its parameter as the new sound settles */
 
 static void take(void *words, u16 e, int k) /* the knob picks up its parameter's value as it stands */
@@ -368,9 +383,10 @@ void digiperform_post(void *words)
     int k;
     if (!kit)
         return;
+    pool_sync(&pool_eng, kit);               /* once a block: the loops below read the decoded copy */
     if (capture || capmask) {                /* the page is opening: every knob takes its parameter's value; or one knob was just assigned */
         for (k = 0; k < NKNOB; k++) {
-            u16 e = peng(kit, k);
+            u16 e = peng(k);
             int p = E_PAR(e);
             if (!capture && !(capmask >> k & 1))
                 continue;
@@ -385,7 +401,7 @@ void digiperform_post(void *words)
     }
     if (trackt) {                            /* the new pattern's sound is still settling: a knob not yet turned shows where its parameter is going */
         for (k = 0; k < NKNOB; k++) {
-            u16 e = peng(kit, k);
+            u16 e = peng(k);
             int p = E_PAR(e);
             if (live[k] && (macro[k] != rest[k] || fine[k]))
                 continue;
@@ -396,7 +412,7 @@ void digiperform_post(void *words)
         }
     }
     for (k = 0; k < NKNOB; k++) {
-        u16 e = peng(kit, k);
+        u16 e = peng(k);
         int p = E_PAR(e), x, t, t0, t1;
         if (!p || p > DEST_LAST || !live[k])
             continue;
