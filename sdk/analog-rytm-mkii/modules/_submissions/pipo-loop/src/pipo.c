@@ -51,6 +51,7 @@ enum { ARM_NONE, ARM_UP, ARM_DOWN };
 struct voice {
     int last_pos;                // position a block ago
     int lo, hi;                  // the loop in frames, for c_sta, c_end and c_frames
+    int a_lo, a_hi;              // the loop as armed: the one the DMA was mirrored for
     unsigned c_frames;
     short c_sta, c_end;
     short w_sta, w_end;          // what this handler wrote, while wrote is set
@@ -117,21 +118,21 @@ void pipo_loop_audio(void)
         else if (p->seen && p->arm) {  // did the voice pass the turn the DMA carried?
             int x = 0, r = 0, turned = 1;
             if (p->arm == ARM_UP) {      // past hi, or wrapped by stock to lo + (x - hi)
-                if (pos >= p->hi)
+                if (pos >= p->a_hi)
                     x = pos;
                 else if (pos < p->last_pos)
-                    x = pos - p->lo + p->hi;
+                    x = pos - p->a_lo + p->a_hi;
                 else
                     turned = 0;
-                r = 2 * p->hi - 1 - x + TURN_LAG;
+                r = 2 * p->a_hi - 1 - x + TURN_LAG;
             } else {                     // below lo, or wrapped by stock to hi - (lo - x)
-                if (pos < p->lo)
+                if (pos < p->a_lo)
                     x = pos;
                 else if (pos > p->last_pos)
-                    x = pos - p->hi + p->lo;
+                    x = pos - p->a_hi + p->a_lo;
                 else
                     turned = 0;
-                r = 2 * p->lo - 1 - x + TURN_LAG;
+                r = 2 * p->a_lo - 1 - x + TURN_LAG;
             }
             if (turned) {                // where the mirrored frames put it, the way back
                 int fr = (int)VFRAMES(v);
@@ -152,8 +153,11 @@ void pipo_loop_audio(void)
             p->arm = ARM_NONE;
         }
         p->up = p->fwd ^ p->back;
-        if ((EFF(t, IDX_LOP) >> 8) == LOP_PIPO && p->hi - p->lo >= MIN_SPAN)
+        if ((EFF(t, IDX_LOP) >> 8) == LOP_PIPO && p->hi - p->lo >= MIN_SPAN) {
             p->arm = p->up ? ARM_UP : ARM_DOWN;
+            p->a_lo = p->lo;             // a block on, the turn is judged against this loop even
+            p->a_hi = p->hi;             // if STA or END (an LFO, a turn) has moved since
+        }
         if (p->back) {
             EFF(t, IDX_STA) = (short)end;
             EFF(t, IDX_END) = (short)sta;
@@ -185,8 +189,8 @@ void *pipo_loop_mirror(int v, int which, int ws_al, int wrap_al, int len)
         return 0;
     data = VDATA(v);
     frames = (int)VFRAMES(v);
-    lo = p->lo;
-    hi = p->hi;
+    lo = p->a_lo;
+    hi = p->a_hi;
     if (!data || wrap_al != (lo & ~7) || hi > frames)
         return 0;                    // not the window the module expects
     m = mirror[v];
