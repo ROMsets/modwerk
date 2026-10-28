@@ -10,7 +10,7 @@ PIPO is an ordinary LOP value. It saves with the sound and the kit, takes parame
 
 On the SAMPLE page, FUNC + turn on STA or END moves that point to the next zero crossing of the sample in the direction you turn, one crossing a detent, so start and loop points sit where the waveform crosses zero. Plain turns stay stock.
 
-The turns are smooth (no jump in the waveform). Each turn falls on the audio engine's 32-frame block, so it comes up to about one block, plus 8 frames, before STA or END.
+Each turn lands exactly on STA or END, at every pitch, with no jump in the waveform: at the turn the module hands stock's sample DMA the loop's frames in reverse order, so stock's own playback runs straight into the way back.
 
 ![LOP OFF, ON and PIPO](media/lop-off.png) ![](media/lop-on.png) ![](media/lop-pipo.png)
 
@@ -19,7 +19,7 @@ The turns are smooth (no jump in the waveform). Each turn falls on the audio eng
 | Control | Where | Values |
 | --- | --- | --- |
 | LOP | SAMPLE page, encoder G | OFF, ON, PIPO, on a three-position switch. OFF and ON play as stock. PIPO plays the loop between STA and END forward, then backward. |
-| FUNC + STA / END | SAMPLE page or its SMPL WAVEFORM view, FUNC held, encoder E or F | Each detent moves the point to the next zero crossing the way you turn, never past the other point. With a trig held in GRID RECORDING it steps that trig's lock (the first detent makes the lock, as stock). Plain turns are stock. |
+| FUNC + STA / END | SAMPLE page or its SMPL WAVEFORM view, FUNC held, encoder E or F | Each detent moves the point to the next zero crossing the way you turn (exactly the frame stock plays from), never past the other point; with LOP ON only crossings of the other point's direction. With a trig held in GRID RECORDING it steps that trig's lock (the first detent makes the lock, as stock). Plain turns are stock. |
 
 LOP's switch is drawn as stock's three-position switch, the one BD CLASSIC's WAV uses: OFF on the left, ON in the middle, PIPO on the right. PIPO applies only to the sample layer of a sound, as LOP does.
 
@@ -47,8 +47,8 @@ Use a build containing Pipo Loop, select a track whose sound plays a sample, and
 ## Compatibility and limitations
 
 - OS 1.74 only, with core-ar2 0.3. No other module is needed, and it builds beside Silent Pad+Trig, Filter Hz and Loop Sync (no shared sites).
-- Sites: the audio interrupt's call to the voice 0 sample prefetch at 0x40121134 (a `jsr`, through a gate that tail-calls stock), the shared OFF/ON value-text routine at 0x400fb56c (prints PIPO for 2 on LOP's own record, stock text otherwise, so another OFF/ON parameter set to 2 over MIDI still reads ON), LOP's maximum in stock's parameter table at 0x401c04f8 (data, 1.0 to 2.0), and the shared OFF/ON switch icon at 0x400fedf4 (for LOP's record only it tail-calls the three-position switch routine BD CLASSIC's WAV uses, with stock's own frames; every other switch stays stock). Zero snap takes the encoder handler's apply-delta call at 0x4003a240 and its lock call at 0x4003a19c, and stock's per-trig lock edit at 0x40037f6c (STA and END with FUNC held only; every other turn passes through). Loop Sync's audio hook at 0x40121020 runs earlier in the same interrupt; Pipo Loop swaps STA and END after it, and Loop Sync's FUNC + TUN and FIN are not touched.
-- A PIPO loop is a few frames shorter at each end than ON's (the turn comes up to one block early). Inaudible on most material, audible on very short loops.
+- Sites: the audio interrupt's call to the voice 0 sample prefetch at 0x40121134 (a `jsr`, through a gate that tail-calls stock), the shared OFF/ON value-text routine at 0x400fb56c (prints PIPO for 2 on LOP's own record, stock text otherwise, so another OFF/ON parameter set to 2 over MIDI still reads ON), LOP's maximum in stock's parameter table at 0x401c04f8 (data, 1.0 to 2.0), and the shared OFF/ON switch icon at 0x400fedf4 (for LOP's record only it tail-calls the three-position switch routine BD CLASSIC's WAV uses, with stock's own frames; every other switch stays stock). Exact turns take the four places stock's prefetch sets a sample DMA's source (0x4011c58a and 0x4011c5e6 for voice 0, 0x4011cb2e and 0x4011cb98 for voices 1-7). Zero snap counts encoder turns through core-ar2's ev_enc hook (it consumes nothing) and takes the encoder handler's apply-delta call at 0x4003a240 and its lock call at 0x4003a19c, and stock's per-trig lock edit at 0x40037f6c (STA and END with FUNC held only; every other turn passes through). Loop Sync's audio hook at 0x40121020 runs earlier in the same interrupt; Pipo Loop swaps STA and END after it, and Loop Sync's FUNC + TUN and FIN are not touched.
+- With END on the sample's very last frame a turn can land up to 7 frames off; set END a little before the end. Exact turns rely on the DMA reading frames the module writes (it pushes the data cache first); rytm-emu does not model the cache, so the unit has to confirm it.
 - Stock plays a loop of at least 141 frames; Pipo Loop leaves loops shorter than 160 frames to stock's forward loop.
 - A new trig always starts forward from STA, as stock does.
 - Zero snap is exact for samples up to 30,720 frames (0.64 s at 48 kHz). STA and END are steps of 1/30,720 of the sample, so on a longer sample the point lands on the nearest step, at most frames / 61,440 frames from the crossing: 1 frame at 1 s, about 4 at 5 s, 8 at 10 s, 47 at 60 s.

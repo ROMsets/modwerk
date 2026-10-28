@@ -19,7 +19,7 @@
     "label": "PIPO LOOP",
     "family": "Sample playback",
     "summary": "LOP gets a third value, PIPO: the sample's loop plays forward, then backward (ping-pong). FUNC + turn on STA or END steps to the next zero crossing.",
-    "overview": "Pipo Loop adds PIPO to the SAMPLE page's LOP parameter, after OFF and ON. A sample whose LOP is PIPO plays from STA to END, then back to STA, then forward again, for as long as the note lasts, with no jump at the turns. LOP's switch becomes a three-position switch like BD CLASSIC's WAV: OFF on the left, ON in the middle, PIPO on the right. PIPO is an ordinary LOP value: it saves with the sound and kit, takes parameter locks and scene locks, and comes back after a power cycle. A sound saved with PIPO plays as a normal forward loop (ON) on an OS without the mod. The turn falls on the audio engine's 32-frame block, so it comes up to about one block before STA or END. On the SAMPLE page, FUNC + turn on STA or END now moves that point to the next zero crossing of the sample in the direction you turn, one crossing a detent, instead of stock's whole-number step; plain turns stay stock.",
+    "overview": "Pipo Loop adds PIPO to the SAMPLE page's LOP parameter, after OFF and ON. A sample whose LOP is PIPO plays from STA to END, then back to STA, then forward again, for as long as the note lasts, with no jump at the turns. LOP's switch becomes a three-position switch like BD CLASSIC's WAV: OFF on the left, ON in the middle, PIPO on the right. PIPO is an ordinary LOP value: it saves with the sound and kit, takes parameter locks and scene locks, and comes back after a power cycle. A sound saved with PIPO plays as a normal forward loop (ON) on an OS without the mod. Each turn lands exactly on STA or END, at every pitch. On the SAMPLE page, FUNC + turn on STA or END now moves that point to the next zero crossing of the sample in the direction you turn, one crossing a detent, instead of stock's whole-number step; plain turns stay stock.",
     "highlights": [
       "Ping-pong loops for any sample, from the SAMPLE page's own LOP knob.",
       "Lock PIPO on a step, or put it in a scene, like any LOP value.",
@@ -59,7 +59,7 @@
     {
       "name": "FUNC + STA / END",
       "default": null,
-      "doc": "SAMPLE page (and its SMPL WAVEFORM view), FUNC held, encoder E or F: each detent moves STA or END to the next zero crossing of the sample in the direction turned, never past the other point. With a trig held (GRID RECORDING) it steps that trig's lock from its own value; the first detent on a trig without a lock makes the lock, as stock. Exact for samples up to 30,720 frames (0.64 s at 48 kHz); longer samples take the nearest STA/END value, at most frames / 61,440 frames off. With no crossing in reach the turn stays stock's. Plain turns are stock.",
+      "doc": "SAMPLE page, FUNC held, encoder E or F: each detent (8 encoder counts) moves STA or END to the next zero crossing the way you turn, exactly the frame stock plays from, never past the other point. With LOP ON only crossings of the other point's direction. With a trig held in GRID RECORDING it steps that trig's lock. Exact up to 30,720 frames (0.64 s); longer samples take the nearest step. Plain turns are stock.",
       "labels": null
     }
   ],
@@ -73,11 +73,12 @@
       "Zero snap is exact only on samples up to 30,720 frames (0.64 s at 48 kHz): STA and END are steps of 1/30,720 of the sample, so on longer samples the point lands on the nearest step, up to frames / 61,440 frames from the crossing (1 frame at 1 s, about 8 at 10 s, 47 at 60 s).",
       "Built for OS 1.74 only, with core-ar2 0.3.",
       "Not yet run on a unit: tested in rytm-emu only.",
-      "A turn falls on a 32-frame audio block, up to about one block (plus 8 frames) before STA or END, so a PIPO loop is a few frames shorter at each end than ON's; inaudible on most material, audible on very short loops.",
       "MIDI CC 30 (LOP) writes its value unchanged, as on stock: CC value 2 now gives PIPO, every other nonzero value ON. Other OFF/ON parameters still read ON for 2.",
       "On stock OS, or a build without this mod, PIPO plays as ON.",
       "LOP's switch is drawn with the knob in the middle for ON, where stock draws it on the right; the value text still reads ON.",
-      "FUNC + turn on STA or END no longer gives stock's whole-number steps; use a plain turn for fine moves."
+      "FUNC + turn on STA or END no longer gives stock's whole-number steps; use a plain turn for fine moves.",
+      "With END on the sample's very last frame, a turn can land up to 7 frames off (rytm-emu: the first turn after a hit); set END a little before the end for exact turns.",
+      "Exact turns depend on DMA reading frames the module writes (the data cache is pushed first); rytm-emu does not model the cache, so this is for the unit to confirm."
     ]
   },
   "platform": {
@@ -96,18 +97,18 @@
     ]
   },
   "resources": {
-    "memoryBytes": 3197,
+    "memoryBytes": 7221,
     "fastBytes": 0,
     "load": {
-      "display": "About 0.1 % of an audio block with no sample looping, about 0.6 % with eight voices in PIPO (static estimate)",
+      "display": "About 0.1 % of an audio block with nothing looping, about 0.6 % with eight voices in PIPO; a turn adds one copy of up to 160 frames (static estimate)",
       "method": "static",
-      "conditions": "Static count of the compiled handler, run once an audio block before the sample engine: about 15 instructions for a voice with LOP OFF or no track, about 70 for one looping with ON, about 105 for one in PIPO, plus four 32-bit divisions for a voice whose STA, END or sample just changed. With the Rytm guide's 0.023 % of a block per instruction a frame: about 0.1 % with nothing looping and about 0.6 % with all eight voices in PIPO. Not measured on a unit. Zero snap runs only on a FUNC + STA or END turn, in the UI task: a scan of up to 262,144 samples, not in the audio path."
+      "conditions": "Static count of the compiled handler, run once an audio block before the sample engine: about 15 instructions for a voice with LOP OFF or no track, about 70 for one looping with ON, about 105 for one in PIPO, plus four 32-bit divisions for a voice whose STA, END or sample just changed. With the Rytm guide's 0.023 % of a block per instruction a frame: about 0.1 % with nothing looping and about 0.6 % with all eight voices in PIPO. Not measured on a unit. Zero snap runs only on a FUNC + STA or END turn, in the UI task: a scan of up to 262,144 samples, not in the audio path. Exact turns: on a block whose DMA carries a turn, the voice's mirrored frames (up to 160) are copied and their cache lines pushed, once a turn."
     }
   },
   "evidence": {
     "tier": "emulator",
     "moduleVersion": "0.1.0-experimental",
-    "sourceSha256": "2e5fef4546874ff4295742efe55c174e94ce261606796ed5405335c36061cecb",
+    "sourceSha256": "da15f46f110c7b86dd44a145dc0997c6293f24edb4b143c2e39e04c8c7fa9e0b",
     "reports": [
       "TESTING.md"
     ],
@@ -116,7 +117,7 @@
   },
   "tests": {
     "report": "TESTING.md",
-    "summary": "rytm-emu c5732f0, OS 1.74, build PP07 (core-ar2 0.3 + 0.1.0): LOP steps OFF/ON/PIPO on a three-position switch; ON plays stock's loop, PIPO a click-free triangle from TUN -24 to +24; p-lock, scene lock, two voices, retrig, power-off, stock playing a saved PIPO as a loop; FUNC + STA/END stepping crossing by crossing, on the sound and on trig locks, in GRID and LIVE REC. Not run on a unit beyond PC03.",
+    "summary": "rytm-emu c5732f0, OS 1.74, build PP09: LOP OFF/ON/PIPO on a three-position switch; PIPO turns exactly at STA and END (period 2x the loop at TUN -24, 0, +24); p-lock, scene, two voices, retrig, power-off; stock plays a saved PIPO as a loop; zero snap one crossing a detent on stock's own frames, on the sound and on locks. Hardware: PC03 only.",
     "documentation": {
       "tutorial": {
         "title": "Quick tutorial",
