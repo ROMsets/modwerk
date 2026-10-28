@@ -317,6 +317,15 @@ in column 23, the column where the drawn waveform changes sign; the END line is 
 waveform changes sign in column 73. The same as the photo. The module draws nothing on this view;
 the lines are stock's rendering of the STA and END values, and the frames played are the crossings
 (checked earlier from the voice position and the audio).
+Stock-only control (stock 1.74, no module, PIPO_SLOW, END by plain and FUNC turns, settled screens):
+END 17680 and 17688 (stock can't reach our 17686) both draw in column 72, as PP10 does. Fitted from
+stock's own screens and checked on new values: a line sits at column 2 + floor(value x 123 / 30720),
+STA and END alike, while the waveform's columns are 2 + floor(frame x 124 / frames). The lines are
+spaced over 123 columns and the wave over 124, so a line drifts up to one column left of its frame
+across the screen: of PIPO_SLOW's ten crossings, 7941, 16581, 22341 and 25221 draw a column left
+(STA on 7941 seen in column 35, its crossing drawn in 36), the other six on the crossing's column.
+Screens taken during fast turning can show a line from mid-glide; the settled screen is the one
+above.
 
 ## Open items
 
