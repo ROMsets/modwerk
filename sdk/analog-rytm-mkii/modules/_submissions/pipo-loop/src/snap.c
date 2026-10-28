@@ -2,7 +2,7 @@
 // Pipo Loop: zero snap. FUNC + turn on the SAMPLE page's STA or END moves
 // that point to the next zero crossing of the sample in the direction of the
 // turn, one crossing for each detent's worth of encoder counts (COUNTS, as
-// pipo_loop_enc counts them), on the sound or on held trigs' locks (audio.s
+// pipo_loop_enc counts them, at most one an encoder event), on the sound or on held trigs' locks (audio.s
 // hands the turn over).
 //
 // STA and END are 8.8 values of 120, 1/30720 of the sample: stock's prefetch
@@ -197,12 +197,13 @@ int pipo_loop_enc(void *brain, char *ev)
 static int steps_now(void)
 {
     if (used_serial != enc_serial) {
-        used_steps = enc_acc / COUNTS;
-        if (used_steps > 8)
-            used_steps = 8;
-        if (used_steps < -8)
-            used_steps = -8;
-        enc_acc -= used_steps * COUNTS;
+        // One crossing once a detent's counts are in, never more for one
+        // event: the counts come after stock's acceleration, and a fast or
+        // FUNC-held turn sends more than a detent's (PC07 on a unit stepped
+        // several crossings a detent). What is left over is dropped.
+        used_steps = enc_acc >= COUNTS ? 1 : enc_acc <= -COUNTS ? -1 : 0;
+        if (used_steps)
+            enc_acc = 0;
         used_serial = enc_serial;
     }
     return used_steps;
