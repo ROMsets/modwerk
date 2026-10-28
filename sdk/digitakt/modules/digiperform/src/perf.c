@@ -258,15 +258,39 @@ static struct kstore store;
 
 static int pver(unsigned char *kit) { return pget(kit, VER_BIT) | pget(kit, VER_BIT + 1) << 1; }
 
+/* The engine reads every entry on every audio block, so the pool is decoded only when its 92 bits have changed:
+ * the four 23-bit words are compared with the last ones decoded. */
+static u32 pool_w[4];
+static u16 pool_e[NENT];
+static int pool_ok;
+
 /* an entry as the rest of the code reads it: bits 15..13 are unused here, see E_ALL and friends */
 static u16 entry(unsigned char *kit, int i)
 {
-    int b, v = 0;
-    if (pver(kit) != VER_NOW)
-        return 0;
-    for (b = 0; b < ENT_BITS; b++)
-        v = (v << 1) | pget(kit, i * ENT_BITS + b);
-    return (u16)(((v >> 10 & 1) << 13) | ((v >> 7 & 7) << 10) | ((v >> 1 & 63) << 4) | ((v & 1) << 3));
+    u32 w[4];
+    int t, b, n, r = 0, ver;
+    for (t = 0; t < 4; t++)
+        w[t] = (u32)(XB(kit, 6 * (t + 4) + 3) & 0x7f) | (u32)XB(kit, 6 * (t + 4) + 4) << 7 | (u32)XB(kit, 6 * (t + 4) + 5) << 15;
+    if (!pool_ok || w[0] != pool_w[0] || w[1] != pool_w[1] || w[2] != pool_w[2] || w[3] != pool_w[3]) {
+        ver = (int)(w[3] >> 19 & 3);             /* stream bits 88, 89 */
+        t = 0;
+        for (n = 0; n < NENT; n++) {
+            int v = 0;
+            for (b = 0; b < ENT_BITS; b++) {
+                v = (v << 1) | (int)(w[t] >> r & 1);
+                if (++r == 23) {
+                    r = 0;
+                    t++;
+                }
+            }
+            pool_e[n] = ver != VER_NOW ? 0 :
+                (u16)(((v >> 10 & 1) << 13) | ((v >> 7 & 7) << 10) | ((v >> 1 & 63) << 4) | ((v & 1) << 3));
+        }
+        for (t = 0; t < 4; t++)
+            pool_w[t] = w[t];
+        pool_ok = 1;
+    }
+    return pool_e[i];
 }
 
 static u32 lock(void)
