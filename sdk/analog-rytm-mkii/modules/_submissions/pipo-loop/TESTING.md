@@ -8,11 +8,11 @@ Everything below was observed in rytm-emu on the named build, except the Hardwar
 - Stock OS 1.74: `.syx` `cb0f99d6…e123`, the owner's file.
 - Core: elekloader core-ar2 0.3 (`core-ar2-0.3.elemod` `6b97dfb3…3e58`, as vendored).
 - Build PP10 (core-ar2 0.3 + Pipo Loop 0.1.0-experimental, `--version PP10`), from that source: `.syx`
-  `PP10SHA`.
+  `1107d5ec0e18e6e710044c8b7d5a3066cc24d9d1f3dd1a0cbccd32ec965bd62f`.
 - Build PC08 (core-ar2 0.3 + Silent Pad+Trig 0.5.1 + Pipo Loop 0.1.0, `--version PC08`): `.syx`
-  `PC08SHA`.
+  `e706dcf3af4544f340b373001cadd749d14a5bbaff6fccc33d1e6f5170cf85b8`.
 - Diagnostic PD02 (PC08's code plus an on-screen readout, branch `diag/pipo-snap`; not for release): `.syx`
-  `PD02SHA`.
+  `d2f3c51f0c495ed821ee2bcda7b4e6f068a5b8f75d69e93d30925c8b52e47a5e`.
 - Build PX07 (with Filter Hz, Loop Sync and Silent Pad+Trig): `.syx` `7dc637fc…`. Linked only, not booted.
 - Earlier builds: PP03 and PC01 (before the code review), PP05 and PC03 (after it), PP06 and PC04 (the
   three-position switch), PP07 and PC05 (zero snap on the sound), PP08 and PC06 (locks), PP09 and PC07 (exact turns);
