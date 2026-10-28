@@ -83,11 +83,12 @@ pipo_loop_func_gate:
         moveq   #44,%d0                         | END
         cmp.l   %d2,%d0
         bne.s   9f
-1:      move.l  %d4,-(%sp)
+1:      clr.l   -(%sp)                          | not a lock
+        move.l  %d4,-(%sp)
         move.l  %d2,-(%sp)
         move.l  %a2,-(%sp)
         jsr     pipo_loop_snap
-        lea     12(%sp),%sp
+        lea     16(%sp),%sp
         movea.l (%a2),%a0                       | the view's vtable, as stock had it
         cmp.l   #SNAP_NONE,%d0
         beq.s   9f
@@ -95,6 +96,65 @@ pipo_loop_func_gate:
         moveq   #0,%d6                          | applied as a fine turn
 9:      pea     -34(%fp)                        | displaced
         jmp     pipo_loop_func_resume
+
+| The same with a trig held: stock edits the trig's lock through the view's
+| lock call, view->vt[124](view, id, delta), with no FUNC argument (FUNC
+| makes no difference there). The site replaces the three pushes of its
+| arguments; d6's low byte is FUNC held, set earlier in the handler, d2 the
+| id, d4 the delta, a2 the view, a0 its vtable. Where the view has a lock
+| editor, the delta for STA and END with FUNC held becomes the step to the
+| next crossing from the lock's value; without one stock edits each held
+| trig in turn and pipo_loop_trig_gate takes it there.
+
+        .globl  pipo_loop_lock_gate
+
+pipo_loop_lock_gate:
+        tst.b   %d6
+        beq.s   9f
+        moveq   #43,%d0                         | STA
+        cmp.l   %d2,%d0
+        beq.s   1f
+        moveq   #44,%d0                         | END
+        cmp.l   %d2,%d0
+        bne.s   9f
+1:      pea     1                               | a lock
+        move.l  %d4,-(%sp)
+        move.l  %d2,-(%sp)
+        move.l  %a2,-(%sp)
+        jsr     pipo_loop_snap
+        lea     16(%sp),%sp
+        movea.l (%a2),%a0                       | the view's vtable, as stock had it
+        cmp.l   #SNAP_NONE,%d0
+        beq.s   9f
+        move.l  %d0,%d4
+9:      move.l  %d4,-(%sp)                      | displaced
+        move.l  %d2,-(%sp)                      | displaced
+        move.l  %a2,-(%sp)                      | displaced
+        jmp     pipo_loop_lock_resume
+
+| Stock's lock edit without a lock editor runs this for each held trig: a
+| trig with a lock gets view->vt[120](view, trig, id, delta). The site
+| replaces the setup of that call (d0 the delta, d2 the trig, a2 the edit's
+| {view, id, delta}); pipo_loop_snap_trig gives the step from that trig's
+| own lock to the next crossing, for STA and END with FUNC held.
+
+        .globl  pipo_loop_trig_gate
+        .extern pipo_loop_snap_trig
+
+pipo_loop_trig_gate:
+        move.l  %d0,-(%sp)                      | delta
+        move.l  4(%a2),-(%sp)                   | id
+        move.l  %d2,-(%sp)                      | trig
+        move.l  (%a2),-(%sp)                    | view
+        jsr     pipo_loop_snap_trig
+        lea     16(%sp),%sp
+        cmp.l   #SNAP_NONE,%d0
+        bne.s   1f
+        move.l  8(%a2),%d0                      | stock's delta
+1:      movea.l (%a2),%a0                       | displaced
+        movea.l (%a0),%a1                       | displaced
+        move.l  %d0,-(%sp)                      | displaced
+        jmp     pipo_loop_trig_resume
 
         .section .rodata
 pipo_loop_pipo:

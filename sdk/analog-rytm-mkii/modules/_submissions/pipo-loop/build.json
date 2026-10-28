@@ -18,7 +18,8 @@
     "ui:SAMPLE page LOP value PIPO and its three-position switch",
     "param:LOP range OFF/ON/PIPO, its value text and icon",
     "ui:FUNC + SAMPLE STA turn",
-    "ui:FUNC + SAMPLE END turn"
+    "ui:FUNC + SAMPLE END turn",
+    "ui:FUNC + SAMPLE STA/END turn with a trig held"
   ],
   "requires": [],
   "derive": null,
@@ -33,14 +34,20 @@
         "pipo_loop_icon3": "0x400fef4a",
         "pipo_loop_icon_frames": "0x419f03cc",
         "pipo_loop_icon_resume": "0x400fedfa",
-        "pipo_loop_func_resume": "0x4003a246"
+        "pipo_loop_func_resume": "0x4003a246",
+        "pipo_loop_lock_resume": "0x4003a1a2",
+        "pipo_loop_trig_resume": "0x40037f72"
       },
       "cflags": [
         "-DPARAMS_EFF_AT=0x8000f7a8",
         "-DVOICE_REC_AT=0x80005b30",
         "-DVOICE_OWNER_AT=0x40291138",
         "-DTRIG_NEXT_AT=0x8000586c",
-        "-DSAMPLE_SLOTS_AT=0x41329e70"
+        "-DSAMPLE_SLOTS_AT=0x41329e70",
+        "-DLOCK_EDITOR_AT=0x40036636",
+        "-DTRACK_INDEX_OF_AT=0x400b693e",
+        "-DLOCK_SLOT_AT=0x40006ea8",
+        "-DIS_KEY_HELD_AT=0x40081c28"
       ],
       "sites": [
         {
@@ -78,6 +85,20 @@
           "stockSha256": "8737736787699bee24f07b0561eb3dcb4786d83c7e79ff2d664e8bc838f23e20",
           "op": "jmp",
           "target": "pipo_loop_func_gate"
+        },
+        {
+          "addr": "0x4003a19c",
+          "len": 6,
+          "stockSha256": "8b2ff1313c2715f1820d66eaf627a9cd77d6fa05e71bf755e169b313c3e91acf",
+          "op": "jmp",
+          "target": "pipo_loop_lock_gate"
+        },
+        {
+          "addr": "0x40037f6c",
+          "len": 6,
+          "stockSha256": "6bec112e4ad8dc436d8a56fe7dd56a0ebb067ae3ba9c4ab0b3b5009bd36d370e",
+          "op": "jmp",
+          "target": "pipo_loop_trig_gate"
         }
       ]
     }
