@@ -53,6 +53,8 @@ static word_t vcall3(void *obj, int slot, int a, int b)
 
 static int frame_of(unsigned frames, int v)   // stock's start or end frame for a value
 {
+    if (v < 0)
+        v = 0;
     return (int)((frames / FULL) * (unsigned)v + ((frames % FULL) * (unsigned)v + FULL - 1) / FULL);
 }
 
@@ -142,13 +144,14 @@ static int snap_from(int cur, int other, int slot, int steps, int lop)
             if (!t)
                 continue;
             if (s && t != s) {
-                int c = dir > 0 ? i : k;
-                int w = value_of(frames, c);
                 int kind = dir > 0 ? t : s;          // the new sign, in time: +1 rising
-                if ((!want || kind == want) && (dir > 0 ? w > v : w < v)) {
-                    v = w;
-                    found = 1;
-                    break;
+                if (!want || kind == want) {
+                    int w = value_of(frames, dir > 0 ? i : k);
+                    if (dir > 0 ? w > v : w < v) {
+                        v = w;
+                        found = 1;
+                        break;
+                    }
                 }
             }
             s = t;
@@ -207,6 +210,8 @@ static int steps_now(void)
         // One crossing an encoder event, whatever its count: on a unit a
         // slow detent sends 1 count, and a fast turn sends events of 15 or
         // more (stock's acceleration, PD01). What is left over is dropped.
+        // Only whether to step comes from here; the way comes from the
+        // delta stock hands over, so a stale count never turns it round.
         used_steps = enc_acc >= COUNTS ? 1 : enc_acc <= -COUNTS ? -1 : 0;
         if (used_steps)
             enc_acc = 0;
@@ -224,6 +229,7 @@ int pipo_loop_snap(void *view, int id, int delta, int lock)
         return SNAP_NONE;
     if (!steps)
         return 0;                    // less than a detent yet: hold the point
+    steps = delta > 0 ? 1 : -1;      // the way stock's own delta goes
     if (lock) {
         void *ed = (void *)LOCK_EDITOR(*(word_t *)((char *)view + 108));
         int track;
@@ -241,10 +247,15 @@ int pipo_loop_snap(void *view, int id, int delta, int lock)
     }
 }
 
+static int no_lock(int v)          // the lock call's "none": below 0, as an int or as its 8.8
+{
+    return v < 0 || (short)v < 0;
+}
+
 static int trig_value(void *view, int trig, int id)
 {
     int v = (int)vcall3(view, VT_TRIG_LOCK, trig, id);
-    if (v >= 0)
+    if (!no_lock(v))
         return (int)(short)v;
     return (int)(short)vcall3(view, VT_VALUE, id, (int)vcall2(view, VT_TRIG_CTX, trig));
 }
@@ -257,10 +268,11 @@ int pipo_loop_snap_trig(void *view, int trig, int id, int delta)
     if (!delta || (id != ID_STA && id != ID_END) || !IS_KEY_HELD(KEY_FUNC))
         return SNAP_NONE;
     lock = (int)vcall3(view, VT_TRIG_LOCK, trig, id);
-    if (lock < 0)
+    if (no_lock(lock))
         return SNAP_NONE;
-    if (!(steps = steps_now()))
+    if (!steps_now())
         return 0;
+    steps = delta > 0 ? 1 : -1;
     return snap_from((int)(short)lock, trig_value(view, trig, id == ID_STA ? ID_END : ID_STA),
                      trig_value(view, trig, ID_SMP) >> 8, steps, trig_value(view, trig, ID_LOP) >> 8);
 }
