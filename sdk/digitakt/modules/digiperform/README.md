@@ -63,7 +63,7 @@ Digi Perform needs core 2.1 and is built for OS 1.53 and 1.54.
 - One assignment for each knob A–H, and a track’s parameter can belong to one knob only. The assignments are kept in bits of tracks 5 to 8’s spare sound bytes that no other mod here uses.
 - Selecting another pattern while the sequencer is stopped reloads the offsets at once; while it plays, the new pattern’s knobs take over when it starts. This is detected from the audio engine’s own pattern bytes; the author has seen it work on a unit.
 - After the stock chord, metronome, scale, microtiming or retrig screens, press TRIG twice to open the Perform page again.
-- The Perform page opens from an audio track’s TRIG page. On a MIDI track the second press does nothing; SETTINGS > PERFORM EDIT works from any track.
+- The Perform page opens from the TRIG page, which the Digitakt shows for audio and MIDI tracks alike. SETTINGS > PERFORM EDIT works from any track.
 - The assignments are kept in bytes of each sound record that the firmware saves and loads but does not use itself. Whether they survive a power cycle on a unit is not yet recorded in TESTING.md.
 
 ### Changes to stock behaviour

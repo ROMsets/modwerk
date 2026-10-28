@@ -151,7 +151,7 @@
       "One assignment for each knob A-H, and a track’s parameter can belong to one knob only; the assignments are kept in bits of tracks 5 to 8’s spare sound bytes that no other mod here uses.",
       "Selecting another pattern while the sequencer is stopped reloads the offsets at once; while it plays, the new pattern’s knobs take over when it starts. This is detected from the audio engine’s own pattern bytes, and the author has seen it work on a unit.",
       "After the stock chord, metronome, scale, microtiming or retrig screens, press TRIG twice to open the Perform page again.",
-      "The Perform page opens from an audio track’s TRIG page. On a MIDI track the second press does nothing; SETTINGS > PERFORM EDIT works from any track.",
+      "The Perform page opens from the TRIG page, which the Digitakt shows for audio and MIDI tracks alike. SETTINGS > PERFORM EDIT works from any track.",
       "Built for OS 1.53 and 1.54. The author’s hardware observations, with the OS release each was made on, are in TESTING.md."
     ]
   },
@@ -175,7 +175,7 @@
     ]
   },
   "resources": {
-    "memoryBytes": 17292,
+    "memoryBytes": 17648,
     "fastBytes": 0,
     "load": {
       "display": "Not measured yet",
@@ -241,7 +241,7 @@
         "type": "emulator",
         "release": "1.54",
         "moduleVersion": "0.1.0-experimental",
-        "imageSha256": "917b882f3acdde69d6dbc7b9a06f192dd3a23bc2c4d655a744dbc060b2f7b2bd",
+        "imageSha256": "5e8d5fc7bfee3ec9d8d8280d106fbabd42be1abd0d793f1224fac831998d8785",
         "setup": "Pinned digiemu, firmware-native drawing, disposable first-boot project. No audio or cycle-timing qualification."
       }
     },
@@ -257,7 +257,7 @@
         "type": "emulator",
         "release": "1.54",
         "moduleVersion": "0.1.0-experimental",
-        "imageSha256": "917b882f3acdde69d6dbc7b9a06f192dd3a23bc2c4d655a744dbc060b2f7b2bd",
+        "imageSha256": "5e8d5fc7bfee3ec9d8d8280d106fbabd42be1abd0d793f1224fac831998d8785",
         "setup": "Pinned digiemu, firmware-native drawing, disposable first-boot project. No audio or cycle-timing qualification."
       }
     },
@@ -273,7 +273,7 @@
         "type": "emulator",
         "release": "1.54",
         "moduleVersion": "0.1.0-experimental",
-        "imageSha256": "917b882f3acdde69d6dbc7b9a06f192dd3a23bc2c4d655a744dbc060b2f7b2bd",
+        "imageSha256": "5e8d5fc7bfee3ec9d8d8280d106fbabd42be1abd0d793f1224fac831998d8785",
         "setup": "Pinned digiemu, firmware-native drawing, disposable first-boot project. No audio or cycle-timing qualification."
       }
     },
@@ -289,7 +289,7 @@
         "type": "emulator",
         "release": "1.54",
         "moduleVersion": "0.1.0-experimental",
-        "imageSha256": "917b882f3acdde69d6dbc7b9a06f192dd3a23bc2c4d655a744dbc060b2f7b2bd",
+        "imageSha256": "5e8d5fc7bfee3ec9d8d8280d106fbabd42be1abd0d793f1224fac831998d8785",
         "setup": "Pinned digiemu, firmware-native drawing, disposable first-boot project. No audio or cycle-timing qualification."
       }
     },
@@ -305,7 +305,7 @@
         "type": "emulator",
         "release": "1.54",
         "moduleVersion": "0.1.0-experimental",
-        "imageSha256": "917b882f3acdde69d6dbc7b9a06f192dd3a23bc2c4d655a744dbc060b2f7b2bd",
+        "imageSha256": "5e8d5fc7bfee3ec9d8d8280d106fbabd42be1abd0d793f1224fac831998d8785",
         "setup": "Pinned digiemu, firmware-native drawing, disposable first-boot project. No audio or cycle-timing qualification."
       }
     }

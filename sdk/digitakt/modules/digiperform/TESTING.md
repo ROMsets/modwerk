@@ -4,16 +4,16 @@
 
 Evidence tier: `none`. Nothing here is a filed hardware report; the author's own observations on a unit are listed below as they were reported.
 
-Source: `sdk/digitakt/modules/digiperform/src` at commit `21e098a73f442daff0fc82e7c437b6731179f4dd`. Modwerk's pinned toolchain compiled the source twice and produced the source-only packages in `sdk/imports/packages/digiperform/` (no stock bytes: addresses, lengths and SHA-256 guards only). The vendored elekloader builder (kit 0.6.0) then linked core 2.1 and Digi Perform into a local image on each release, with the owner's stock OS files, which stay on the author's computer:
+Source: `sdk/digitakt/modules/digiperform/src` at commit `ef0a333cf01282ecd0ae896abb878cf71b38bf9a`. Modwerk's pinned toolchain compiled the source twice and produced the source-only packages in `sdk/imports/packages/digiperform/` (no stock bytes: addresses, lengths and SHA-256 guards only). The vendored elekloader builder (kit 0.6.0) then linked core 2.1 and Digi Perform into a local image on each release, with the owner's stock OS files, which stay on the author's computer:
 
-- OS 1.54: core 2.1 and Digi Perform 0.1.0-experimental, built and verified; image SHA-256 `917b882f3acdde69d6dbc7b9a06f192dd3a23bc2c4d655a744dbc060b2f7b2bd`. Digi Perform package SHA-256 `9337a7f099aa7f5c87ee3dadfb63e6571c8e8803e5fb4296270b29b83c3628a0`.
-- OS 1.53: core 2.1 and Digi Perform 0.1.0-experimental, built and verified; image SHA-256 `017c016a29512b07b48b0d60c5dde36d64d7e3fe294e4e0783a17020771463bb`.
+- OS 1.54: core 2.1 and Digi Perform 0.1.0-experimental, built and verified; image SHA-256 `5e8d5fc7bfee3ec9d8d8280d106fbabd42be1abd0d793f1224fac831998d8785`. Digi Perform package SHA-256 `f055fe24fb1e68ac392c51ee9da141a1a9006d1c1255643cf01f603f6b3dab47`.
+- OS 1.53: core 2.1 and Digi Perform 0.1.0-experimental, built and verified; image SHA-256 `6f56d9a55d0d7bb40b48860c7c40a859ed0a8fb793b8dc7bad6395d2f7cadd8a`.
 
-The local images carry the build label `2.3c`. Both are build checks, not hardware tests.
+The local images carry the build label `3.0a`. Both are build checks, not hardware tests.
 
 ## Resources
 
-- Memory: 17,292 B per release: 16,546 B in `.run`, 726 B in `.bss` and 20 B of table contributions (five core events). No FAST AUDIO bytes. This is the object's size, from the package; it excludes the shared core and linker alignment.
+- Memory: 17,648 B per release: 16,902 B in `.run`, 726 B in `.bss` and 20 B of table contributions (five core events). No FAST AUDIO bytes. This is the object's size, from the package; it excludes the shared core and linker alignment.
 - Load: not measured. The engine hook runs once per audio block and adds up to eight offsets to the smoothed parameter words; the cost has not been timed on a unit or in a cycle-accurate run.
 
 ## Combinations
@@ -30,9 +30,17 @@ Run in the pinned digiemu (revision `c1b5735835923e328f8b4950d6ba927875e5b669`, 
 - Pattern change: stopped, the offsets reload at once; playing, they hold at the selection and release when the engine switches pattern.
 - Stock screens: FUNC + TRK, FUNC + PTN, FUNC + PAGE, and a held step with an arrow show the stock screens, the same as stock without the module. The stock firmware itself keeps the metronome and scale pages open after the keys are released and closes the metronome on a second FUNC + PTN; the Perform page leaves first, so those behaviours are the stock ones.
 
+Storage and entry changes (build `3.0a`, emulator and host only; none of it is hardware evidence):
+
+- The assignments now live in tracks 5 to 8's spare sound bits with a version of their own and a marker in parameter slot 49 of those tracks. A host test of the packing code taken from `src/perf.c` ran 20,000 random pools: every entry (all-tracks flag, track, parameter, direction) read back as written, the two reserved bits were left as they were, only the pool's 92 own bits changed (no other byte or bit of the sound, tracks 1 to 4 untouched), the 92 stream bits are 92 distinct bits, and a pool without version 1 reads as empty.
+- All eight rows of Perform Edit were set to different tracks and parameters, and the Perform page and the edit list read every one back, including rows G and H, which sit across the track 7 and 8 boundary of the pool; earlier rows did not change when later ones were set. A negative direction read back. The all-tracks setting was not reached in the emulator run.
+- Pattern A01 and A02 kept their own assignments across a pattern switch, and copying A01 to A03 carried both.
+- With Euclidean 1.1.5 and cc-names 2.1.1 in the same image (dt-support 1.0.1), the elekloader builder reports no overlaps on both releases. Euclidean's page (hold FUNC + AMP), the Perform page (TRIG twice) and Euclidean again all opened in turn on OS 1.54 in the emulator. On a MIDI track the second TRIG press opened the Perform page, as it did before the MIDI hooks were removed.
+- Not run: a project save and reload (the capture tool's card is write-protected, and a plan with my own harness landed on the wrong screens), loading a sound onto tracks 5 to 8 or onto tracks 1 to 4, saving a track 5 to 8 sound to the pool, the same checks on OS 1.53, and any hardware run of the new layout.
+
 ## Author's hardware observations
 
-Reported by the author (ROMsets) while testing local builds on a unit, build labels in brackets. Recorded as reported. The author says most of this testing was on OS 1.54; the per-item OS release was not recorded, and none of it is a version-matched hardware report.
+Reported by the author (ROMsets) while testing local builds on a unit, build labels in brackets. These builds (2.x) kept the assignments in other bytes of the kit than the current layout (tracks 5 to 8's spare bits, build 3.0a), so none of this covers the storage as it now is. Recorded as reported. The author says most of this testing was on OS 1.54; the per-item OS release was not recorded, and none of it is a version-matched hardware report.
 
 - FUNC and turn snapped much more sensitively than a stock page (before the lock fix), then "a load better" after it (2.2a).
 - Track and parameter chooser resolution "right for both" after matching the SAMP selector (2.2b).
@@ -41,7 +49,7 @@ Reported by the author (ROMsets) while testing local builds on a unit, build lab
 - Overall, "hardware looks pretty good"; a slight delay in the knob indicators after a pattern change was reported, and a change to show the new values at the switch followed (2.3a, not re-reported).
 - OS 1.53: a final smoke test on a unit (build 2.3c) that the author describes as covering a good part of the main functionality: the page opening, Perform Quick Assign, setting and editing assignments in Perform Edit, and changing assigned parameter values with the knobs. Not a full pass.
 
-Not tested on a unit, or not reported: power-cycle persistence of the assignments, a project saved with assignments loaded on a build without the module, anything on OS 1.53 beyond the smoke test above, CPU load, every combination with other mods, and the stock flows compared side by side beyond the screens above.
+Not tested on a unit, or not reported: the current storage layout (tracks 5 to 8's spare bits) on a unit at all, power-cycle persistence of the assignments, a project saved with assignments loaded on a build without the module, anything on OS 1.53 beyond the smoke test above, CPU load, every combination with other mods, and the stock flows compared side by side beyond the screens above.
 
 ## Category checklist (system)
 
@@ -52,9 +60,9 @@ Not tested on a unit, or not reported: power-cycle persistence of the assignment
 - A project with assignments loaded without the module: not tested.
 - Affected: the original Digitakt on OS 1.53 and 1.54, audio tracks 1–8; existing projects are unchanged until an assignment is made.
 
-## Documentation capture — 26 October 2026
+## Documentation capture — 28 October 2026
 
-Documentation version: `0.1.0-experimental`. Source revision: `21e098a73f442daff0fc82e7c437b6731179f4dd` (`sdk/digitakt/modules/digiperform`). The OS 1.54 image above was captured through real panel inputs in the pinned digiemu with firmware-native drawing (`hle=False`) and a disposable first-boot project. The capture script runs without the audio engine, so the knobs show their assignment but not live values. Only complete, unmodified LCD frames were kept at 6× integer scale, and every image was opened for review. The record is [capture.json](media/capture.json); the plan is [capture-plan.txt](media/capture-plan.txt).
+Documentation version: `0.1.0-experimental`. Source revision: `ef0a333cf01282ecd0ae896abb878cf71b38bf9a` (`sdk/digitakt/modules/digiperform`). The OS 1.54 image above was captured through real panel inputs in the pinned digiemu with firmware-native drawing (`hle=False`) and a disposable first-boot project. The capture script runs without the audio engine, so the knobs show their assignment but not live values. Only complete, unmodified LCD frames were kept at 6× integer scale, and every image was opened for review. The record is [capture.json](media/capture.json); the plan is [capture-plan.txt](media/capture-plan.txt).
 
 - The Perform page with eight empty knobs.
 - Perform Quick Assign: choosing the track for knob A.

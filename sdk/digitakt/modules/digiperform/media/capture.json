@@ -3,13 +3,13 @@
   "machine": "digitakt",
   "moduleId": "digiperform",
   "moduleVersion": "0.1.0-experimental",
-  "capturedAt": "2026-10-26",
+  "capturedAt": "2026-10-28",
   "firmware": "1.54",
-  "imageSha256": "917b882f3acdde69d6dbc7b9a06f192dd3a23bc2c4d655a744dbc060b2f7b2bd",
+  "imageSha256": "5e8d5fc7bfee3ec9d8d8280d106fbabd42be1abd0d793f1224fac831998d8785",
   "stockSha256": "f78ba80fa7b1da5fb0e1ff61ad61e9e71aafe79f4364fc49679f3651353e3cf6",
   "source": {
     "repository": "https://github.com/repeat98/modwerk",
-    "revision": "21e098a73f442daff0fc82e7c437b6731179f4dd",
+    "revision": "ef0a333cf01282ecd0ae896abb878cf71b38bf9a",
     "path": "sdk/digitakt/modules/digiperform"
   },
   "kit": {
@@ -32,10 +32,10 @@
       {
         "id": "digiperform",
         "version": "0.1.0-experimental",
-        "sha256": "d789f0e709e5f1ea7455c52ac627bfb827a271dd729285ad2ec01be1063bb01d"
+        "sha256": "f055fe24fb1e68ac392c51ee9da141a1a9006d1c1255643cf01f603f6b3dab47"
       }
     ],
-    "outputVersion": "2.3c",
+    "outputVersion": "3.0a",
     "verified": true
   },
   "emulator": {
@@ -82,7 +82,7 @@
       "press 19"
     ],
     [
-      1514.237,
+      1514.238,
       "release 19"
     ],
     [
@@ -90,7 +90,7 @@
       "press 1"
     ],
     [
-      2414.263,
+      2414.264,
       "press 40"
     ],
     [
@@ -138,7 +138,7 @@
       "press 15"
     ],
     [
-      8014.427,
+      8014.426,
       "release 15"
     ],
     [
@@ -194,11 +194,11 @@
       "press 15"
     ],
     [
-      10814.507,
+      10814.508,
       "release 15"
     ],
     [
-      11114.516,
+      11114.517,
       "press 15"
     ],
     [
@@ -226,14 +226,14 @@
       "path": "media/assign-track.png",
       "sha256": "a62fe4fbb94a716c40f58460e27aeb97336ff98e4166c3cf7be65a7d93aba6c3",
       "plan": "wait 1000\ntap TRIG\ntap TRIG\nwait 500\nsnap perform-page\npress FUNC\npress #40\nrelease #40\nrelease FUNC\nwait 300\nsnap assign-track\ntap #40\nwait 300\ntap #40\nwait 2500\nsnap assigned\ntap GLOBAL\nwait 500\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\nsnap settings\ntap YES\nwait 500\nsnap perform-edit\n",
-      "atMs": 2800.0002136752137,
-      "requestedAtMs": 3014.280982905983
+      "atMs": 2780.940811965812,
+      "requestedAtMs": 3014.2805555555556
     },
     {
       "path": "media/assigned.png",
       "sha256": "f8fa69dccbbc1b288f82882d58907fcd6201c6ed3932f82e7b28a552c0ae75cb",
       "plan": "wait 1000\ntap TRIG\ntap TRIG\nwait 500\nsnap perform-page\npress FUNC\npress #40\nrelease #40\nrelease FUNC\nwait 300\nsnap assign-track\ntap #40\nwait 300\ntap #40\nwait 2500\nsnap assigned\ntap GLOBAL\nwait 500\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\nsnap settings\ntap YES\nwait 500\nsnap perform-edit\n",
-      "atMs": 6393.8948717948715,
+      "atMs": 6400.0,
       "requestedAtMs": 6614.385683760684
     },
     {
@@ -247,8 +247,8 @@
       "path": "media/perform-edit.png",
       "sha256": "21a7d8976b98c282be5662c3a64156402de8960ff5d1726a7bee9d9d5b480c96",
       "plan": "wait 1000\ntap TRIG\ntap TRIG\nwait 500\nsnap perform-page\npress FUNC\npress #40\nrelease #40\nrelease FUNC\nwait 300\nsnap assign-track\ntap #40\nwait 300\ntap #40\nwait 2500\nsnap assigned\ntap GLOBAL\nwait 500\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\nsnap settings\ntap YES\nwait 500\nsnap perform-edit\n",
-      "atMs": 12200.000427350427,
-      "requestedAtMs": 12414.554273504273
+      "atMs": 12199.999786324786,
+      "requestedAtMs": 12414.554059829059
     }
   ],
   "limitations": [
