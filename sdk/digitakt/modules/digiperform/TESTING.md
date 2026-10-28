@@ -48,7 +48,7 @@ Known limitation, reported by the author: when a new pattern starts to play, the
 
 Reported by the author (ROMsets) while testing local builds on a unit, build labels in brackets. These builds (2.x) kept the assignments in other bytes of the kit than the current layout (tracks 5 to 8's spare bits, build 3.0a), so none of this, except the first item (3.0a), covers the storage as it now is. Recorded as reported. The author says most of this testing was on OS 1.54; the per-item OS release was not recorded, and none of it is a version-matched hardware report.
 
-- Build 3.0a on OS 1.54, the checklist given for this update (assign, save and power-cycle, pattern switch and copy, sound loads onto tracks 5 to 8 and 1 to 4, a MIDI track's TRIG page, the Euclidean and cc-names image): the author reported "everything seems good" apart from the Overbridge delay under "Overbridge delay" above. Reported as a whole; the individual steps were not itemised. OS 1.53 on the new layout: not yet reported.
+- Build 3.0a on OS 1.54, the checklist given for this update (assign, save and power-cycle, pattern switch and copy, sound loads onto tracks 5 to 8 and 1 to 4, a MIDI track's TRIG page, the Euclidean and cc-names image): the author reported "everything seems good" apart from the Overbridge delay under "Overbridge delay" above. Reported as a whole; the individual steps were not itemised. Build 3.0d on OS 1.53, a smoke test of the same functions on a unit: the author reported "I think we're good to go". Reported as a whole; the individual steps and the pass or fail of each were not itemised. Build 3.0d on OS 1.54 was tested by the author with Overbridge connected (see "Overbridge delay").
 - FUNC and turn snapped much more sensitively than a stock page (before the lock fix), then "a load better" after it (2.2a).
 - Track and parameter chooser resolution "right for both" after matching the SAMP selector (2.2b).
 - Selecting a pattern while it plays: the parameters did not reset to the pattern's values at first (2.2d), then "that works now" (2.2e).
@@ -56,7 +56,7 @@ Reported by the author (ROMsets) while testing local builds on a unit, build lab
 - Overall, "hardware looks pretty good"; a slight delay in the knob indicators after a pattern change was reported, and a change to show the new values at the switch followed (2.3a, not re-reported).
 - OS 1.53: a final smoke test on a unit (build 2.3c) that the author describes as covering a good part of the main functionality: the page opening, Perform Quick Assign, setting and editing assignments in Perform Edit, and changing assigned parameter values with the knobs. Not a full pass.
 
-Not tested on a unit, or not reported: the current storage layout (tracks 5 to 8's spare bits) on a unit at all, power-cycle persistence of the assignments, a project saved with assignments loaded on a build without the module, anything on OS 1.53 beyond the smoke test above, CPU load, every combination with other mods, and the stock flows compared side by side beyond the screens above.
+Not tested on a unit, or not reported step by step: the current storage layout's checklist above was reported only as a whole, so each step (power-cycle persistence, sound loads onto tracks 5 to 8 and 1 to 4, the all-tracks setting) has no item of its own; a project saved with assignments loaded on a build without the module; CPU load (never timed), every combination with other mods, and the stock flows compared side by side beyond the screens above.
 
 ## Category checklist (system)
 
