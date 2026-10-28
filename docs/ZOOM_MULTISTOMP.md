@@ -172,32 +172,88 @@ Before any browser write, in this order:
 3. A first write on the maintainer's own pedal with the stock updater ready
    for recovery, then a documented recovery path for users.
 
-What this means for the Octatrack interface ([ADD_A_MACHINE.md](ADD_A_MACHINE.md#aim-for-the-octatracks-interface)),
-the owner's plan (27 October 2026, on #956), like the Octatrack beta:
-**MIDISTOMP becomes the base** underneath, the way the base is on the Octatrack,
-and the ZDL effects are the modules; its author is on board. MIDISTOMP's patches
-are applied in the browser to the user's own Zoom updater (as the Octatrack base
-is built from the user's own OS file) and flashed in update mode, the bootloader
-never touched. The link is Web MIDI SysEx (the pedal page's `ZoomLink`, plus
-Modwerk commands the base answers); MIDISTOMP's transport block becomes the one
-tempo and transport contract. Zoom's firmware with effect files stays the route
-without a base, like the Octatrack's card build: installs write persistent
-storage and load after a power cycle, with no RAM load, trial, Keep or Undo.
-Order: the read-only pedal page; a hello base (2.10 plus one patch that answers a
-Modwerk hello, built with `zoomms` and flashed with Zoom's updater); the browser
-builder and flashing; effect sync; the pedal on `OctatrackHub` with module sets;
-the project's own knob handlers and the `zdl` contract. The owner is preparing
-the detailed plan.
+What this means for the Octatrack interface ([ADD_A_MACHINE.md](ADD_A_MACHINE.md#aim-for-the-octatracks-interface)):
+stock Zoom firmware has no way to load an effect into RAM, so there is no
+trial, Keep or Undo; installs write persistent storage. Zoom's firmware with
+effect files stays the route without a base, like the Octatrack's card build,
+with that resource reason for the exception, for owner review.
 
-## Proposed sequence
+## The base: MIDISTOMP
 
-1. Agree the contract changes above, with the Zoom pedals as one family.
-2. ~~Promote the draft profiles to `sdk/machines/` with the agreed fields.~~ Done.
-3. A `zdl` module contract for prebuilt effects (binary hash, source path,
-   knobs, DSP cost, effect ID, evidence), then a first module set: the 22-effect
-   pack.
-4. In-browser NAM and cab builds from the project's templates.
-5. Install: Effect Manager download now; a browser install from the user's own
-   Zoom updater once the steps in [Installing on stock firmware](#installing-on-stock-firmware)
-   are done.
-6. Optional: the patch editor as a device page.
+Owner, 27 October 2026: the pedals get the Octatrack beta's setup, with Luca
+Matturro's [MIDISTOMP](https://github.com/matujuice/zoom-ms-midistomp) (MIT)
+as the base: Zoom's own 2.10 patched in the browser from the user's own
+updater, flashed once in update mode, then modules over USB. Luca agreed to
+mod selection and to his transport block as the shared tempo contract.
+
+- `vendor/midistomp/` holds MIDISTOMP at a pinned revision
+  (`sdk/imports/midistomp-*.json`): `LICENSE`, `models/` and `asm/` unchanged,
+  and its patches in `midistomp.json`, converted by
+  [`scripts/midistomp-import.ts`](../scripts/midistomp-import.ts) without Zoom's
+  bytes. Each `expect` becomes a sha256 (as the Octatrack's `stock_guard`), a
+  text `replace` becomes writes at the addresses it hits in the stock 2.10 OS,
+  and a run of 16 or more bytes a patch repeats from Zoom's files (part of the
+  boot picture, a register-restore sequence) becomes a copy from the user's
+  own file.
+- [`zoom-base.ts`](../src/engine/zoom/zoom-base.ts), with `ais.ts` (a port of
+  zoomms' `ais.py`), applies them in the browser. From the stock MS-70CDR 2.10
+  Mac updater (27 October 2026) it builds `hello` and MIDISTOMP V1.2 byte for
+  byte as zoomms does: `ZOOM_MS70CDR_APP='…/ZOOM MS-70CDR v2.10 Updater.app'
+  npx vitest run src/engine/zoom`. Firmware never enters CI.
+- A new MIDISTOMP revision: run the import on a clean checkout with
+  `--app '<stock Mac updater>.app'`, then refresh the zoomms hashes in
+  `zoom-base.test.ts` (`zoomms build-mac` at that revision).
+
+### Flashing from the browser (next)
+
+Nothing writes to a pedal yet. Before the first write of our own:
+
+1. **Record one flash on the wire.** Only Effect Manager's write of the effect
+   area has been recorded, never the OS write. Record MIDISTOMP's updater (its
+   own builder, or `zoomms build-mac`) flashing an MS-70CDR, with MIDI
+   Monitor's spy driver. Use MIDISTOMP's updater, not Zoom's: Zoom's rewrites
+   the bootloader on every update, MIDISTOMP's never does. Recovery: update
+   mode (hold Up and Down while plugging in USB) and Zoom's 2.10 updater. The
+   capture carries Zoom's OS, so it stays private.
+2. **The flasher**, on the pedal page's link (SysEx framing, 8-into-7 packing
+   and CRC32 in `zoom-protocol.ts`). In update mode the identity's version
+   reads "1.1…" (the bootloader) and `01` answers `00 00`. Messages are
+   `F0 52 00 61 <command> … F7`, numbers in 7-bit groups, least significant
+   first: erase `0A` + address (5) + length (5); write `02` + address (5) +
+   length (2) + 2,048 bytes packed 8-into-7, high bits first, + CRC32 of the
+   block XOR `0xFFFFFFFF` (5); finish `04`, and the pedal reboots. Each answers
+   `00 00`. The recording settles anything the OS write does differently.
+3. **Its steps**, the stock updater's script with MIDISTOMP's skips
+   (`zoomms/macapp.py`): erase `0x0EF000` +`0x1000` (the OS trailer first, so
+   an interrupted flash shows); if the boot logo changed, erase `0x3FD000`
+   +`0x3000` and write `Preset.bin`; erase `0x040000` +`0xB0000`; write
+   `Main.bin` (720,896 bytes, 352 blocks). Never `0x000000` (the bootloader)
+   or `0x0F0000` (the effects).
+4. **Tests:** a fake pedal that must receive exactly the recorded messages,
+   byte for byte; then `hello` (it only renames the VERSION menu entry) on a
+   real MS-70CDR, its owner putting it in update mode.
+
+## Plan
+
+In order, with who (27 October 2026). Effect Manager stays the fallback
+install throughout.
+
+1. The read-only pedal page and its link: #956 (Manro).
+2. ~~The base built in the browser~~: done (#991).
+3. The recording and the browser flasher (above), first run with `hello`.
+4. A hello base: a MIDISTOMP patch that answers a Modwerk SysEx hello
+   (version, then status), so the site knows a pedal runs the base (Luca,
+   with Modwerk agreeing the message).
+5. Which MIDISTOMP features depend on each other, so they can be picked as
+   mods (Luca). Shared parts, such as the transport block, go into the base.
+6. `OctatrackHub` taking a machine instead of `ZoomHub` copying it, then the
+   base install and update on the pedal page, effect sync (file plus
+   effect-list record, then a power cycle, as proven) and module sets.
+7. The project's own knob handlers instead of the stock ones every built
+   effect carries (Manro): until then no ZDL effect can be listed. Then the
+   `zdl` module contract (effect-ID ledger, DSP limit 300 under MIDISTOMP 2)
+   and a first module set.
+8. Later: the Windows `.exe` as input (a port of `zoomms/parts.py`), the
+   MS-50G and MS-60B (their stock updaters resolve and check the patches),
+   loading effects without a reboot, in-browser NAM and cab builds, and the
+   patch editor as a device page.

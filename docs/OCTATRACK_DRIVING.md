@@ -104,7 +104,7 @@ error and moves on. macOS `nc -U` hangs up before the reply, so use the script.
 | `pick:T1:FX2:SPRING_REV` | pick an effect by name (spaces as `_`), FX1 or FX2: the chooser opens, LEVEL scrolls the exact rows, YES; done once the track runs it (about 120 ms after YES); fails at once if the loader refuses. A notice on screen eats its first keys and it times out after 5 s: after removing a module the bank names (MISSING MODULES) send `YES` first |
 | `part1`-`part4` | switch Parts (PART + an arrow), done once the Part changed |
 | `ui` | each track's FX1/FX2 as they run, the current track, Part, transport |
-| `stats` | CPU, each core's mean/peak per mille, idle passes |
+| `stats` | CPU, each core's mean/peak per mille, idle passes. One reading is not a measurement: on 27 October 2026 (MKII, a dev twin, stopped, nothing changing) it swung between 41 % and 60 % within ten seconds. Take ten readings in each state, or time the hook itself with `modwerk_cost` (`profile`) |
 | `loader` | packets accepted, rejected, errors, jobs, selections, commits, rollbacks, code words per core |
 | `mem:0x80000ec4:16` | RAM in hex, read-only, any length, within 0x40000400-0x40cfffff (short of the pool's end and the loader's statics), 0x46000000-0x46ffffff, 0x80000000-0x8000ffff and the battery RAM's records 0x100f0000-0x100fffff (`dev.c`); the battery-RAM Part copies are outside it |
 | (any sequence) | answers within 20 s beyond its own `w` waits, else an error, and the next request runs |
