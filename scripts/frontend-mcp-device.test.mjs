@@ -317,6 +317,21 @@ describe('frontend MCP reviewed device transactions', () => {
     expect((await review()).review).toBeTypeOf('string')
   })
 
+  it('accepts a trial whose self-test only peaked over 90 %, and still undoes one with a fault beside it', async () => {
+    link.finalReading = { state: 3, failed: 8 | 256, saved: 1 }
+    const started = await trial()
+    expect(started.trial).toBeTypeOf('string')
+    expect(link.undos).toBe(0)
+    await service.call('device_keep', { trial: started.trial })
+    expect(link.keeps).toBe(1)
+  })
+
+  it('undoes a trial whose self-test found the DSP stopped beside a CPU peak', async () => {
+    link.finalReading = { state: 3, failed: 4 | 256, saved: 1 }
+    await expect(trial()).rejects.toThrow('passed physical self-test')
+    expect(link.undos).toBe(1)
+  })
+
   it('consumes the Undo token after restoration even when the completion status read fails', async () => {
     const result = await trial()
     link.failHealthOnce = true

@@ -1,33 +1,30 @@
-# Proposed sample-editor base service
+# Sample-editor base service
 
-This is an owner-review proposal, not released capability. It is split from
-[Beat Slicer staging #840](https://github.com/repeat98/modwerk/pull/840).
-Do not merge or publish it until the reuse and event-allocation decisions below
-are resolved. The physical report below applies only to its named private build, not the default beta base.
+The beta base carries this service (`npm run octatrack:base -- --beta` passes
+`--sample-editor`) since the owner accepted it on 27 October 2026. It came from
+[Beat Slicer #840](https://github.com/repeat98/modwerk/pull/840) and
+[#914](https://github.com/repeat98/modwerk/pull/914). The physical report below
+applies only to its named private build, not to the beta base.
 
-## Why it is proposed
+## Why the base owns it
 
 An independently loaded module needs a safe way to propose slice starts without
 retaining instrument pointers or replacing a stock menu another module uses.
-The proposed base copies metadata, owns native confirmation and atomic marker
+The base copies metadata, owns native confirmation and atomic marker
 publication, and admits typed action records against the complete current
 loader owner. Modules retain their own algorithms and controls.
 
-**Beat Slicer is the only confirmed consumer.** Its recording-buffer extension
-would still be the same module and does not establish a second consumer. A
-synthetic test client proves interface behavior, not demand from another module.
-No released catalogue subscriber is declared. Maintainer review must decide
-whether another real module needs this AED SLICE list; otherwise its stock sites
-should remain the module's own declared patch under the module guide's rule.
-Do not invent future consumers to justify base ownership.
+**Beat Slicer is the first consumer.** The owner accepted base ownership so
+that later AED SLICE actions share one menu and one confirmed marker writer
+instead of patching the same stock sites. A synthetic test client proves
+interface behavior, not demand from another module.
 
-## Event allocation is unresolved
+## Event allocation
 
-This snapshot appends `ot_sample_editor_actions` at provisional index 36,
-following main's MIDI events at 32–34 (#857) and `ev_trig_muted` at 35 (#912). No module package may be
-released against the provisional allocation.
+`ot_sample_editor_actions` is index 36, after the MIDI events at 32–34 (#857)
+and `ev_trig_muted` at 35 (#912). Packages built against the earlier
+provisional indices 32 and 35 do not load on the beta base.
 The target descriptor test reads the registry index instead of assuming 32.
-This branch is based on main, not stacked on #857 or another module.
 
 ## Boundary and scope
 
@@ -46,8 +43,9 @@ This branch is based on main, not stacked on #857 or another module.
   count store, with DMA still enabled; physical timing remains unqualified.
   PCM analysis, playback processing and implicit saves remain out of scope.
 - `sample_editor_menu.c` and `sample_editor_hooks.s`: native menu/selection and
-  waveform-worker boundaries, enabled only by the private `--sample-editor` flag.
-  Ordinary beta bases leave the stock editor sites and contribution disabled.
+  waveform-worker boundaries, built with `--sample-editor`. The beta base sets
+  it; a base built without it leaves the stock editor sites alone and refuses
+  contributions.
 - Loader changes carry typed table declarations, source-built C descriptor
   alignment and the machine's reviewed MCF54455 target/code-generation guard.
 
@@ -131,9 +129,13 @@ The contributor clarified that the bar counts are sample lengths and reported
 source and a full pairing of the file-slot values were not supplied; no
 per-source duration or additional cross-product coverage is inferred.
 
-The private helper later recorded USB loss at 10:41 Taipei time on 27 October
-and stopped; its final Undo was not verified. Whether this was a deliberate
-unplug/restart after testing or an unexpected disconnect awaits clarification.
+The private helper recorded USB loss at 10:41 Taipei time on 27 October.
+The author confirmed they deliberately powered the machine off, then unplugged
+USB after testing. On the next power-on, they reported Beat Grid was gone and
+the other modules returned. A fresh read-only check before the later Undo test
+verified original flashed base `77226ffcdc7ebc704040c92530dfd40401896ba7567450494a1a917686f7088d`
+and all sixteen saved module IDs/names. The interrupted playback run's final
+USB Undo remains unverified; the separate successful run below does not relabel it.
 No Keep, flash, sample/project save, persistence or final Undo result is claimed. Exact physical short-commit
 timing, complete scheduler/Pickup coverage and extended cancellation remain
 open. These results belong to the event-35 build above; the later merge of
@@ -142,3 +144,33 @@ not relabeled as tests of a regenerated event-36 base or default beta build.
 The board, service, menu, hooks and action implementation files still match
 the tested snapshot byte for byte; this source comparison does not qualify
 the different complete binary or its physical interrupt timing.
+
+
+### Separate same-build USB Undo verified — 27 October 2026
+
+The author explicitly requested completing the USB Undo test and confirmed
+stopped playback/recording, connected USB and a safe/disposable project.
+At 20:36 Taipei time, a fresh read-only connection verified the original
+flashed `77226ffc…` base, normal/known state and all sixteen saved modules.
+
+The exact playback-test private base `8ffc8ffefe3ecd00ca434fe67ee6e902ea0b359d0f6343a404a5bd3ec4e9c69a`
+was RAM-booted again. A new single-use review bound its empty active baseline
+to the identical Beat Slicer 0.1.66 package
+`5e5e1e41257b0f290110e47ee6881a485661fc1daafa0986a7dd7ae6e6ca1e03`
+(5,776 bytes; provisional event 35). No interrupted session was resumed.
+Actual singleton trial and physical self-test passed: one live/intact module,
+zero failures and no DSP modules. The authorized USB Undo then succeeded.
+
+At 20:37:54 Taipei time, a separate fresh read-only connection independently
+confirmed the same private base, normal phase, known active digest exactly
+`8ffc8ffefe3ecd00ca434fe67ee6e902ea0b359d0f6343a404a5bd3ec4e9c69a`
+and the original empty inventory. This is an observed same-build hardware
+USB trial/self-test/Undo result. No Keep, flash, sample/project save or new
+audio test occurred. Receipts remain private under
+`usb-undo-20261027/hardware1/`; no firmware or raw diagnostics are committed.
+
+The verified Undo restores the empty private RAM baseline. Returning to the
+flashed base and saved sixteen-module set after this new run needs a user
+power cycle; no post-test power-cycle result is claimed here. The earlier
+power-off/interrupted-run outcomes and later event-36 build qualification
+remain separate.

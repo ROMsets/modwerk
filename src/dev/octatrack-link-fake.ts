@@ -4,7 +4,7 @@
 // real bytes, and runs the upload session's phases with no device behind them.
 import type { Inventory, InventoryTarget } from '../config/inventory.ts'
 import { sha } from '../../vendor/elekloader/kit/src/bytes.ts'
-import { depackSection } from '../../vendor/elekloader/kit/src/codec/elz.ts'
+import { depackSection } from '../engine/elektron/codec/depack.ts'
 import { OctatrackLink, type LinkDevice, type LinkSession, type LinkUsb } from '../engine/elekloader/octatrack-link.ts'
 import { UPLOAD_TIMEOUT_MAX_MS, UploadDeviceError, UploadUnconfirmedError } from '../engine/elekloader/upload-session.ts'
 import { SELFTEST_BYTES, VENDOR_CLASS, VENDOR_PROTOCOL, VENDOR_SUBCLASS } from '../engine/elekloader/upload-usb.ts'
@@ -273,13 +273,12 @@ export function previewKit() {
   Object.assign(window, { modwerkUsbPreview: unit })
   return {
     link: new OctatrackLink(unit.usb, fakeSession(unit, 60)),
-    // A pretend load, stress test and inventory, so the whole flow can be clicked through.
+    // A pretend load and inventory, so the whole flow can be clicked through.
     prepareUpdate: async (target: InventoryTarget) => {
       await wait(400); unit.pending = { moduleIds: target.moduleIds, removedStockFx: target.removedStockFx ?? [] }
       // Each load stages different bytes, so the unit's active digest (and the inventory read after Keep) changes.
       return { name: target.name, changes: [{ module: target.name, data: new TextEncoder().encode(JSON.stringify(unit.pending).padEnd(160 * 1024)) }] }
     },
     readInventory: async () => { await wait(150); return structuredClone(unit.installed) },
-    stressTest: async () => { await wait(2500); return null },
   }
 }

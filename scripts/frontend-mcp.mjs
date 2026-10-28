@@ -295,7 +295,9 @@ export async function createFrontendTools(options, injected, dependencies = {}) 
       let selftest
       const unsubscribe = link.subscribeDiagnostics(event => { if (event.event === 'selftest') selftest = event.reading })
       try { await link.update(plan.prepared.name, plan.prepared.changes, () => link.selftest()) } finally { unsubscribe() }
-      if (link.getState().status !== 'trial' || !link.getState().tested || selftest?.state !== 2 || selftest.failed) {
+      // A self-test that only peaked over 90 % passes, as on the site: the runtime guards load (selftest.ts SELFTEST_LOAD).
+      const passed = selftest?.state === 2 && !selftest.failed || selftest?.state === 3 && !!selftest.failed && !frontend.selftestFaults(selftest.failed)
+      if (link.getState().status !== 'trial' || !link.getState().tested || !passed) {
         if (link.getState().status === 'trial') await link.undo()
         throw new Error('Device trial did not provide a passed physical self-test: ' + (link.getState().notice?.text ?? link.getState().status))
       }

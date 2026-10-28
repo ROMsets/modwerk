@@ -1,14 +1,18 @@
 # Digitakt II SDK
 
-Modwerk's Digitakt II path is experimental and targets stock OS 1.17 only. It uses elekloader kit 0.5.0 and the `core-dt2` 1.0 event bus. The machine remains in research: builds can be checked locally, but downloads stay disabled until the exact Modwerk packages are qualified and reviewed.
+Modwerk's Digitakt II path is experimental and targets stock OS 1.17 only. It uses elekloader kit 0.5.0 and the `core-dt2` 1.0 hook bus. The machine remains in research: builds can be checked locally, but downloads stay disabled until the exact Modwerk packages are qualified and reviewed.
 
-## Core events
+## Modwerk stack
 
-The core is toonst's digitakt2-perform core 1.0 (GPL-2.0-or-later), pinned by hash in [sdk/imports/elekloader-digitakt2-perform-v1.0.json](../../imports/elekloader-digitakt2-perform-v1.0.json); its contract is [core-profile/interface.json](../../digitakt-ii/core-profile/interface.json). It exposes the UI events below and nothing of the sequencer, the LFOs or the voices. A mod that needs one of those sites proposes an event first and never patches the site itself ([propose an event](../../../docs/module-guides/README.md#propose-an-event-on-the-digitakt-digitone-or-digitakt-ii)); a new core release is pinned the same way.
+Today the core is toonst's digitakt2-perform 1.0, and builds stay local. The Digitakt II is to get the Octatrack's stack ([recipe](../../../docs/MACHINE_RECIPE.md)): a Modwerk base started from that core's source, which takes the hooks mods propose, then a USB link, the loader's glue, base updates over USB, the MCP's device tools and the machine page. None of it is started.
 
-The core subscribes mods to these ColdFire/UI events:
+## Core hooks
 
-| Event | Handler | Use |
+The core is toonst's digitakt2-perform core 1.0 (GPL-2.0-or-later), pinned by hash in [sdk/imports/elekloader-digitakt2-perform-v1.0.json](../../imports/elekloader-digitakt2-perform-v1.0.json); its contract is [core-profile/interface.json](../../digitakt-ii/core-profile/interface.json). It exposes the UI hooks below and nothing of the sequencer, the LFOs or the voices. A mod that needs one of those sites proposes a core hook first and never patches the site itself ([propose a hook](../../../docs/module-guides/README.md#propose-a-hook-on-the-digitakt-digitone-or-digitakt-ii)); the hook goes into the Digitakt II's Modwerk base ([Modwerk stack](#modwerk-stack)).
+
+The core subscribes mods to these ColdFire/UI hooks:
+
+| Hook | Handler | Use |
 | --- | --- | --- |
 | `ev_tick` | `void f(void *ctrl)` | UI compose check, approximately 30 Hz. Set `ctrl + 0x20` to 1 to request redraw. This is not an audio-rate clock. |
 | `ev_draw` | `void f(void *bmp, void *ctrl)` | Draw after the OS composes its 128x64 screen. |
@@ -17,14 +21,14 @@ The core subscribes mods to these ColdFire/UI events:
 | `ev_settings` | `void f(void *menu)` | Add rows while the SETTINGS menu is built. |
 | `ev_personalize` | `void f(void *menu)` | Add rows while PERSONALIZE is built. |
 
-The Digitakt II core does not start DTIM0 and exposes no audio-render event. Audio is rendered by the separate SHARC DSP; these events are not sample-accurate hooks.
+The Digitakt II core does not start DTIM0 and exposes no audio-render hook. Audio is rendered by the separate SHARC DSP; these hooks are not sample-accurate.
 
 ## Memory
 
 - Shared DDR: `0x47F00000–0x47F40000` (262,144 bytes for core and linked mods).
 - Fast-code SRAM: `0x8000F100–0x80010000` (3,840 bytes). The core copies `.fast` code on its first UI tick.
 - Core 1.0 footprint: 480 bytes `.run` plus 20 bytes `.bss`; the linker remains authoritative for combined sizes and overlap.
-- Each event collection has four entries in core 1.0. `core_fast` has sixteen copy-table entries.
+- Each hook collection has four entries in core 1.0. `core_fast` has sixteen copy-table entries.
 
 ## Build and recovery
 
