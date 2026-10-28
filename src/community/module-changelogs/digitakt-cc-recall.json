@@ -3,9 +3,9 @@
     "version": "0.1.0-experimental",
     "date": "2026-10-28",
     "changes": [
-      "First release for Digitakt I OS 1.54, on Core 2.1. SETTINGS > CC RECALL makes the MIDI tracks send their pattern’s CC values at once after a pattern reload, a pattern change, a project load or STOP.",
-      "Stock, those values only go out with each track’s next trig, so external gear and the effects through FX CONTROL CH keep the old values until then. Each track now sends what that trig would send, straight away; the trig still sends it as stock.",
-      "STOP counts as a new pattern for the MIDI tracks, so it sends the values too. Pitch bend and aftertouch go out as with the stock first trig. Unticked, MIDI output is stock.",
+      "First release for Digitakt I OS 1.54, on Core 2.1. SETTINGS > CC RECALL makes the MIDI tracks send their pattern’s CC values at once.",
+      "It acts after a pattern reload, a pattern change, a project load or STOP; stock waits for each track’s next trig, which still sends them too.",
+      "Pitch bend and aftertouch go out as with the stock first trig. Unticked, MIDI output is stock.",
       "The setting is not saved and starts unticked at every power-on.",
       "Known issue: not yet tested on a unit."
     ]
