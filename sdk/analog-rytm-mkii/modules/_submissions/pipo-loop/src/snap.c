@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Pipo Loop: zero snap. FUNC + turn on the SAMPLE page's STA or END moves
 // that point to the next zero crossing of the sample in the direction of the
-// turn, one crossing for each detent's worth of encoder counts (COUNTS, as
-// pipo_loop_enc counts them, at most one an encoder event), on the sound or on held trigs' locks (audio.s
-// hands the turn over).
+// turn, on the sound or on held trigs' locks (audio.s hands the turn over).
+// The encoder feels like a stepped control: with FUNC held, stock's encoder
+// engine reads the turn through LOP's own profile (pipo_loop_profile), so a
+// crossing goes by exactly when LOP would step a value, several on a fast
+// turn as stock's acceleration gives them.
 //
 // STA and END are 8.8 values of 120, 1/30720 of the sample: stock's prefetch
 // plays from frame ceil(frames * value / 30720) (its EMAC multiply by 8/15,
@@ -177,59 +179,43 @@ static int editor_value(void *ed, int track, int id, void *view)
     return (int)(short)vcall3(view, VT_VALUE, id, -1);
 }
 
-// Encoder counts, from core-ar2's ev_enc: FUNC + E or F on any page (only
-// STA and END's turns use them). One crossing for each COUNTS counts (a
-// detent's, as stock's encoder sends them), the rest kept for the next event;
-// each event's steps are worked out once, for every path stock takes it by
-// (one held trig after another).
-#define COUNTS 1            // a slow detent on a unit sends 1 count (PD01: 1-3 counts, as many events)
-#define ENC_STA 4
-#define ENC_END 5
-static int enc_acc, enc_last = -1, enc_serial, used_serial = -1, used_steps;
-
-int pipo_loop_enc(void *brain, char *ev)
+// The steps in stock's delta for a turn read through LOP's profile: a whole
+// value a step (8.8), at least one, at most MAX_STEPS.
+#define MAX_STEPS 16
+static int steps_of(int delta)
 {
-    int enc = *(int *)(ev + 12), count = *(int *)(ev + 16);
-    (void)brain;
-    if ((enc != ENC_STA && enc != ENC_END) || !IS_KEY_HELD(KEY_FUNC)) {
-        enc_acc = 0;
-        enc_last = -1;
-        return 0;
-    }
-    if (enc != enc_last || (count > 0) != (enc_acc > 0))
-        enc_acc = 0;                 // another knob or the other way: start the count again
-    enc_last = enc;
-    enc_acc += count;
-    enc_serial++;
-    return 0;                        // stock goes on with the turn
+    int n = (delta < 0 ? -delta : delta) >> 8;
+    if (n < 1)
+        n = 1;
+    if (n > MAX_STEPS)
+        n = MAX_STEPS;
+    return delta < 0 ? -n : n;
 }
 
-static int steps_now(void)
+// From audio.s, before stock's encoder engine reads a turn on STA or END:
+// with FUNC held, LOP's profile (copied into the handler's buffer) instead of
+// STA and END's own; 1 when it did, and audio.s takes LOP's count factors too.
+#define LOP_PROFILE (*(const char *volatile *)(LOP_REC_AT + 16))
+#define PROFILE_BYTES 28
+int pipo_loop_profile(char *buf)
 {
-    if (used_serial != enc_serial) {
-        // One crossing an encoder event, whatever its count: on a unit a
-        // slow detent sends 1 count, and a fast turn sends events of 15 or
-        // more (stock's acceleration, PD01). What is left over is dropped.
-        // Only whether to step comes from here; the way comes from the
-        // delta stock hands over, so a stale count never turns it round.
-        used_steps = enc_acc >= COUNTS ? 1 : enc_acc <= -COUNTS ? -1 : 0;
-        if (used_steps)
-            enc_acc = 0;
-        used_serial = enc_serial;
-    }
-    return used_steps;
+    const char *src = LOP_PROFILE;
+    int i;
+    if (!buf || !src || !IS_KEY_HELD(KEY_FUNC))
+        return 0;
+    for (i = 0; i < PROFILE_BYTES; i++)
+        buf[i] = src[i];
+    return 1;
 }
 
 // From audio.s, FUNC + turn on STA or END: the sound's value (lock 0), or a
 // held trig's lock through the lock editor (lock 1).
 int pipo_loop_snap(void *view, int id, int delta, int lock)
 {
-    int other = id == ID_STA ? ID_END : ID_STA, steps = steps_now();
+    int other = id == ID_STA ? ID_END : ID_STA, steps;
     if (!delta)
         return SNAP_NONE;
-    if (!steps)
-        return 0;                    // less than a detent yet: hold the point
-    steps = delta > 0 ? 1 : -1;      // the way stock's own delta goes
+    steps = steps_of(delta);
     if (lock) {
         void *ed = (void *)LOCK_EDITOR(*(word_t *)((char *)view + 108));
         int track;
@@ -270,9 +256,7 @@ int pipo_loop_snap_trig(void *view, int trig, int id, int delta)
     lock = (int)vcall3(view, VT_TRIG_LOCK, trig, id);
     if (no_lock(lock))
         return SNAP_NONE;
-    if (!steps_now())
-        return 0;
-    steps = delta > 0 ? 1 : -1;
+    steps = steps_of(delta);
     return snap_from((int)(short)lock, trig_value(view, trig, id == ID_STA ? ID_END : ID_STA),
                      trig_value(view, trig, ID_SMP) >> 8, steps, trig_value(view, trig, ID_LOP) >> 8);
 }

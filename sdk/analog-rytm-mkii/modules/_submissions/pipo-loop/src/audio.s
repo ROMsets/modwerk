@@ -65,6 +65,34 @@ pipo_loop_icon_gate:
 1:      movea.l pipo_loop_icon_frames,%a0       | displaced
         jmp     pipo_loop_icon_resume
 
+| How a FUNC turn on STA or END feels. Stock's encoder handler copies the
+| parameter's encoder profile into a buffer (d4) and takes two count factors
+| from its record (a5, d6), then its engine (0x4006efca, 0x4006f1fa) turns
+| the counts into a delta. The site replaces the first three pushes of that
+| call, where both of the handler's paths meet; for STA and END (d2) with FUNC
+| held, pipo_loop_profile puts LOP's profile in the buffer and the gate takes
+| LOP's factors, so the turn steps as LOP's switch does.
+
+        .globl  pipo_loop_prof_gate
+        .extern pipo_loop_profile
+
+pipo_loop_prof_gate:
+        cmpi.l  #43,%d2                         | STA
+        beq.s   1f
+        cmpi.l  #44,%d2                         | END
+        bne.s   9f
+1:      move.l  %d4,-(%sp)                      | the profile buffer
+        jsr     pipo_loop_profile
+        addq.l  #4,%sp
+        tst.l   %d0
+        beq.s   9f
+        movea.l pipo_loop_lop_rec+4,%a5         | LOP's count factors
+        move.l  pipo_loop_lop_rec+8,%d6
+9:      move.l  %d6,-(%sp)                      | displaced
+        move.l  %a5,-(%sp)                      | displaced
+        move.l  %d5,-(%sp)                      | displaced
+        jmp     pipo_loop_prof_resume
+
 | Zero snap: FUNC + turn on the SAMPLE page's STA or END. Stock's encoder
 | handler ends by calling the view's apply-delta with FUNC held, which steps
 | STA and END by whole numbers. The site replaces the first two instructions

@@ -8,13 +8,7 @@
   "defsym": {},
   "cflags": [],
   "weak": [],
-  "subscribe": [
-    {
-      "event": "ev_enc",
-      "fn": "pipo_loop_enc",
-      "order": 50
-    }
-  ],
+  "subscribe": [],
   "contribute": [],
   "collections": {},
   "copied": [],
@@ -42,7 +36,9 @@
         "pipo_loop_icon_resume": "0x400fedfa",
         "pipo_loop_func_resume": "0x4003a246",
         "pipo_loop_lock_resume": "0x4003a1a2",
-        "pipo_loop_trig_resume": "0x40037f72"
+        "pipo_loop_trig_resume": "0x40037f72",
+        "pipo_loop_prof_resume": "0x4003a0e4",
+        "pipo_loop_lop_rec": "0x419a574c"
       },
       "cflags": [
         "-DPARAMS_EFF_AT=0x8000f7a8",
@@ -53,7 +49,8 @@
         "-DLOCK_EDITOR_AT=0x40036636",
         "-DTRACK_INDEX_OF_AT=0x400b693e",
         "-DLOCK_SLOT_AT=0x40006ea8",
-        "-DIS_KEY_HELD_AT=0x40081c28"
+        "-DIS_KEY_HELD_AT=0x40081c28",
+        "-DLOP_REC_AT=0x419a574c"
       ],
       "sites": [
         {
@@ -84,6 +81,13 @@
           "stockSha256": "0528305f5347b3808effa560c49adb196e58354efe1c9c8ea8566757ad4ffac3",
           "op": "jmp",
           "target": "pipo_loop_icon_gate"
+        },
+        {
+          "addr": "0x4003a0de",
+          "len": 6,
+          "stockSha256": "e88c5d87b784c48d23213d41bd40e3f156f01c147327ad4ba43b3e58d0f848e0",
+          "op": "jmp",
+          "target": "pipo_loop_prof_gate"
         },
         {
           "addr": "0x4003a240",
