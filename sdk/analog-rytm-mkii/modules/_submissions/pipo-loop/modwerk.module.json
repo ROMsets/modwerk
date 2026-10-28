@@ -116,7 +116,7 @@
   },
   "tests": {
     "report": "TESTING.md",
-    "summary": "rytm-emu c5732f0, OS 1.74, build PP13: LOP OFF/ON/PIPO on a three-position switch; PIPO turns exactly at STA and END (period 2x the loop at TUN -24, 0, +24); p-lock, scene, two voices, retrig, power-off; stock plays a saved PIPO as a loop; zero snap stepping like LOP onto stock's own frames, on the sound and on locks, holding at the sample's edges, STA and END passing or sharing a crossing. Hardware, as reported: PC03; diagnostics PD01 and PD03 (snap holds at edges, clean LOP ON loops when snapped).",
+    "summary": "rytm-emu c5732f0, OS 1.74, build PP13: LOP OFF/ON/PIPO on a three-position switch; PIPO turns exactly at STA and END (period 2x the loop at TUN -24, 0, +24); p-lock, scene, two voices, retrig, power-off; stock plays a saved PIPO as a loop; zero snap stepping like LOP onto stock's own frames, on the sound and on locks, holding at the sample's edges, STA and END passing or sharing a crossing. Hardware, as reported: PC03; diagnostics PD01-PD05 (snap holds at edges, clean LOP ON loops when snapped, S/E labels, locks).",
     "documentation": {
       "tutorial": {
         "title": "Quick tutorial",

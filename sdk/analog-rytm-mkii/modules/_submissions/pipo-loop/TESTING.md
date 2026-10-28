@@ -250,6 +250,14 @@ test samples PIPO_SLOW, PIPO_110 and PIPO_SQR and reported:
   was clean; PIPO gave a soft knock at the turns. At a turn the waveform's slope reverses, which no
   choice of frame avoids on a pure tone, so this is expected (README).
 
+## PD05 on an Analog Rytm MKII (2026-10-28), as reported
+
+npp1993 flashed the build with the S and E labels (PD05/PC11 code) and reported: the labels look
+great; STA and END can sit on top of each other and change places (END before STA), with both labels
+showing; a lock set with FUNC + turn while a trig is held shows its position when that trig is held
+again; "I think that's everything good". Not reported on this build: moderate-speed turns after the
+skip fix, PIPO turn clicks, the unmirrored counter.
+
 ## PD04 report; S and E labels (2026-10-28)
 
 **PD04 on an Analog Rytm MKII, as reported by npp1993.** FUNC + STA/END feels better. A very slow
@@ -419,7 +427,7 @@ above.
 
 ## Not tested
 
-- On a unit, beyond the PC03, PD01, PD03 and PD04 reports above: PC11, PP13 and PD05 have not been flashed.
+- On a unit, beyond the PC03, PD01, PD03, PD04 and PD05 reports above: PC11 and PP13 have not been flashed.
 - KIT SAVE and KIT RELOAD from the KIT menu, the sound browser, sound SysEx dumps and Overbridge.
 - Eight voices in PIPO at once, LFO or velocity modulation of STA and END while in PIPO, and Loop
   Sync and Pipo Loop on the same track.
