@@ -105,6 +105,34 @@
           "stockSha256": "6bec112e4ad8dc436d8a56fe7dd56a0ebb067ae3ba9c4ab0b3b5009bd36d370e",
           "op": "jmp",
           "target": "pipo_loop_trig_gate"
+        },
+        {
+          "addr": "0x4011c58a",
+          "len": 6,
+          "stockSha256": "e3fa31891726e01c1336b2349b39bbfd8b834fa09bc0a03b3d1d74432ce7d2ff",
+          "op": "jsr",
+          "target": "pipo_loop_v0w_gate"
+        },
+        {
+          "addr": "0x4011c5e6",
+          "len": 8,
+          "stockSha256": "196d0dda111b1ae37f88dd571c335bbfd9eb3b527ba8e423e2d1129c21cd7948",
+          "op": "jsr",
+          "target": "pipo_loop_v0m_gate"
+        },
+        {
+          "addr": "0x4011cb2e",
+          "len": 10,
+          "stockSha256": "cea8a71b90dd8a6b4b9ac741ae5acf4dbe46eb367e81086d6aef10c4ea1e5e63",
+          "op": "jsr",
+          "target": "pipo_loop_vnw_gate"
+        },
+        {
+          "addr": "0x4011cb98",
+          "len": 8,
+          "stockSha256": "ddb2c3a57a21875cf6d54c6613cf769cf0ebeada1969bec8020fb662392a2c28",
+          "op": "jsr",
+          "target": "pipo_loop_vnm_gate"
         }
       ]
     }

@@ -156,6 +156,120 @@ pipo_loop_trig_gate:
         move.l  %d0,-(%sp)                      | displaced
         jmp     pipo_loop_trig_resume
 
+| Exact turns (pipo_loop_mirror in pipo.c). Stock's prefetch sets up two DMA
+| transfers per voice into its SRAM window: TCD1 (descriptor at
+| PIPO_TCD1_AT) copies the segment after the loop's end (from the loop's
+| start, wrap_al = WRAP_AL), TCD2 (PIPO_TCD2_AT) the main segment (from the
+| window's start, WIN_AL); a wrap is in the window when TCD1's length
+| (LEN1) is above 0. These gates sit where stock writes each transfer's
+| source: for a voice in PIPO, pipo_loop_mirror gives a buffer of the loop's
+| frames the other way round to copy instead. Voice 0's prefetch is its own
+| routine; voices 1-7 share one, its loop counter (voice - 1) at 88(%sp).
+
+        .equ    LEN1, 0x8000582c
+        .equ    LEN2, 0x80005830
+        .equ    WRAP_AL, 0x80005834
+        .equ    WIN_AL, 0x80005838
+        .equ    WIN_BASE, 0x80005864
+        .globl  pipo_loop_v0w_gate, pipo_loop_v0m_gate, pipo_loop_vnw_gate, pipo_loop_vnm_gate
+        .extern pipo_loop_mirror
+
+| mirror(voice d0, which d1, len a0): -> d0 the buffer or 0
+mirror: move.l  %a0,-(%sp)                      | len
+        move.l  WRAP_AL,-(%sp)
+        move.l  WIN_AL,-(%sp)
+        move.l  %d1,-(%sp)
+        move.l  %d0,-(%sp)
+        jsr     pipo_loop_mirror
+        lea     20(%sp),%sp
+        rts
+
+| voice 0, TCD1: a0 its source, a2 the descriptor, d1 LEN1, d3 its window
+| index. Replaces `move.l %d3,%d0; add.l %d0,%d0; move.l %a0,(%a2)`.
+pipo_loop_v0w_gate:
+        tst.l   %d1
+        ble.s   9f
+        lea     -12(%sp),%sp
+        movem.l %d1/%a0-%a1,(%sp)
+        movea.l %d1,%a0
+        moveq   #0,%d0
+        moveq   #1,%d1
+        bsr.w   mirror
+        tst.l   %d0
+        beq.s   1f
+        move.l  %d0,4(%sp)                      | the source: the buffer
+1:      movem.l (%sp),%d1/%a0-%a1
+        lea     12(%sp),%sp
+9:      move.l  %d3,%d0                         | displaced
+        add.l   %d0,%d0                         | displaced
+        move.l  %a0,(%a2)                       | displaced
+        rts
+
+| voice 0, TCD2: a1 its source, a0 the descriptor, d4 LEN2, d6 its
+| destination. Replaces `moveq #1,%d0; move.l %a1,(%a0); move.l %d6,16(%a0)`.
+pipo_loop_v0m_gate:
+        tst.l   LEN1
+        ble.s   9f
+        lea     -8(%sp),%sp
+        movem.l %a0-%a1,(%sp)
+        movea.l %d4,%a0
+        moveq   #0,%d0
+        moveq   #2,%d1
+        bsr.w   mirror
+        tst.l   %d0
+        beq.s   1f
+        move.l  %d0,4(%sp)
+1:      movem.l (%sp),%a0-%a1
+        lea     8(%sp),%sp
+9:      moveq   #1,%d0                          | displaced
+        move.l  %a1,(%a0)                       | displaced
+        move.l  %d6,16(%a0)                     | displaced
+        rts
+
+| voices 1-7, TCD1: a0 its source, a2 the descriptor, d0 its window index.
+| Replaces `add.l %d0,%d0; move.l %a0,(%a2); add.l WIN_BASE,%d0`.
+pipo_loop_vnw_gate:
+        tst.l   LEN1
+        ble.s   9f
+        lea     -16(%sp),%sp
+        movem.l %d0-%d1/%a0-%a1,(%sp)
+        move.l  108(%sp),%d0                    | the loop counter (88 + return + saves)
+        addq.l  #1,%d0
+        movea.l LEN1,%a0
+        moveq   #1,%d1
+        bsr.w   mirror
+        tst.l   %d0
+        beq.s   1f
+        move.l  %d0,8(%sp)
+1:      movem.l (%sp),%d0-%d1/%a0-%a1
+        lea     16(%sp),%sp
+9:      add.l   %d0,%d0                         | displaced
+        move.l  %a0,(%a2)                       | displaced
+        add.l   WIN_BASE,%d0                    | displaced
+        rts
+
+| voices 1-7, TCD2: a1 its source, a0 the descriptor. Replaces
+| `moveq #1,%d0; move.l %a1,(%a0); movea.l 60(%sp),%a1`.
+pipo_loop_vnm_gate:
+        tst.l   LEN1
+        ble.s   9f
+        lea     -8(%sp),%sp
+        movem.l %a0-%a1,(%sp)
+        move.l  100(%sp),%d0                    | the loop counter (88 + return + saves)
+        addq.l  #1,%d0
+        movea.l LEN2,%a0
+        moveq   #2,%d1
+        bsr.w   mirror
+        tst.l   %d0
+        beq.s   1f
+        move.l  %d0,4(%sp)
+1:      movem.l (%sp),%a0-%a1
+        lea     8(%sp),%sp
+9:      moveq   #1,%d0                          | displaced
+        move.l  %a1,(%a0)                       | displaced
+        movea.l 64(%sp),%a1                     | displaced (60 + return)
+        rts
+
         .section .rodata
 pipo_loop_pipo:
         .asciz  "PIPO"

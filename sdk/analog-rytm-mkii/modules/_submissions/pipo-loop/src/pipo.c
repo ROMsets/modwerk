@@ -9,19 +9,21 @@
 //
 // The stock sample engine reads each track's effective STA, END and LOP once
 // an audio block and plays from STA towards END, backward when END is below
-// STA; the play position is an absolute frame index either way. So swapping
-// the effective STA and END turns a voice around where it is. Each block,
-// before the engine reads them, this handler looks at every voice's position:
-// when the coming block would reach the loop's far end, it flips that voice's
-// direction, and while a voice plays its way back it swaps STA and END in the
-// effective parameter array. A new trig starts forward again.
+// STA; the play position is an absolute frame index either way. Its prefetch
+// copies, a block ahead, a 140-frame window of the sample into SRAM by DMA:
+// near the loop's end, the frames up to the end, then the loop's start, so
+// the voice wraps mid-block at the exact frame. For a voice in PIPO the
+// module turns that wrap into the turn: the gates in audio.s point the DMA
+// of the frames past the turn at a buffer holding the loop's frames in
+// reverse order (pipo_loop_mirror), so the voice plays straight on into the
+// way back, at the exact frame, with stock's own interpolation. The block
+// after, this handler moves the position where stock wrapped it to the
+// mirrored frame and turns the voice round: while it plays its way back STA
+// and END are swapped in the effective parameter array. A new trig starts
+// forward again.
 //
 // The swap does not rely on stock rebuilding the array every block: when the
 // values still read as the ones written a block ago, they are put back first.
-//
-// The turn falls on a block boundary, so it comes up to one block (32 frames
-// at unity pitch) plus GUARD before the loop's end. Looking one step ahead is
-// the least that works: with none, stock wraps the voice to STA first.
 
 #include <stdint.h>
 
@@ -39,11 +41,13 @@
 #define VOICES 8
 #define TRACKS 12
 #define MIN_SPAN 160        // stock plays a loop of at least 141 frames
-#define GUARD 8             // frames kept clear of the far end for the interpolator
-#define MAX_STEP 512        // a larger move between blocks is a jump, not travel
+#define MIRROR 160          // frames in a DMA segment at most (stock: 140 + alignment)
+#define VDATA(v) (*(volatile short *volatile *)(VREC(v) + 0))
+
+enum { ARM_NONE, ARM_UP, ARM_DOWN };
 
 struct voice {
-    int last_pos, step;          // position a block ago; frames travelled a block
+    int last_pos;                // position a block ago
     int lo, hi;                  // the loop in frames, for c_sta, c_end and c_frames
     unsigned c_frames;
     short c_sta, c_end;
@@ -52,9 +56,12 @@ struct voice {
     unsigned char up;            // the voice moves towards higher frames this block
     unsigned char back;          // playing the way back: STA and END swapped
     unsigned char seen, wrote, track;
+    unsigned char arm;           // this block's DMA may carry the turn: ARM_UP at hi, ARM_DOWN at lo
+    unsigned char fresh;         // restarted a block ago: the position jumped to STA, not a wrap
 };
 
 static struct voice voices[VOICES];
+static short mirror[VOICES][MIRROR] __attribute__((aligned(16)));
 
 static int frame_of(unsigned frames, int v8)   // STA/END (8.8, of 120) to stock's frame: ceil(frames * v8 / 30720)
 {
@@ -69,7 +76,7 @@ void pipo_loop_audio(void)
     int v;
     for (v = 0; v < VOICES; v++) {
         struct voice *p = &voices[v];
-        int t = OWNER(v), sta, end, pos, d, ahead;
+        int t = OWNER(v), sta, end, pos;
         unsigned frames;
         if (p->wrote) {                  // still as written: stock did not rebuild it
             if (EFF(p->track, IDX_STA) == p->w_sta && EFF(p->track, IDX_END) == p->w_end) {
@@ -81,16 +88,10 @@ void pipo_loop_audio(void)
         if (t >= TRACKS || !(EFF(t, IDX_LOP) >> 8)) {   // no voice, or LOP OFF: nothing to follow
             p->back = 0;
             p->seen = 0;
+            p->arm = ARM_NONE;
             continue;
         }
         pos = VPOS(v);
-        if (p->seen) {                   // travel only in the way it was moving
-            d = pos - p->last_pos;
-            if (p->up ? d > 0 && d <= MAX_STEP : d < 0 && d >= -MAX_STEP)
-                p->step = d < 0 ? -d : d;
-        }
-        p->last_pos = pos;
-        p->seen = 1;
         sta = EFF(t, IDX_STA);
         end = EFF(t, IDX_END);
         frames = VFRAMES(v);
@@ -105,16 +106,47 @@ void pipo_loop_audio(void)
             p->c_end = end;
             p->c_frames = frames;
         }
-        if ((trig & (1u << v))                       // restarts from STA this block
-            || (EFF(t, IDX_LOP) >> 8) != LOP_PIPO     // OFF, or ON: stock's loop
-            || p->hi - p->lo < MIN_SPAN)
+        if (trig & (1u << v)) {          // restarts from STA this block
             p->back = 0;
-        else {
-            ahead = p->step + GUARD;     // this block's travel
-            if (p->fwd ^ p->back ? pos + ahead >= p->hi : pos - ahead <= p->lo)
+            p->arm = ARM_NONE;
+            p->fresh = 1;
+        } else if (p->fresh)
+            p->fresh = 0;
+        else if (p->seen && p->arm) {  // did the voice pass the turn the DMA carried?
+            int x = -1, r = 0;
+            if (p->arm == ARM_UP) {      // past hi, or wrapped by stock to lo + (x - hi)
+                if (pos >= p->hi)
+                    x = pos;
+                else if (pos < p->last_pos)
+                    x = pos - p->lo + p->hi;
+                r = 2 * p->hi - 1 - x;
+            } else {                     // below lo, or wrapped by stock to hi - (lo - x)
+                if (pos < p->lo)
+                    x = pos;
+                else if (pos > p->last_pos)
+                    x = pos - p->hi + p->lo;
+                r = 2 * p->lo - 1 - x;
+            }
+            if (x >= 0) {                // where the mirrored frames put it, the way back
+                if (r < p->lo)
+                    r = p->lo;
+                if (r > p->hi - 1)
+                    r = p->hi - 1;
+                VPOS(v) = r;
+                pos = r;
                 p->back ^= 1;
+            }
+        }
+        p->last_pos = pos;
+        p->seen = 1;
+        if ((EFF(t, IDX_LOP) >> 8) != LOP_PIPO     // OFF, or ON: stock's loop
+            || p->hi - p->lo < MIN_SPAN) {
+            p->back = 0;
+            p->arm = ARM_NONE;
         }
         p->up = p->fwd ^ p->back;
+        if ((EFF(t, IDX_LOP) >> 8) == LOP_PIPO && p->hi - p->lo >= MIN_SPAN)
+            p->arm = p->up ? ARM_UP : ARM_DOWN;
         if (p->back) {
             EFF(t, IDX_STA) = (short)end;
             EFF(t, IDX_END) = (short)sta;
@@ -124,4 +156,49 @@ void pipo_loop_audio(void)
             p->track = (unsigned char)t;
         }
     }
+}
+
+// From the gates in audio.s, as stock's prefetch sets up the DMA of a voice's
+// window that wraps at the loop's end. which 1: the segment after hi (stock:
+// the loop's start, from wrap_al), for a voice going up; which 2: the main
+// segment (stock: from ws_al up to hi), for a voice going down, which reads
+// it backward after lo. Returns a buffer of len frames to copy instead,
+// holding the loop's frames the other way round from the turn on, or 0 to
+// leave stock's.
+void *pipo_loop_mirror(int v, int which, int ws_al, int wrap_al, int len)
+{
+    struct voice *p;
+    volatile short *data;
+    short *m;
+    int frames, i, n, lo, hi;
+    if (v < 0 || v >= VOICES || len <= 0 || len > MIRROR)
+        return 0;
+    p = &voices[v];
+    if (p->arm != (which == 1 ? ARM_UP : ARM_DOWN))
+        return 0;
+    data = VDATA(v);
+    frames = (int)VFRAMES(v);
+    lo = p->lo;
+    hi = p->hi;
+    if (!data || wrap_al != (lo & ~7) || hi > frames)
+        return 0;                    // not the window the module expects
+    m = mirror[v];
+    if (which == 1) {                // window index of hi holds frame hi - 1, then hi - 2, ...
+        int off = lo - wrap_al;
+        for (i = 0; i < len; i++) {
+            n = i < off ? hi - off + i : hi - 1 - (i - off);
+            m[i] = data[n < 0 ? 0 : n >= frames ? frames - 1 : n];
+        }
+    } else {                         // below hi's window index: lo, lo + 1, ... read backward
+        int nh = hi - ws_al;
+        if (nh <= 0 || nh > MIRROR)
+            return 0;
+        for (i = 0; i < len; i++) {
+            n = i < nh ? lo + (nh - 1 - i) : lo + (i - nh);
+            m[i] = data[n < 0 ? 0 : n >= frames ? frames - 1 : n];
+        }
+    }
+    for (i = 0; i < len * 2; i += 16)   // the DMA reads memory, not the data cache
+        __asm__ volatile ("cpushl %%dc,(%0)" : : "a" ((char *)m + i) : "memory");
+    return m;
 }
