@@ -308,6 +308,15 @@ parameter ids 34-37, 45 (LOP), 224, 248 and 463; the switch icon by twelve param
   voices in PIPO. rytm-emu's breakpoints and profiler do not reach the audio interrupt's mod code, so
   it was not measured. Not measured on a unit.
 
+## Open items
+
+- Possible later improvement (npp1993, 2026-10-28): FUNC snaps could skip stock's STA/END glide and
+  jump straight to the crossing, so no wrap or PIPO turn plays from between crossings while a turn
+  settles. Not built: STA and END as played are stock's smoothing plus LFO and velocity modulation,
+  so the module would have to work out the target itself every audio block, only after a FUNC snap,
+  without breaking plain-turn smoothing or modulation: more code in the audio path and another
+  round of emulator and unit tests.
+
 ## Not tested
 
 - On a unit, beyond the PC03 and PD01 reports above: PC08, PP10 and PD02 have not been flashed.
