@@ -184,6 +184,13 @@ crossing's direction:
   for the whole run; the voice stays parked around frame 196, LOP ON and PIPO alike (PIPO leaves
   loops under 160 frames to stock).
 
+Stock glides STA and END to a new value rather than jumping: PP10, effective STA read every 1M
+instructions during a FUNC turn from 0 to ZSIN's first crossing went 0x00, 0x02, 0x0f, 0x1a, 0x22, …
+0x41, 0x42, 0x43 and settled on 0x44 about 30M instructions later (the same on the next step, 0x47
+… 0x9f). A wrap or PIPO turn inside that glide plays from a point between crossings, which matches
+npp1993's report of clicks only while turning (PD01/PD02 era, PIPO_110). Nathaniel chose to keep
+stock's glide (2026-10-28).
+
 The emulator drops the first two to four encoder events after FUNC goes down or the turn changes
 direction (stock's encoder smoothing in rytm-emu), so the step counts above are not one a turn.
 
@@ -237,6 +244,9 @@ test samples PIPO_SLOW, PIPO_110 and PIPO_SQR and reported:
   crossing to stock's whole-number step; fixed (see above). The line is stock's drawing: the module
   never draws it, and one column covers about 225 frames of a 0.6 s sample, so a line on a crossing
   can sit a column off; the frame readout is what plays.
+- Later on PD01 (PIPO_110): plain points with LOP ON click; FUNC-snapped points with LOP ON are clean;
+  holding FUNC and turning STA while the loop plays gives occasional clicks, clean once it lands;
+  PIPO, once settled, gives a muffled knock at the turns, not a discontinuity.
 - C, clicks (PIPO_110): LOP ON with STA and END not snapped clicked on every pass; snapped, LOP ON
   was clean; PIPO gave a soft knock at the turns. At a turn the waveform's slope reverses, which no
   choice of frame avoids on a pure tone, so this is expected (README).
