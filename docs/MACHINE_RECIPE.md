@@ -35,7 +35,7 @@ Read this before you plan a core, a base or the first modules for any machine ot
 | --- | --- | --- | --- | --- | --- |
 | Octatrack | available | Modwerk base (beta) | done | `ot_emu` | the reference |
 | Digitakt, Digitone | preview | Modwerk cores, interfaces 2.1 and 2.2 (in development, frozen) | not started | digiemu | grow the core into the base, then the loader glue (the Octatrack's ColdFire family) |
-| Analog Rytm MKII | preview | elekloader core-ar2 0.7 | started: the base is core-ar2 0.7's source, built by `npm run machine:base` (29 October 2026); the plan was agreed on #878, with a SysEx link over USB MIDI | rytm-emu | the send bus and an FX list in the base |
+| Analog Rytm MKII | preview | elekloader core-ar2 0.7 | started: the base is core-ar2 0.7's source, built by `npm run machine:base`, with the send bus and the FX list `mw_fx` (29 October 2026); the plan was agreed on #878, with a SysEx link over USB MIDI | rytm-emu | the site on the base (#878), then the USB link |
 | Analog Four MKII | research | elekloader core-a4 0.2 | not started | none known | as the Rytm: same platform |
 | Digitakt II | research | digitakt2-perform 1.0 | started: core-dt2 1.1's source is copied into `sdk/machines/digitakt-ii/elekloader/` (29 October 2026), with its additions proposed in the interface; nothing builds from it yet | digikit (the author's; emulator only) | build the base from the owner's OS file and ship it with the 1.1 hooks |
 | Syntakt | research | Modwerk boot probe | not started | none known | the core stage, planned as the base |
