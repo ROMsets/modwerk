@@ -376,6 +376,7 @@
     },
     {
       "id": "quantize-live-rec-toggle",
+      "unitName": "Quant Live Rec",
       "octabam": true,
       "abi": 7,
       "features": 1,
@@ -391,6 +392,7 @@
     },
     {
       "id": "direct-jump-kyoti",
+      "unitName": "DirectJmp Kyoti",
       "octabam": true,
       "abi": 7,
       "features": 1,
