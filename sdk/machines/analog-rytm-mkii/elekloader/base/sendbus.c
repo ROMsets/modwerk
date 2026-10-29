@@ -896,11 +896,12 @@ struct core_param {
 // Core asks a page's shown each time the page key steps onto it, with the
 // view: kept, it tells which page that view has selected. A frame can ask
 // this mod's ids just before the key steps off its page (mw_send_key), so a
-// page whose view has stepped on is not up, whatever stock last asked.
+// page whose view has stepped on is not up, whatever stock last asked. With
+// no send effect installed the key steps over both pages, as on stock.
 static char *page_view[3];         // by PAGE_SHOWN_*
 
-static int shown_fx(void *view) { page_view[PAGE_SHOWN_FX] = view; return 1; }
-static int shown_send(void *view) { page_view[PAGE_SHOWN_SEND] = view; return 1; }
+static int shown_fx(void *view) { page_view[PAGE_SHOWN_FX] = view; return n_fx > 0; }
+static int shown_send(void *view) { page_view[PAGE_SHOWN_SEND] = view; return n_fx > 0; }
 
 static int page_up(int p)
 {
