@@ -376,6 +376,7 @@
     },
     {
       "id": "quantize-live-rec-toggle",
+      "unitName": "Quant Live Rec",
       "octabam": true,
       "abi": 7,
       "features": 1,
