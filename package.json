@@ -35,6 +35,7 @@
     "elekloader:update": "node scripts/elekloader-update.ts",
     "octatrack:elekloader:verify": "node scripts/verify-octatrack-elemods.mjs",
     "octatrack:base": "node scripts/octatrack-base.mjs",
+    "machine:base": "python3 -B scripts/machine-base.py",
     "octatrack:module-packages": "python3 -B scripts/octatrack-module-packages.py",
     "upload:verify": "sh sdk/runtime/upload/tests/run_host.sh",
     "upstream:tools": "python3 -B scripts/upstream-tools.py",
