@@ -147,7 +147,7 @@
     ],
     "limitations": [
       "Cannot be installed with Digi Matrix: both patch the render site after the LFOs (0x40077eb2), so the configurator never offers them together.",
-      "Parameters are the sound’s slots 1-45, named as the Digitakt’s pages name them; ranges come from the firmware’s own table. FLT.DEL to FLT.ROUT are the filter’s second page.",
+      "Parameters are the sound’s slots 1-45, named as the Digitakt’s own pages name them (a mod that renames a page’s knobs for its machines, Digi Mono for example, is not followed yet); ranges come from the firmware’s own table. FLT.DEL to FLT.ROUT are the filter’s second page.",
       "One assignment for each knob A-H, and a track’s parameter can belong to one knob only; the assignments are kept in bits of tracks 5 to 8’s spare sound bytes that no other mod here uses.",
       "Selecting another pattern while the sequencer is stopped reloads the offsets at once; while it plays, the new pattern’s knobs take over when it starts. This is detected from the audio engine’s own pattern bytes, and the author has seen it work on a unit.",
       "After the stock chord, metronome, scale, microtiming or retrig screens, press TRIG twice to open the Perform page again.",
