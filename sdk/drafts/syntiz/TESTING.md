@@ -145,3 +145,13 @@ not hardware evidence.
   tried and accepted with no refusal. SRC SETUP's machine list scrolls to POLY8, ANALOG BD, VECTOR, FM SYNTH and
   SYNTIZ, the last row; eight DOWN presses reach it and YES makes track 1 SYNTIZ, its SRC page "SRC SAW > SYNTIZ".
   Not yet on a unit.
+
+## On the author's second MKII (29 October 2026)
+
+- A second MKII of the author's, on Elektron's OS 1.40C until then: the private test base `b30d9b09` (`main` + #943
+  + `WV` 1-15) flashed by the author from the card; the link then read OCTATRACK 1.40C, base `b30d9b09…`. Over USB,
+  this package (`syntiz.mwrm`, `da5f1e78`) and FM Synth 0.1.2 (`6e571654`) each tried and kept (generations 1
+  and 2); `npm run device -- missing`: nothing.
+- Reported by the author, playing it with a friend: the six models work "very well".
+- Power cycle: a project saved with SYNTIZ tracks, the unit switched off and on; reported by the author: everything
+  came back. Over USB afterwards: base `b30d9b09…`, nothing missing.
