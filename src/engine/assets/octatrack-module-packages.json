@@ -391,6 +391,7 @@
     },
     {
       "id": "direct-jump-kyoti",
+      "unitName": "DirectJmp Kyoti",
       "octabam": true,
       "abi": 7,
       "features": 1,
