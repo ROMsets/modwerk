@@ -451,9 +451,9 @@ static int undo_kind;                       /* 1: a paste can be undone, 2: a cl
 static int trig_down;                       /* TRIG is held on the page: its values show, REC / PLAY / STOP work on the page */
 static int trig_used;                       /* ... and a key was pressed with it, so letting go does not leave the page */
 static volatile int hold_t;                 /* UI ticks TRIG has been down: a short press is a tap, a longer one a hold */
+static int trig_rep;                        /* the first repeat event of the held TRIG came: the stock page shows its values from then on, and so does this one */
 static int trig_pend;                       /* TRIG was pressed on the stock TRIG page: a tap, on its release, opens this page */
 #define TAP_TICKS 15                        /* half a second */
-#define VALUE_TICKS 12                      /* the stock page shows its values about 0.4 s after TRIG goes down; so does this one */
 static unsigned char press_ev[64];          /* the TRIG press, replayed for the stock page when the press was a plain tap */
 static void *tap_view;                      /* the TRIG page's view, and its stock key handler, for that replay */
 static int (*tap_stock)(void *, void *);
@@ -746,7 +746,7 @@ static void draw_play(void *bmp, unsigned char *kit)
         if (E_PAR(e) && E_PAR(e) <= DEST_LAST) {
             char b[8], d[2];
             int len = 0, tx;
-            if ((show[k] || (trig_down && hold_t >= VALUE_TICKS)) && live[k]) {   /* just turned, or TRIG held a moment: the value, as the MIDI CC page shows it */
+            if ((show[k] || (trig_down && trig_rep)) && live[k]) {   /* just turned, or TRIG held a moment: the value, as the MIDI CC page shows it */
                 len = value_text(b, 5, E_PAR(e), shown_word(kit, k));
             } else {
                 const char *a = names4[E_PAR(e)];
@@ -1023,10 +1023,14 @@ int digiperform_key(void *brain, void *ev)
                 int i;
                 trig_down = 1;
                 trig_used = 0;
+                trig_rep = 0;
                 hold_t = 0;
                 for (i = 0; i < 64; i++)
                     press_ev[i] = ((unsigned char *)ev)[i];
-            } else if (!KEYDOWN(ev) && trig_down) {
+            } else if (KEYDOWN(ev)) {
+                if (trig_down)
+                    trig_rep = 1;            /* a down event that is no fresh press: the key's repeat, which the stock page waits for too */
+            } else if (trig_down) {
                 int tap = !trig_used && hold_t < TAP_TICKS;   /* held longer, the page stays and its names come back */
                 void *v = tap_view;
                 trig_down = 0;
