@@ -453,6 +453,7 @@ static int trig_used;                       /* ... and a key was pressed with it
 static volatile int hold_t;                 /* UI ticks TRIG has been down: a short press is a tap, a longer one a hold */
 static int trig_pend;                       /* TRIG was pressed on the stock TRIG page: a tap, on its release, opens this page */
 #define TAP_TICKS 15                        /* half a second */
+#define VALUE_TICKS 12                      /* the stock page shows its values about 0.4 s after TRIG goes down; so does this one */
 static unsigned char press_ev[64];          /* the TRIG press, replayed for the stock page when the press was a plain tap */
 static void *tap_view;                      /* the TRIG page's view, and its stock key handler, for that replay */
 static int (*tap_stock)(void *, void *);
@@ -745,7 +746,7 @@ static void draw_play(void *bmp, unsigned char *kit)
         if (E_PAR(e) && E_PAR(e) <= DEST_LAST) {
             char b[8], d[2];
             int len = 0, tx;
-            if ((show[k] || trig_down) && live[k]) {   /* just turned, or TRIG held: the value, as the MIDI CC page shows it */
+            if ((show[k] || (trig_down && hold_t >= VALUE_TICKS)) && live[k]) {   /* just turned, or TRIG held a moment: the value, as the MIDI CC page shows it */
                 len = value_text(b, 5, E_PAR(e), shown_word(kit, k));
             } else {
                 const char *a = names4[E_PAR(e)];
