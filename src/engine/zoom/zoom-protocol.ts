@@ -142,3 +142,18 @@ export const validEffectName = (name: string) => /^[A-Z0-9_]{1,8}\.ZDL$/.test(na
 /** Effects this page may install or remove: added ones (group 8, IDs 403-957, the ranges in the ID ledger,
  * docs/ZDL_MODULE_CONTRACT.md) until modules settle it. Zoom's own effects are never offered for removal. */
 export const isAddedEffect = (effect?: { gid: number; fxid: number }) => !!effect && effect.gid === 8 && effect.fxid >= 403 && effect.fxid <= 957
+
+/** Effect IDs two collections shipped for different effects. Swapping one for the other froze an MS-70CDR at boot
+ * until its ROM was reprogrammed (repeat98/ZoomMultistompZDL issue 8), and a pedal can't say what it had before,
+ * so neither is installed. */
+export const CLASHING_EFFECT_IDS = [{ gid: 8, fxid: 409, files: 'Spool.ZDL and the older TEcho4.ZDL' }]
+
+/** Why an effect file can't be installed, or undefined when it can: the name, an effect header, an added effect, no known clash. */
+export function installRefusal(name: string, data: ArrayLike<number>): string | undefined {
+  const info = effectInfo(data), id = info && info.gid + '/' + info.fxid
+  if (!validEffectName(name.toUpperCase())) return name + ': the pedal needs a name of at most 8 letters, digits or underscores, then .ZDL.'
+  if (!info) return name + ' is not an effect file.'
+  if (!isAddedEffect(info)) return name + ' has effect ID ' + id + ': only added effects (group 8, IDs 403 to 957) are installed. Zoom’s own effects stay as they are.'
+  const clash = CLASHING_EFFECT_IDS.find(c => c.gid === info.gid && c.fxid === info.fxid)
+  if (clash) return name + ' uses effect ID ' + id + ', which ' + clash.files + ' both use. Swapping one for the other has frozen a pedal at boot, so it isn’t installed.'
+}

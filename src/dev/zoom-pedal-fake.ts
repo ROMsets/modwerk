@@ -6,7 +6,7 @@ import type { MidiAccessLike, MidiIn, MidiOut } from '../engine/zoom/zoom-link'
 export type FakePedalFile = { name: string; data: number[] }
 const BLOCK = 512
 
-export function fakeZoomPedal({ deviceId = 0x61, firmware = '2.10', files = [] as FakePedalFile[], free = 400_000, portName = 'ZOOM MS Series', silent = false, slow = undefined as { cmd: number; nth: number; ms: number | null } | undefined, latency = 0, failWriteOf = '' } = {}) {
+export function fakeZoomPedal({ deviceId = 0x61, firmware = '2.10', files = [] as FakePedalFile[], free = 400_000, portName = 'ZOOM MS Series', silent = false, slow = undefined as { cmd: number; nth: number; ms: number | null } | undefined, latency = 0, failWriteOf = '', keepOnDelete = '' } = {}) {
   const sent: number[][] = []
   let listAt = 0, reading: FakePedalFile | undefined, readAt = 0, step = 0, writing: FakePedalFile | undefined, failing = !!failWriteOf
   const input: MidiIn = { id: 'in', name: portName, state: 'connected', onmidimessage: null }
@@ -54,7 +54,7 @@ export function fakeZoomPedal({ deviceId = 0x61, firmware = '2.10', files = [] a
         return ack()
       }
       if (cmd === 0x21 && writing) { const done = writing; writing = undefined; const i = files.findIndex(f => f.name === done.name); if (i >= 0) files[i] = done; else files.push(done); return ack() }
-      if (cmd === 0x24) { const gone = String.fromCharCode(...m.slice(6, m.indexOf(0, 6))), i = files.findIndex(f => f.name === gone); if (i >= 0) files.splice(i, 1); return ack() }
+      if (cmd === 0x24) { const gone = String.fromCharCode(...m.slice(6, m.indexOf(0, 6))), i = files.findIndex(f => f.name === gone); if (i >= 0 && gone !== keepOnDelete) files.splice(i, 1); return ack() }   // keepOnDelete: answers but keeps it
       if (cmd === 0x05 || cmd === 0x22) { step++; return step % 3 === 0 ? block() : ack() }
       if (cmd === 0x29) { const m = [...head, ...Array(15).fill(0), 0xf7]; size5(free).forEach((b, i) => { m[16 + i] = b }); return reply(m) }
       return ack()

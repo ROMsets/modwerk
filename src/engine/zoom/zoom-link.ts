@@ -1,7 +1,7 @@
 // The site's link to a Zoom MultiStomp over Web MIDI: identify the pedal, list its files, read them (the backup),
 // and install or remove one effect file the way the project's editor proved safe on the MS-70CDR 2.10.
 // The commands are in zoom-protocol.ts.
-import { EFFECT_LIST, EFFECT_LIST_SIZE, FILE, IDENTITY_REQUEST, WRITE_BLOCK, effectInfo, isFileReply, listRecords, listWith, listWithout, parseBlock, parseIdentity, parseListEntry, parseUsage, validEffectName, zoomSysex, type ZoomIdentity } from './zoom-protocol'
+import { EFFECT_LIST, EFFECT_LIST_SIZE, FILE, IDENTITY_REQUEST, WRITE_BLOCK, effectInfo, installRefusal, isAddedEffect, isFileReply, listRecords, listWith, listWithout, parseBlock, parseIdentity, parseListEntry, parseUsage, zoomSysex, type ZoomIdentity } from './zoom-protocol'
 import { storedZip } from './zip'
 
 export type ZoomLinkStatus = 'unsupported' | 'idle' | 'connecting' | 'ready' | 'reading' | 'writing'
@@ -199,10 +199,14 @@ export class ZoomLink {
     const back = await this.read(name)
     if (back.length !== data.length || back.some((b, i) => b !== data[i])) throw new Error(name + ' read back different from what was written.')
   }
+  // Delete a file, then list again: the pedal's reply alone doesn't show it went.
   private async remove(name: string) {
     this.heads.delete(name.toUpperCase())
-    for (const body of FILE.remove(name)) await this.ask(body)
+    let answered = true
+    for (const body of FILE.remove(name)) if (!await this.ask(body)) answered = false
     await this.close()
+    await this.drain()
+    if ((await this.list()).some(f => f.name.toUpperCase() === name.toUpperCase())) throw new Error(name + ' is still on the pedal' + (answered ? '' : ', which stopped answering') + '. The effect list no longer names it: remove it again before power-cycling.')
   }
   private async effectList() {
     const list = await this.read(EFFECT_LIST)
@@ -211,15 +215,15 @@ export class ZoomLink {
   }
 
   /**
-   * Install one effect file. A new one: its ID must be free, there must be room, and the file is written before
+   * Install one added effect file (installRefusal: never Zoom's own, nor a known ID clash). A new one: its ID must be free, there must be room, and the file is written before
    * it goes into the effect list (whose original is written back if that fails). An installed one of the same
    * name: only the same effect (group and ID), and only when the bytes differ. Every write is read back.
    * Returns the effect list from before, for the caller to offer for saving. Power-cycle the pedal to load it.
    */
   readonly installFile = (name: string, data: ArrayLike<number>) => this.exclusive('Installing ' + name, async () => {
-    const file = name.toUpperCase(), bytes = Array.from(data), info = effectInfo(bytes)
-    if (!validEffectName(file)) throw new Error(name + ': the pedal needs a name of at most 8 letters, digits or underscores, then .ZDL.')
-    if (!info) throw new Error(name + ' is not an effect file.')
+    const file = name.toUpperCase(), bytes = Array.from(data), refused = installRefusal(name, bytes)
+    if (refused) throw new Error(refused)
+    const info = effectInfo(bytes)!
     const files = await this.list(), existing = files.find(f => f.name.toUpperCase() === file)
     if (existing) {
       const head = await this.head(existing)
@@ -252,10 +256,12 @@ export class ZoomLink {
     return { previousList: list, unchanged: false }
   }, 'writing')
 
-  /** Remove one effect file: out of the effect list first, then the file. Returns the effect list from before. */
+  /** Remove one added effect file: out of the effect list first, then the file, then list to check it went. Returns the effect list from before. */
   readonly removeFile = (name: string) => this.exclusive('Removing ' + name, async () => {
     const files = await this.list(), file = files.find(f => f.name.toUpperCase() === name.toUpperCase())
     if (!file || !/\.zdl$/i.test(file.name)) throw new Error(name + ' is not an effect on the pedal.')
+    const head = await this.head(file)
+    if (!isAddedEffect(head)) throw new Error(file.name + (head ? ' has effect ID ' + head.gid + '/' + head.fxid : ' has no effect header') + ': only added effects (group 8, IDs 403 to 957) are removed. Zoom’s own effects stay as they are.')
     const list = await this.effectList(), updated = listWithout(list, file.name)
     if (updated) await this.write(EFFECT_LIST, updated)
     await this.remove(file.name)

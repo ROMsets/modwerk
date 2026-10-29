@@ -94,8 +94,12 @@ Example (shape only):
 
 ## Effect IDs
 
-An effect ID must be unique on a pedal: two effects with the same ID make one
-of them unreachable. Modwerk keeps a ledger of author ranges, as Stomphacks
+An effect ID must be unique, on a pedal and across collections: two effects
+with the same ID make one of them unreachable, and swapping one for the other
+froze an MS-70CDR at boot until its ROM was reprogrammed (Spool.ZDL and the
+older TEcho4.ZDL, both 409 in group 8; TEcho4 is now 946). A pedal can't say
+what it had before, so the pedal page refuses a known clash
+(`CLASHING_EFFECT_IDS` in `zoom-protocol.ts`) as well as an ID already on it. Modwerk keeps a ledger of author ranges, as Stomphacks
 does for the ZD2 pedals, plus the IDs of Zoom's stock effects (metadata only,
 no stock files). ZoomMultistompZDL already reserves 403-499 for its effects,
 500-699 for NAM slots, 700-899 for cab slots and 900-957 for templates; other

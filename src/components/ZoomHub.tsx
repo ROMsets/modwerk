@@ -3,7 +3,7 @@ import { DeviceImage } from '../devices/DeviceImage'
 import { zoomHubHref, type ZoomHubView } from '../devices/zoom-hub-route'
 import type { DeviceProfile } from '../devices/registry'
 import type { ZoomFile, ZoomLink } from '../engine/zoom/zoom-link'
-import { ZOOM_DEVICE_IDS, effectInfo, isAddedEffect } from '../engine/zoom/zoom-protocol'
+import { ZOOM_DEVICE_IDS, effectInfo, installRefusal, isAddedEffect } from '../engine/zoom/zoom-protocol'
 import { useMobileWorkspace } from '../hooks/useMobileWorkspace'
 import { useZoomLink } from '../hooks/useZoomLink'
 import { Icon, type IconName } from './Icon'
@@ -21,7 +21,8 @@ const isCapture = (name: string) => /^(NAM|C)\d/i.test(name)
 /**
  * Your Zoom pedal: the Octatrack page (OctatrackHub.tsx) for a Zoom MultiStomp, beta only. The pedal's own
  * pages on the leading side, the selected one on the trailing side, over the Web MIDI link (zoom-link.ts).
- * Read-only for now: it identifies the pedal, lists what's on it and backs it up; installing comes next.
+ * It identifies the pedal, lists what's on it, backs it up, and installs or removes added effect files (the link
+ * refuses Zoom's own and known ID clashes).
  */
 export function ZoomHub({ device, view, link, header }: { device: DeviceProfile; view: ZoomHubView; link: ZoomLink | null; header?: ReactNode }) {
   const mobile = useMobileWorkspace()
@@ -46,10 +47,10 @@ export function ZoomHub({ device, view, link, header }: { device: DeviceProfile;
   const keepList = (list?: number[]) => list && { url: URL.createObjectURL(new Blob([Uint8Array.from(list)])), name: 'pedal-FLST_SEQ-' + new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-') + '.ZDT' }
   const install = (file: File) => run(async () => {
     if (!link) return
-    const data = new Uint8Array(await file.arrayBuffer()), info = effectInfo(data), name = file.name.toUpperCase()
-    if (!info) throw new Error(file.name + ' is not an effect file.')
-    if (!isAddedEffect(info)) throw new Error(file.name + ' has effect ID ' + info.gid + '/' + info.fxid + ': this page installs added effects only (group 8, IDs 403 to 957). Zoom’s own effects stay as they are.')
-    if (!window.confirm('Install ' + name + ' (version ' + info.version + ', ' + kb(data.length) + ')? It is written, read back and added to the pedal’s effect list. Don’t touch the pedal or the cable until it’s done.')) return
+    const data = new Uint8Array(await file.arrayBuffer()), refused = installRefusal(file.name, data), name = file.name.toUpperCase()
+    if (refused) throw new Error(refused)
+    const info = effectInfo(data)!
+    if (!window.confirm('Install ' + name + ' (version ' + info.version + ', effect ID ' + info.gid + '/' + info.fxid + ', ' + kb(data.length) + ')? No other effect you install, now or later, may share that ID. It is written, read back and added to the pedal’s effect list. Don’t touch the pedal or the cable until it’s done.')) return
     const result = await link.installFile(name, data)
     if (alive.current) setChanged({ text: result.unchanged ? name + ' is already this exact file.' : name + ' installed and read back identical. Power-cycle the pedal to load it.', list: keepList(result.previousList) })
     await read()
@@ -109,6 +110,7 @@ export function ZoomHub({ device, view, link, header }: { device: DeviceProfile;
           {connected && files && <section className="hub-section" aria-labelledby="zoom-install-title">
             <h3 id="zoom-install-title">Install an effect file</h3>
             <p>An added effect (.ZDL), for example a NAM capture or cab from the NAM + Cab Loader. It’s written, read back and added to the effect list; the list from before is offered for saving. Zoom’s own effects are never changed here.</p>
+            <p><strong>Two added effects must never share an effect ID.</strong> Swapping one for another with the same ID has frozen a pedal at boot, and recovering it needed a ROM programmer. This page refuses an ID already on the pedal or known to clash, but it can’t see what the pedal had before. Back up all files first.</p>
             <label className="button button-quiet zoom-pick"><input type="file" accept=".zdl,.ZDL" hidden disabled={busy} onChange={event => { const file = event.target.files?.[0]; event.target.value = ''; if (file) install(file) }} />Choose a .ZDL file</label>
             {changed && <p role="status">{changed.text}{changed.list && <> <a className="text-button" href={changed.list.url} download={changed.list.name}>Save the effect list from before</a></>}</p>}
           </section>}

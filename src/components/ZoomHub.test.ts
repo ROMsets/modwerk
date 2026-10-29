@@ -108,7 +108,17 @@ describe('installing and removing on the pedal page', () => {
     Object.defineProperty(input, 'files', { value: [new File([Uint8Array.from(fakeEffect('X.ZDL', 7, 99, '1.00').data)], 'X.ZDL')], configurable: true })
     await act(() => { input.dispatchEvent(new Event('change', { bubbles: true })) })
     await until(() => !!container.querySelector('.hub-error'))
-    expect(container.querySelector('.hub-error')?.textContent).toMatch(/installs added effects only/)
+    expect(container.querySelector('.hub-error')?.textContent).toMatch(/only added effects/)
+    expect(fake.sent.some(m => m[4] === 0x60 && m[5] === 0x23)).toBe(false)
+    await idle(fake.link)
+  })
+  it('warns before any write, and refuses an effect ID known to clash', async () => {
+    const fake = await setup(), input = open().querySelector<HTMLInputElement>('input[type=file]')!
+    expect(open().textContent).toMatch(/Two added effects must never share an effect ID/)
+    Object.defineProperty(input, 'files', { value: [new File([Uint8Array.from(fakeEffect('SPOOL.ZDL', 8, 409, '1.00').data)], 'Spool.ZDL')], configurable: true })
+    await act(() => { input.dispatchEvent(new Event('change', { bubbles: true })) })
+    await until(() => !!container.querySelector('.hub-error'))
+    expect(container.querySelector('.hub-error')?.textContent).toMatch(/Spool\.ZDL and the older TEcho4\.ZDL/)
     expect(fake.sent.some(m => m[4] === 0x60 && m[5] === 0x23)).toBe(false)
     await idle(fake.link)
   })
