@@ -11,7 +11,9 @@
 | The MIDI tracks' task learns of a new or reloaded pattern through two
 | functions that store the pattern's address (0x400e0b04, which also marks
 | every track for loading at its next trig, and 0x400e0b3a, which loads
-| them at once); the two sites are those stores. The task's clock record
+| them at once), and, when the sequencer changes pattern while playing,
+| through its own pattern record (0x400e126c, which marks every track); the
+| three sites are those stores. The task's clock record
 | (0x400e128c, about 30 times a second even when stopped) then loads one
 | track and sends what the stock first trig sends, keeping the track's
 | stock state so that trig still does its own.
@@ -35,8 +37,12 @@
 
         .section .run, "ax"
 
-| ---- 0x400e0b08 and 0x400e0b56: a pattern for the MIDI tracks (6 bytes) ---
-| Both replay the store they replaced and count a new pattern.
+| ---- 0x400e0b08, 0x400e0b56 and 0x400e126c: a pattern for the MIDI tracks --
+| (6 bytes each). The first two are the calls a reload, STOP, a pattern change
+| while stopped or a project load makes; the third is the MIDI task's own
+| pattern record, which the sequencer sends when it changes pattern while
+| playing (a cued pattern, a chain, song mode). Each replays the store it
+| replaced and counts a new pattern.
         .balign 2
         .globl  ccr_mark
 ccr_mark:
@@ -49,6 +55,13 @@ ccr_mark:
 ccr_mark_loaded:
         addq.l  #1, ccr_gen
         move.l  %d3, PATTERN            | the instruction this replaced
+        rts
+
+        .balign 2
+        .globl  ccr_mark_record
+ccr_mark_record:
+        addq.l  #1, ccr_gen
+        move.l  %d0, PATTERN            | the instruction this replaced
         rts
 
 | ---- 0x400e128c: the MIDI tracks' clock record (6 bytes) --------------------

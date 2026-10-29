@@ -3,9 +3,9 @@
   "machine": "digitakt",
   "moduleId": "cc-recall",
   "moduleVersion": "0.1.0-experimental",
-  "capturedAt": "2026-10-28",
+  "capturedAt": "2026-10-29",
   "firmware": "1.54",
-  "imageSha256": "0f79fa5eea59a1b03fc01eaa5abd9f3105e6d2c68e632ad3a176c3bf6269a70a",
+  "imageSha256": "e43f0e6be0eebdd7d16603daa2980d4ccc140614e83caefd03d7045219124beb",
   "stockSha256": "f78ba80fa7b1da5fb0e1ff61ad61e9e71aafe79f4364fc49679f3651353e3cf6",
   "source": {
     "repository": "https://github.com/repeat98/modwerk",

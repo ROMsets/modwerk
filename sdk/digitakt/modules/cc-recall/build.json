@@ -47,6 +47,13 @@
           "stockSha256": "56fca10588c62176d9eab23c3dc78dd2a1fe8a38fe27b171216004346be0194a",
           "op": "jsr",
           "target": "ccr_tick"
+        },
+        {
+          "addr": "0x400e126c",
+          "len": 6,
+          "stockSha256": "4387672943b0571c966279ee8837ea786aa581d89b70b1b0444e743d0c2459f0",
+          "op": "jsr",
+          "target": "ccr_mark_record"
         }
       ]
     }

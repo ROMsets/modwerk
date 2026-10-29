@@ -80,7 +80,7 @@
     ]
   },
   "resources": {
-    "memoryBytes": 574,
+    "memoryBytes": 590,
     "fastBytes": 0,
     "load": {
       "display": "No audio-interrupt code; about 20 cycles per MIDI-task clock, 5,200 when a track is sent (emulator)",
@@ -91,7 +91,7 @@
   "evidence": {
     "tier": "none",
     "moduleVersion": "0.1.0-experimental",
-    "sourceSha256": "dbaf6612de948f941a9846669c9c783ea41688324510dcb2a1caae4e1590f8e7",
+    "sourceSha256": "d9fff9a2b27853f996a0fc799a1bf4d98977ca2ab1a86ed19b459e7bb6f220ef",
     "reports": [
       "evidence/source-identity.json",
       "TESTING.md"
@@ -101,7 +101,7 @@
   },
   "tests": {
     "report": "TESTING.md",
-    "summary": "Emulator: with CC RECALL ticked, a pattern reload while stopped makes MIDI track A send its saved CC values at once (stock waits for the next trig); also after STOP and a project load, and the next trig still sends as stock. With FX Track on FX CONTROL CH 1, a reload puts the reverb PRE back to the saved value at once and CC 24 does not leave MIDI OUT. Unticked: stock. Hardware not yet tested.",
+    "summary": "Emulator: with CC RECALL ticked, a pattern reload while stopped makes MIDI track A send its saved CC values at once (stock waits for the next trig); also after STOP, a project load and an injected playing pattern change, and the next trig still sends as stock. With FX Track on FX CONTROL CH 1, a reload puts the reverb PRE back to the saved value at once and CC 24 does not leave MIDI OUT. Unticked: stock. Author's unit, first build: reload works; a pattern change while playing did not send, which this build fixes (not yet retested).",
     "documentation": {
       "tutorial": {
         "title": "Quick tutorial: reload a pattern and hear the saved sound",
@@ -147,7 +147,7 @@
         "type": "emulator",
         "release": "1.54",
         "moduleVersion": "0.1.0-experimental",
-        "imageSha256": "0f79fa5eea59a1b03fc01eaa5abd9f3105e6d2c68e632ad3a176c3bf6269a70a",
+        "imageSha256": "e43f0e6be0eebdd7d16603daa2980d4ccc140614e83caefd03d7045219124beb",
         "setup": "Pinned digiemu, firmware-native drawing, disposable first-boot project. No audio or cycle-timing qualification."
       }
     },
@@ -163,7 +163,7 @@
         "type": "emulator",
         "release": "1.54",
         "moduleVersion": "0.1.0-experimental",
-        "imageSha256": "0f79fa5eea59a1b03fc01eaa5abd9f3105e6d2c68e632ad3a176c3bf6269a70a",
+        "imageSha256": "e43f0e6be0eebdd7d16603daa2980d4ccc140614e83caefd03d7045219124beb",
         "setup": "Pinned digiemu, firmware-native drawing, disposable first-boot project. No audio or cycle-timing qualification."
       }
     }

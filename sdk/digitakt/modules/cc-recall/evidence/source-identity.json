@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "algorithm": "sha256 of canonical sorted JSON {sources,build}; UTF-8, compact separators",
-  "sha256": "dbaf6612de948f941a9846669c9c783ea41688324510dcb2a1caae4e1590f8e7",
+  "sha256": "d9fff9a2b27853f996a0fc799a1bf4d98977ca2ab1a86ed19b459e7bb6f220ef",
   "sources": {
-    "src/ccrecall.s": "57d511c6c5426cb45679fe8447958faa95029642208ac42c6612281f38e33866"
+    "src/ccrecall.s": "3b9859d6abd6e76f25bdd460f59aab84fc8e2d9a08be204c67b1da0fc3c469a9"
   },
   "build": {
     "schemaVersion": 1,
@@ -54,6 +54,13 @@
             "stockSha256": "56fca10588c62176d9eab23c3dc78dd2a1fe8a38fe27b171216004346be0194a",
             "op": "jsr",
             "target": "ccr_tick"
+          },
+          {
+            "addr": "0x400e126c",
+            "len": 6,
+            "stockSha256": "4387672943b0571c966279ee8837ea786aa581d89b70b1b0444e743d0c2459f0",
+            "op": "jsr",
+            "target": "ccr_mark_record"
           }
         ]
       }
