@@ -58,6 +58,12 @@ class MachineEventTests(unittest.TestCase):
         self.assertEqual(known, protect | native)
         self.assertIn(('AB', 1, 1), known)
 
+    def test_chooser_rows_match_the_tables_room(self):
+        # The registry reads as many machines as the loader admits to ot_machines: five stock rows and its room.
+        rows = int(re.search(r'#define ROWS (\d+)u', (OT / 'elekloader/machine_registry.c').read_text()).group(1))
+        room = next(e['room'] for e in json.loads((OT / 'events.json').read_text())['events'] if e['event'] == 'ot_machines')
+        self.assertEqual(rows, 5 + room)
+
     def test_contributor_admission_on_the_host(self):
         result = host(self, ADAPTERS / 'test_machine_contributors.c', ADAPTERS / 'machine_lifetime.c', ADAPTERS / 'machine_parts.c')
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)

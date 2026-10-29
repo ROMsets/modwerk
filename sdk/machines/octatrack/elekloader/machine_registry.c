@@ -23,7 +23,7 @@
 #define SIG 60u
 #define FLEX_PAGE 0x400d31aeu
 #define STATIC_PAGE 0x400d301cu
-#define ROWS 9u                              /* five stock machines and up to four contributed */
+#define ROWS 13u                             /* five stock machines and up to eight contributed (ot_machines' room) */
 typedef volatile uint8_t Part;
 typedef struct modwerk_machine Machine;
 #define MACHINES (MODWERK_OT_MACHINES - RUNTIME_EVENTS)

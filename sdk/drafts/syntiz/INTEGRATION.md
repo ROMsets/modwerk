@@ -8,9 +8,9 @@ Working notes for the machine glue (not written yet), from the sources cited. Co
   (`sdk/machines/octatrack/include/modwerk_events.h:100`): label, Part signature (two letters and a version
   range at Part offset 60 + 30 x track), flags (PROTECT, POOL for a model list), page, defaults, and
   callbacks, among them `render(track, ping, start, end)`. Certain (source).
-- The chooser holds five stock machines and four contributed ones (`machine_registry.c:26`, ROWS 9).
-  POLY8, Analog BD, VECTOR and FM Synth are the four today, so SYNTIZ beside all of them needs the base to grow;
-  beside FM Synth alone it fits. Certain (source).
+- The chooser held five stock machines and four contributed ones (`machine_registry.c:26`, ROWS 9), filled by
+  POLY8, Analog BD, VECTOR and FM Synth. This PR gives it eight (`ot_machines`' room 8, ROWS 13), so SYNTIZ sits
+  beside all four with room for more. Certain (source).
 - No module contributes a machine through its own `runtime.json` yet: the four are ports
   (`module-adapters/machine-ports.json`). SYNTIZ would be the first. Certain (source).
 
