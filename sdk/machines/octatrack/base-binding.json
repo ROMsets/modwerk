@@ -1,26 +1,26 @@
 {
  "schema": 1,
- "identity": "88c68eed4eb5bd9e41c00687f97935409f5ee0029db57a39fa19f9b79b445497",
+ "identity": "a542a515c1955b9264712073bb40c81a492f1a993bfa991640d111eb03aaa130",
  "arena": 1089502688,
  "pool": 1087542656,
  "symbols": {
   "modwerk_controller_write_begin": 1084871420,
   "modwerk_controller_write_end": 1084871448,
-  "modwerk_cue_cfg_clamp": 1085072240,
-  "modwerk_raise_ev_mute_keep": 1085074594
+  "modwerk_cue_cfg_clamp": 1085072340,
+  "modwerk_raise_ev_mute_keep": 1085074694
  },
  "controllers": {
   "sidechain-compressor": "bc005d3dc5f4a961bc23068b28ab20314f492b12609e087f8d2d4d47caf68d81",
   "output-matrix": "8e4c2be24be544ef9abfbb3bef89e017f5a3994c991e5d59ccae7cad0675271b",
-  "analog-bassdrum": "0698b719508ac2bf22277fa7885e305385293bd98f084b1b627014e79b77f7a2"
+  "analog-bassdrum": "5ef60dd9313bbe9bdf0b0fc7a013cc47e186225278008ddda0361bde53475b8b"
  },
  "variants": {
-  "tracks-main-cue": "88c68eed4eb5bd9e41c00687f97935409f5ee0029db57a39fa19f9b79b445497",
-  "tracks": "620c120eac03263cb37f82b7431908d54ee0be1e1cb6c33856266fe92be935c6",
-  "tracks-post": "f301c78375d2c02583a05e06ca2e9e0911c268be0f2daa2e667a7fc31fc3eb4e",
-  "main-cue": "e0bbfb3d73b3962186322b568a64b5eadb98d5830ddddc1642fe7ca4079f1f55",
-  "main": "656c021d6e3d8a957a08866d74f76d5bfef305da6826092d85669f90b5ac9e76",
-  "master": "4ef3514af2eb2cc7bbd16a9cd1bba836f5fbb878724d5b862c9f8da46fcdc342",
-  "off": "e27111bd9da5612a3d878f758444fc0a2dad35aa1d50ec02fcbbc2ec1dde7769"
+  "tracks-main-cue": "a542a515c1955b9264712073bb40c81a492f1a993bfa991640d111eb03aaa130",
+  "tracks": "555a621ed251b8298eddf7b2180a06023e50fd350eedb00e32da60749600912d",
+  "tracks-post": "23ecff741c4f2f1e0d834b7bb27ac261c34b0f20bbad720e68de407e69367d9a",
+  "main-cue": "9c3d8ba79379003fef7b5f7ac800ad3f91fceef89d9080f6c93b40c99603d247",
+  "main": "0503c466f0587c9a02c714eb0a1d94f8b648e21611796196eff309902a0f1cb0",
+  "master": "7b2a8fbfee4ddece6e3dc9e7b5108e6aa4f98f1c59dc93c2a85b724065bd3ce5",
+  "off": "bd08d38dc218aea2cac16ec24cfe4851500998c3d05d28e9b484577786be7326"
  }
 }
