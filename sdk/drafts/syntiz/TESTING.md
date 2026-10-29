@@ -137,3 +137,11 @@ not hardware evidence.
   titled "MACHINE:SYNTIZ"; the SRC page's footer reads "SRC SAW", "SRC PULSE" and "SRC ENS", then the label
   SYNTIZ, whole. ("SYNTIZ PULSE" before the label filled the footer's 18 characters and cut it to SYNTI.) Track 1
   at C3 130.86 Hz for SAW and PULSE, ENS with a fifth at 61.68 Hz, as before the rename. Not yet on a unit.
+
+## Beside the four other machines (29 October 2026)
+
+- Emulator: the beta base of this branch (`96fa9aa5`: `WV` 1-15 known, room for eight machines), then over
+  emulated USB POLY8 0.3.1, Analog BD 0.1.6, VECTOR 0.2.5, FM Synth 0.1.2 and this package (`da5f1e78`), each
+  tried and accepted with no refusal. SRC SETUP's machine list scrolls to POLY8, ANALOG BD, VECTOR, FM SYNTH and
+  SYNTIZ, the last row; eight DOWN presses reach it and YES makes track 1 SYNTIZ, its SRC page "SRC SAW > SYNTIZ".
+  Not yet on a unit.
