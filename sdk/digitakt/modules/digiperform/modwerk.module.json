@@ -84,7 +84,7 @@
     {
       "name": "Hold TRIG + REC / STOP / PLAY",
       "default": null,
-      "doc": "Copy the page (all eight assignments), paste it over the page, or clear every assignment. The same key again undoes the paste or clear. Holding TRIG shows the values instead of the labels, and letting go with no other key brings the labels back and keeps the page; a tap of TRIG leaves the page. Plain REC, STOP and PLAY work as usual.",
+      "doc": "Copy the page (all eight assignments), paste it over the page, or clear every assignment. The same key again undoes the paste or clear. Holding TRIG shows the values instead of the labels after a moment, as on the stock pages, and letting go with no other key brings the labels back and keeps the page; a tap of TRIG leaves the page. Plain REC, STOP and PLAY work as usual.",
       "labels": null
     },
     {
@@ -175,7 +175,7 @@
     ]
   },
   "resources": {
-    "memoryBytes": 18228,
+    "memoryBytes": 18264,
     "fastBytes": 0,
     "load": {
       "display": "Not measured yet",

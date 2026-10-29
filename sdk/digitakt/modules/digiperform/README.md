@@ -19,7 +19,7 @@ The change is added after the engine has smoothed and modulated the parameter. I
 | FUNC + turn a knob | Snaps the parameter to its own stock snap values, with the stock lock after each snap. |
 | FUNC + a knob’s push (Perform Quick Assign) | On an empty knob: turn to choose the track (1–8 or ALL) and push, then turn to choose the parameter and push. NO cancels. On an assigned knob: removes the assignment. |
 | FUNC + NO | Reloads the pattern as stock does; the offsets go and the knobs pick up the reloaded values again. |
-| Hold TRIG + REC / STOP / PLAY | Copy the page (all eight assignments), paste it over the page, or clear every assignment. The same key again undoes a paste or clear. Holding TRIG shows the values instead of the labels, and letting go with no other key brings the labels back and keeps the page. Plain REC, STOP and PLAY work as usual. |
+| Hold TRIG + REC / STOP / PLAY | Copy the page (all eight assignments), paste it over the page, or clear every assignment. The same key again undoes a paste or clear. Holding TRIG shows the values instead of the labels after a moment, as on the stock pages, and letting go with no other key brings the labels back and keeps the page. Plain REC, STOP and PLAY work as usual. |
 | NO | Puts any moved knob back to its stored value and stays on the page. TRIG or another page key leaves. |
 | FUNC + TRK, FUNC + PTN, FUNC + PAGE, a held step with LEFT/RIGHT or UP/DOWN | Leave the Perform page and open the stock chord setup, metronome, scale, microtiming or retrig screens, which behave exactly as stock. Press TRIG twice to come back. |
 
