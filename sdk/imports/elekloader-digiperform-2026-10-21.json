@@ -15,7 +15,7 @@
       "license": "GPL-3.0-or-later",
       "source": {
         "repo": "repeat98/modwerk",
-        "commit": "da4d96e41d3b34a7edf2940e189db19c14fa7725",
+        "commit": "f52095f5931647fc0bb8a879fc0fd3680d6ea58e",
         "path": "sdk/imports/packages/digiperform/digiperform-0.1.0-experimental-os1.53.elemod"
       },
       "title": "Digi Perform",
@@ -42,7 +42,7 @@
       "license": "GPL-3.0-or-later",
       "source": {
         "repo": "repeat98/modwerk",
-        "commit": "da4d96e41d3b34a7edf2940e189db19c14fa7725",
+        "commit": "f52095f5931647fc0bb8a879fc0fd3680d6ea58e",
         "path": "sdk/imports/packages/digiperform/digiperform-0.1.0-experimental-os1.54.elemod"
       },
       "title": "Digi Perform",

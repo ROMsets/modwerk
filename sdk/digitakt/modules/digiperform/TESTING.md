@@ -18,7 +18,11 @@ The local images carry the build label `3.0d`. Both are build checks; the author
 
 ## Combinations
 
-`modules:check` flags the overlaps the manifests declare: Digi Perform and Digi Matrix patch the same render site, so it is declared in `compatibility.conflicts`. Digi Perform and cc-names no longer share a patch site. The elekloader combination matrix with every other Modwerk mod was not run. Not tested.
+`modules:check` flags the overlaps the manifests declare: Digi Perform and Digi Matrix patch the same render site, so it is declared in `compatibility.conflicts`. Digi Perform and cc-names no longer share a patch site. The elekloader combination matrix with every other Modwerk mod was not run.
+Digi Perform beside Digi Poly and DigiChain (build `3.0d` with Digi Poly 2.0, DigiChain 1.6 and core 2.1; emulator only, never hardware evidence). Digi Poly replaces the draw slot of the TRIG page's view, next to the key slot Digi Perform patches. Both releases link into one image with no overlap reported. In the pinned digiemu (OS 1.54 and OS 1.53), with the audio engine off:
+- On a track with the stock machine, the TRIG page drew as stock, TRIG pressed again opened the Perform page, and TRIG left it back to the stock TRIG page.
+- On a track set to POLY (FUNC + SRC, then POLY), the TRIG page drew Digi Poly's page (NOT1 to NOT4 as a keyboard, LEV, VEL, LEN, PROB, LFO.T). TRIG pressed again opened the Perform page, TRIG left it back to Digi Poly's TRIG page, and opening Perform a second time worked the same way. NO on the Perform page stayed on it, as documented.
+- Not tested: audio with POLY notes while the Perform page is open, assignments or pattern changes with Digi Poly active, Digi Poly's other pages, and any run on a unit.
 
 ## Emulator checks (author)
 
