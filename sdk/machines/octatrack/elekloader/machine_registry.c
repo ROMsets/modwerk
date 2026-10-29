@@ -250,7 +250,9 @@ unsigned mw_chooser_type(unsigned type, const Part *ptr)
  * advances that voice. Nothing stops it when the track changes machine: stock's parameter load (0x40001f18) never
  * touches the record, and voice bind (0x40006820) runs only where a commit changes the type. A switch that keeps the
  * stored type (FLEX <-> machine, of the playing Part) stops it here, before the track's parameters change: the track
- * is silent until its next trig, never a short burst of the old voice that the first trig cuts or plays over. */
+ * is silent until its next trig, never a short burst of the old voice that the first trig cuts or plays over.
+ * It runs from the UI task with interrupts on: a trig the frame interrupt starts in the same moment could be cleared
+ * with it. That is one byte, one trig, at the moment the player changes the machine, and acceptable (owner, 29 Oct 2026). */
 #define VOICE 0x800049d8u
 #define VOICE_STRIDE 168u
 static void hush(const Part *part, unsigned track, unsigned type)
