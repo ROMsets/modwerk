@@ -6,9 +6,13 @@ Everything below was observed in rytm-emu on the named build, except the Hardwar
   `src/pipo.c` `bd1e8dc2…a9d8`, `src/snap.c` `af812459…7bfb`, `src/marks.c` `d2994d5d…79a9`. Fingerprint (`sha256`
   of `sha256sum build.json src/audio.s src/pipo.c src/snap.c src/marks.c`): `1a344049…96b7` (`evidence.sourceSha256`).
 - Stock OS 1.74: `.syx` `cb0f99d6…e123`, the owner's file.
-- Core: elekloader core-ar2 0.3 (`core-ar2-0.3.elemod` `6b97dfb3…3e58`, as vendored).
+- Core: elekloader core-ar2 0.3 (`core-ar2-0.3.elemod` `6b97dfb3…3e58`, as vendored) for every build below except PP14;
+  PP14 takes core-ar2 0.7 (`core-ar2-0.7.elemod` `f1e9cb2c…d9c1`, as vendored), the core Modwerk's Rytm builds use since #987.
 - Build PP13 (core-ar2 0.3 + Pipo Loop 0.1.0-experimental, `--version PP13`), from that source: `.syx`
   `ae15d8b52b4485e0216a4416dd809334b07cdfde0529ca69e8fcd9b59ca58147`.
+- Build PP14 (core-ar2 0.7 + Pipo Loop 0.1.0-experimental, `--version PP14`), from the same source: `.syx`
+  `94bb114986d71e23760cdfec3d0de1f055637c5417bd9b40a29febcbc474e2ac`. Linked by Modwerk's linker on the owner's stock 1.74;
+  the same route with core 0.3 reproduces PP13 byte for byte. It boots to the main screen in rytm-emu `c5732f0`.
 - Build PC11 (core-ar2 0.3 + Silent Pad+Trig 0.5.1 as on main + Pipo Loop 0.1.0, `--version PC11`): `.syx`
   `f6e59b8fca126ec3bbc173e5617e30ade67dfe430693bc936a2d2d0495adb5c5`.
 - Diagnostic PD05 (PC11's code plus an on-screen readout, branch `diag/pipo-loop`; not for release): `.syx`
@@ -258,6 +262,22 @@ showing; the loop plays; a lock set with FUNC + turn while a trig is held lands 
 its position when that trig is held again; "I think that's everything good". PD05 is PC11's code plus
 the readout; PC11 and PP13 themselves were not flashed.
 
+## PP14 on an Analog Rytm MKII (2026-10-29), as reported
+
+npp1993 flashed PP14 (Pipo Loop 0.1.0 alone on core-ar2 0.7, `94bb1149…e2ac`) on an Analog Rytm MKII with stock OS 1.74
+and reported, in order:
+
+- PIPO turns on a looping sample: "fine"; the LOP switch works; moving the sample markers, zero crossing
+  works fine.
+- A kit saved with PIPO on and reloaded: seemed to work fine.
+- A power cycle: the OS came up and booted fine. "I think we're all good."
+- Stock 1.74 restored over USB (`cb0f99d6…e123`) and the PIPO kit loaded: LOP reads ERROR on the SAMPLE page,
+  also after the kit reloaded; turning the knob steps between OFF and ON; no crash. The sound still loops
+  ("it seems to treat the error value as loop. So it still functions").
+
+Not itemized: no listening notes beyond "fine" for the PIPO turns, no duration, no sample length, no
+firmware read-back. Several voices, LOP locks and scenes and MIDI CC 30 were not run.
+
 ## PD04 report; S and E labels (2026-10-28)
 
 **PD04 on an Analog Rytm MKII, as reported by npp1993.** FUNC + STA/END feels better. A very slow
@@ -429,14 +449,14 @@ above.
 
 On a unit (everything below was run in rytm-emu only, or not at all):
 
-- PC11 and PP13 themselves (PD05, the same code plus the readout, was flashed).
-- Moderate-speed FUNC turns after the skip fix (one crossing for up to two values); PIPO turn clicks
-  after the four-way cache push; the unmirrored counter staying 0 over a long PIPO note.
+- PC11 and PP13 themselves (PD05, the same code plus the readout, was flashed). PP14, the same code on core-ar2 0.7, was.
+- Moderate-speed FUNC turns after the skip fix (one crossing for up to two values); the unmirrored
+  counter staying 0 over a long PIPO note. (PIPO turns after the four-way cache push were reported fine on PP14, not itemized.)
 - Several voices in PIPO at once (eight), retrig, and LFO or velocity modulation of STA and END
   while in PIPO.
 - LOP's PIPO as a p-lock and in scenes, LOP set over MIDI CC 30 (including values above 2).
-- Kit save and reload (KIT menu), the sound browser, sound SysEx dumps, Overbridge, power cycle with
-  PIPO saved, and a saved PIPO kit on stock 1.74 (plays as ON there in rytm-emu).
+- The sound browser, sound SysEx dumps and Overbridge. (Kit save and reload, a power cycle and a PIPO kit on
+  stock 1.74 were run on PP14; see above.)
 - Silent Pad+Trig's rows and pads used together with Pipo Loop in one session (PC11 builds both;
   PD05 carried both but only Pipo Loop was exercised); Loop Sync and Pipo Loop on the same track.
 - Several trigs held at once while snapping locks.

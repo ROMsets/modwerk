@@ -1,12 +1,12 @@
 # Pipo Loop
 
-An Analog Rytm MKII mod by npp1993 (Nathaniel Pavel). Version 0.1.0-experimental, OS 1.74 with core-ar2 0.3.
+An Analog Rytm MKII mod by npp1993 (Nathaniel Pavel). Version 0.1.0-experimental, OS 1.74 with core-ar2 0.7.
 
 ## Overview
 
 Pipo Loop gives the SAMPLE page's LOP parameter a third value, PIPO, after OFF and ON. A sample whose LOP is PIPO plays its loop forward from STA to END, then backward to STA, then forward again, for as long as the note lasts: a ping-pong loop. ON stays the stock forward loop, which jumps back to STA at END, and OFF plays the sample once.
 
-PIPO is an ordinary LOP value. It saves with the sound and the kit, takes parameter locks and scene locks, and comes back after a power cycle. A sound saved with PIPO plays as a normal forward loop on stock OS 1.74 or a build without this mod, because stock reads any nonzero LOP as ON.
+PIPO is an ordinary LOP value. It saves with the sound and the kit, takes parameter locks and scene locks, and comes back after a power cycle. A sound saved with PIPO plays as a normal forward loop on stock OS 1.74 or a build without this mod, because stock reads any nonzero LOP as ON. Stock has no text for PIPO, so LOP reads ERROR there until you turn the knob, which steps between OFF and ON.
 
 On the SAMPLE page, FUNC + turn on STA or END moves that point to the next zero crossing of the sample in the direction you turn, stepping as LOP steps through its values, so start and loop points sit where the waveform crosses zero. Plain turns stay stock.
 
@@ -51,7 +51,7 @@ Use a build containing Pipo Loop, select a track whose sound plays a sample, and
 
 ## Compatibility and limitations
 
-- OS 1.74 only, with core-ar2 0.3. No other module is needed, and it builds beside Silent Pad+Trig, Filter Hz and Loop Sync (no shared sites).
+- OS 1.74 only, with core-ar2 0.7. No other module is needed, and it builds beside Silent Pad+Trig, Filter Hz and Loop Sync (no shared sites).
 - Sites: the audio interrupt's call to the voice 0 sample prefetch at 0x40121134 (a `jsr`, through a gate that tail-calls stock), the shared OFF/ON value-text routine at 0x400fb56c (prints PIPO for 2 on LOP's own record, stock text otherwise, so another OFF/ON parameter set to 2 over MIDI still reads ON), LOP's maximum in stock's parameter table at 0x401c04f8 (data, 1.0 to 2.0), and the shared OFF/ON switch icon at 0x400fedf4 (for LOP's record only it tail-calls the three-position switch routine BD CLASSIC's WAV uses, with stock's own frames; every other switch stays stock). Exact turns take the four places stock's prefetch sets a sample DMA's source (0x4011c58a and 0x4011c5e6 for voice 0, 0x4011cb2e and 0x4011cb98 for voices 1-7). With FUNC held, a turn on STA or END is read through LOP's encoder profile (0x4003a0de, before stock's encoder engine); the S and E labels are drawn as stock's waveform widget finishes (0x4006ce72, the end of its draw routine, which only SMPL WAVEFORM calls); zero snap takes the encoder handler's apply-delta call at 0x4003a240 and its lock call at 0x4003a19c, and stock's per-trig lock edit at 0x40037f6c (STA and END with FUNC held only; every other turn passes through). Loop Sync's audio hook at 0x40121020 runs earlier in the same interrupt; Pipo Loop swaps STA and END after it, and Loop Sync's FUNC + TUN and FIN are not touched.
 - With END on the sample's very last frame a turn can land up to 7 frames off; set END a little before the end. Exact turns rely on the DMA reading frames the module writes (it pushes the data cache first); rytm-emu does not model the cache, so the unit has to confirm it.
 - Stock plays a loop of at least 141 frames; Pipo Loop leaves loops shorter than 160 frames to stock's forward loop.
@@ -62,7 +62,7 @@ Use a build containing Pipo Loop, select a track whose sound plays a sample, and
 - STA and END glide to a new value over a fraction of a second, as stock does for every change: while a FUNC turn settles, a loop wrap or PIPO turn can land between crossings and click. Once the point has settled it plays from the crossing. A later version could let FUNC snaps skip the glide and jump straight to the crossing; that is not built, because STA and END as played are stock's smoothing plus LFO and velocity modulation, so the module would have to work out the target every audio block without breaking plain-turn smoothing or modulation.
 - A PIPO turn on a crossing can still give a soft knock on a pure tone: the waveform's slope reverses at the turn, which no choice of frame avoids. A forward loop (LOP ON) between two crossings of one direction joins smoothly.
 - The STA and END lines on the SMPL WAVEFORM view are stock's drawing: one column covers many frames (about 225 for a 0.6 s sample), and stock spaces the lines over 123 columns but the waveform over 124, so a line can sit one column left of the crossing it is on, more often towards the right of the screen. The frame stock plays from is the one the snap set.
-- On stock OS, PIPO plays as ON. Sounds and kits keep the value, so loading them again with the mod brings PIPO back.
+- On stock OS, PIPO plays as ON and LOP reads ERROR until the knob is turned (seen on a unit). Sounds and kits keep the value, so loading them again with the mod brings PIPO back.
 - Run on a unit by the author as test builds (PC03 and the diagnostics PD01 to PD05, reported in [TESTING.md](TESTING.md)); what is not yet tested on a unit is listed there.
 
 ## Tests and measurements
