@@ -86,7 +86,7 @@ def check_toolchain(toolchain):
                          % (cross, toolchain['binutils'], (asm.stdout.splitlines() or ['none'])[0]))
 
 
-LISTS = ('sources', 'sites', 'subscribe', 'contribute', 'storage', 'weak', 'copied', 'requires', 'conflicts')
+LISTS = ('sources', 'cflags', 'sites', 'subscribe', 'contribute', 'storage', 'weak', 'copied', 'requires', 'conflicts')
 DICTS = ('defsym', 'collections')
 
 

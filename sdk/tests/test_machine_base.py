@@ -72,12 +72,17 @@ class MachineBases(unittest.TestCase):
             for site in config.get("add", {}).get("sites", []):
                 self.assertNotIn("stock", site, site["addr"])
                 self.assertRegex(site["stockSha256"], r"^[0-9a-f]{64}$")
-                self.assertTrue(site["len"] >= 6 and site["len"] % 2 == 0, site["addr"])
+                if site.get("kind") == "data":
+                    self.assertEqual(len(site["new"]), 2 * site["len"], site["addr"])
+                else:
+                    self.assertTrue(site["len"] >= 6 and site["len"] % 2 == 0, site["addr"])
 
     def test_merge_extends_lists_and_refuses_a_redefined_name(self):
         mod = {"sources": ["a.s"], "defsym": {"X": "1"}}
-        merged = machine_base.merge(dict(mod), {"sources": ["../base/b.c"], "defsym": {"Y": "2"}, "sites": [{"a": 1}]}, [{"b": 2}])
+        merged = machine_base.merge(dict(mod), {"sources": ["../base/b.c"], "cflags": ["-DY_AT=0x1"], "defsym": {"Y": "2"},
+                                                "sites": [{"a": 1}]}, [{"b": 2}])
         self.assertEqual(merged["sources"], ["a.s", "../base/b.c"])
+        self.assertEqual(merged["cflags"], ["-DY_AT=0x1"])
         self.assertEqual(merged["defsym"], {"X": "1", "Y": "2"})
         self.assertEqual(merged["sites"], [{"b": 2}])
         with self.assertRaises(ValueError):
@@ -91,6 +96,11 @@ class MachineBases(unittest.TestCase):
         self.assertEqual(machine_base.keeps(built, reference, ["id", "sites", "build"]), [])
         self.assertEqual(machine_base.keeps({"id": "core", "sites": [1], "build": {"sources": {"x": "9"}}}, reference,
                                             ["id", "sites", "build"]), ["sites", "build"])
+
+    def test_rytm_send_effect_ids_are_unique_and_in_range(self):
+        ids = json.loads((APP / "sdk/machines/analog-rytm-mkii/fx-ids.json").read_text())["ids"]
+        self.assertTrue(all(1 <= int(n) <= 63 for n in ids), ids)
+        self.assertEqual(len(set(ids.values())), len(ids), ids)
 
 
 if __name__ == "__main__":
