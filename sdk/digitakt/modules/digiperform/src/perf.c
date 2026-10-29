@@ -450,6 +450,9 @@ static unsigned char *undo_kit;             /* the pattern's kit the buffer belo
 static int undo_kind;                       /* 1: a paste can be undone, 2: a clear, 0: none */
 static int trig_down;                       /* TRIG is held on the page: its values show, REC / PLAY / STOP work on the page */
 static int trig_used;                       /* ... and a key was pressed with it, so letting go does not leave the page */
+static volatile int hold_t;                 /* UI ticks TRIG has been down: a short press is a tap, a longer one a hold */
+static int trig_pend;                       /* TRIG was pressed on the stock TRIG page: a tap, on its release, opens this page */
+#define TAP_TICKS 15                        /* half a second */
 static unsigned char press_ev[64];          /* the TRIG press, replayed for the stock page when the press was a plain tap */
 static void *tap_view;                      /* the TRIG page's view, and its stock key handler, for that replay */
 static int (*tap_stock)(void *, void *);
@@ -470,7 +473,6 @@ static int from_trig;                       /* opened from the TRIG page: play o
 int digiperform_title_on;                   /* the TRIG page's title reads "Perform mode" (perf_glue.s) */
 static void *trig_view;                     /* the TRIG page's view, for the header's message */
 static int top;                             /* the first row the EDIT view shows */
-static int closing;                         /* TRIG just closed the page: the stock handler gets that press */
 static int dk;                              /* the knob being assigned from the PLAY view, 1..8, or 0: none */
 static int dstage;                          /* 0: its track is being chosen, 1: its parameter */
 static int dtrk;                            /* the track so far: 0..7, 8 all; it starts on track 1 */
@@ -827,6 +829,8 @@ void digiperform_draw(void *bmp, void *ctrl)
 void digiperform_tick(void *ctrl)           /* keep the frame coming while the page is up */
 {
     kstore_tick(&store, UI_KIT, KS_SLOT_PERF, KS_TRACKS, pmask);   /* a sound load keeps the pool */
+    if ((trig_pend || trig_down) && hold_t < 255)
+        hold_t++;
     if (digiperform_open) {
         int k;
         for (k = 0; k < NKNOB; k++)
@@ -960,14 +964,37 @@ static void draft_turn(unsigned char *kit, int n)
     dpar = OPAR(v);
 }
 
+/* a tap of TRIG on the TRIG page: the Perform page opens over it */
+static void open_page(void)
+{
+    digiperform_open = 1;
+    from_trig = 1;
+    trig_view = tap_view;
+    trig_down = 0;
+    digiperform_title_on = 1;                /* the stock page starts its title again, and shows ours */
+    editing = 0;
+    cursor = 0;
+    sel = 0;
+    capture = 1;
+    if (tap_stock)
+        tap_stock(tap_view, press_ev);
+}
+
 int digiperform_key(void *brain, void *ev)
 {
     int id = KEYID(ev);
     unsigned char *kit = UI_KIT;
     (void)brain;
     if (!digiperform_open) {
-        if (id != KEY_TRIG)
-            closing = 0;
+        if (trig_pend) {
+            if (id == KEY_TRIG && !KEYDOWN(ev)) {
+                trig_pend = 0;
+                if (hold_t < TAP_TICKS && tap_view)
+                    open_page();             /* a tap: the Perform page. A hold was the stock page's: its values, and TRIG + REC / STOP / PLAY */
+            } else if (id != KEY_TRIG && KEYPRESS(ev)) {
+                trig_pend = 0;               /* a key with TRIG held (copy, paste, a step ...): the stock page's gesture */
+            }
+        }
         if (no_up && id == 13) {             /* the NO that closed SETTINGS' EDIT view: its release must not reach the menu, which would close as well */
             no_up = 0;
             if (!KEYDOWN(ev))
@@ -995,10 +1022,11 @@ int digiperform_key(void *brain, void *ev)
                 int i;
                 trig_down = 1;
                 trig_used = 0;
+                hold_t = 0;
                 for (i = 0; i < 64; i++)
                     press_ev[i] = ((unsigned char *)ev)[i];
             } else if (!KEYDOWN(ev) && trig_down) {
-                int tap = !trig_used;
+                int tap = !trig_used && hold_t < TAP_TICKS;   /* held longer, the page stays and its names come back */
                 void *v = tap_view;
                 trig_down = 0;
                 if (tap) {
@@ -1287,29 +1315,16 @@ int digiperform_enc(void *brain, void *ev)
  * not hooked. */
 int digiperform_trigkey(void *view, void *ev, int (*stock)(void *, void *))
 {
+    int i;
     if (KEYID(ev) != KEY_TRIG || !KEYPRESS(ev) || *(int *)((char *)view + 0x88) != KEY_TRIG || KEYHELD(KEY_FUNC))
         return 0;                            /* FUNC + TRIG is the stock quantize page */
     if (digiperform_open)
         return 0;
-    if (closing) {
-        closing = 0;                         /* this press is the one that just closed the page */
-        return 0;
-    }
-    digiperform_open = 1;
-    from_trig = 1;
-    trig_view = view;
-    tap_view = view;
+    tap_view = view;                         /* the release decides: a tap opens the page, a hold stays the stock page's (digiperform_key) */
     tap_stock = stock;
-    {
-        int i;
-        for (i = 0; i < 64; i++)
-            press_ev[i] = ((unsigned char *)ev)[i];   /* kept, to start the header's title again after a stock screen */
-    }
-    trig_down = 0;
-    digiperform_title_on = 1;                /* the stock handler runs next and shows the title: ours */
-    editing = 0;
-    cursor = 0;
-    sel = 0;
-    capture = 1;
-    return 0;                                /* not taken: the stock handler starts the header animation */
+    for (i = 0; i < 64; i++)
+        press_ev[i] = ((unsigned char *)ev)[i];   /* kept, to start the header's title again */
+    trig_pend = 1;
+    hold_t = 0;
+    return 0;                                /* not taken: the stock page shows its values while TRIG is down */
 }
