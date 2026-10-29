@@ -4,16 +4,16 @@
 
 Evidence tier: `none`. Nothing here is a filed hardware report; the author's own observations on a unit are listed below as they were reported.
 
-Source: `sdk/digitakt/modules/digiperform/src` at commit `da4d96e41d3b34a7edf2940e189db19c14fa7725`. Modwerk's pinned toolchain compiled the source twice and produced the source-only packages in `sdk/imports/packages/digiperform/` (no stock bytes: addresses, lengths and SHA-256 guards only). The vendored elekloader builder (kit 0.6.0) then linked core 2.1 and Digi Perform into a local image on each release, with the owner's stock OS files, which stay on the author's computer:
+Source: `sdk/digitakt/modules/digiperform/src` at commit `d94d5c93f2684d24feb41b25e79cec197f7c41a9`. Modwerk's pinned toolchain compiled the source twice and produced the source-only packages in `sdk/imports/packages/digiperform/` (no stock bytes: addresses, lengths and SHA-256 guards only). The vendored elekloader builder (kit 0.6.0) then linked core 2.1 and Digi Perform into a local image on each release, with the owner's stock OS files, which stay on the author's computer:
 
-- OS 1.54: core 2.1 and Digi Perform 0.1.0-experimental, built and verified; image SHA-256 `9903ee834ae91e79198e26b3a74850acc0256328b4985cd5ec2a5c3c67ce3d01`. Digi Perform package SHA-256 `0609ca6128005e1ea33dcdfcd445cbc8de6123a0cf928c45d1f0fdeb9c8dd16c`.
-- OS 1.53: core 2.1 and Digi Perform 0.1.0-experimental, built and verified; image SHA-256 `fd713938a9b0e75df20782782071978eca39197b307ecf49460e9ebe8762e46d`. Digi Perform package SHA-256 `2ad8bdc1dd676e2b38ce474dcee1b85a16cdcb34364b9b5d77f3a840c9c6dd8a`.
+- OS 1.54: core 2.1 and Digi Perform 0.1.0-experimental, built and verified; image SHA-256 `f7034f52653e6f801d19778502f7245792b62c705548e4fce763f9893babf7f6`. Digi Perform package SHA-256 `79d2aaa1b6c8fe9a1a7f0f17c938f3b15a564743a36b7a20cbef74cdc317721b`.
+- OS 1.53: core 2.1 and Digi Perform 0.1.0-experimental, built and verified; image SHA-256 `67bf862d1386af1ce57cf4ab9f29368884de04f66331e2e59049c75b01fb841b`. Digi Perform package SHA-256 `842a40fdeeabd1a12084f519b1116fc39728d70da0ed9c862c2b1e67dbec47a3`.
 
-The local images carry the build label `3.0d`. Both are build checks; the author's hardware observations are listed below.
+The local images carry the build label `3.0f`. Both are build checks; the author's hardware observations are listed below.
 
 ## Resources
 
-- Memory: 18,060 B per release: 17,242 B in `.run`, 798 B in `.bss` and 20 B of table contributions (five core events). No FAST AUDIO bytes. This is the object's size, from the package; it excludes the shared core and linker alignment.
+- Memory: 18,228 B per release: 17,406 B in `.run`, 802 B in `.bss` and 20 B of table contributions (five core events). No FAST AUDIO bytes. This is the object's size, from the package; it excludes the shared core and linker alignment.
 - Load: not measured. The engine hook runs once per audio block and adds up to eight offsets to the smoothed parameter words; the cost has not been timed on a unit or in a cycle-accurate run.
 
 ## Combinations
@@ -42,6 +42,12 @@ Storage and entry changes (build `3.0a`, emulator and host only; none of it is h
 - Pattern A01 and A02 kept their own assignments across a pattern switch, and copying A01 to A03 carried both.
 - With Euclidean 1.1.5 and cc-names 2.1.1 in the same image (dt-support 1.0.1), the elekloader builder reports no overlaps on both releases. Euclidean's page (hold FUNC + AMP), the Perform page (TRIG twice) and Euclidean again all opened in turn on OS 1.54 in the emulator. On a MIDI track the second TRIG press opened the Perform page, as it did before the MIDI hooks were removed.
 - Not run: a project save and reload (the capture tool's card is write-protected, and a plan with my own harness landed on the wrong screens), loading a sound onto tracks 5 to 8 or onto tracks 1 to 4, saving a track 5 to 8 sound to the pool, the same checks on OS 1.53, and any hardware run of the new layout.
+
+## TRIG tap and hold (build 3.0f)
+
+The author reported (OS 1.54, hardware, after build 3.0d): on the Perform page, holding TRIG shows the values, but letting go with no copy or paste dismissed the page; and holding TRIG on the TRIG page opened the Perform page at once, so the TRIG page's own values, copy, paste and clear could not be reached. Build 3.0f separates a tap from a hold: the Perform page opens when TRIG is released within half a second with no other key pressed, and a longer hold, or any key pressed with TRIG, leaves the page where it is.
+
+Emulator only (digiemu, OS 1.54, build 3.0f; never hardware evidence). Build 3.0d reproduced both reports: a release after a hold left the Perform page, and a hold on the TRIG page opened it. Build 3.0f: a tap on the TRIG page opens the Perform page; a hold on the Perform page and release keeps it (labels again); a tap there goes back; a hold on the TRIG page shows its stock values (VEL 100, LEN 1/16, LEV 100) and keeps the page; TRIG + REC on the TRIG page gives the stock COPY PAGE TRIG; TRIG + REC and TRIG + STOP on the Perform page give COPY PAGE PERF and PASTE PAGE PERF. Not run: OS 1.53, hardware, a slow tap (longer than half a second counts as a hold and changes nothing).
 
 ## Overbridge delay (builds 3.0c and 3.0d)
 
