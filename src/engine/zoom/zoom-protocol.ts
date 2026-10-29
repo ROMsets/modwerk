@@ -145,8 +145,8 @@ export const isAddedEffect = (effect?: { gid: number; fxid: number }) => !!effec
 
 /** Effect IDs two collections shipped for different effects. Swapping one for the other froze an MS-70CDR at boot
  * until its ROM was reprogrammed (repeat98/ZoomMultistompZDL issue 8), and a pedal can't say what it had before,
- * so neither is installed. */
-export const CLASHING_EFFECT_IDS = [{ gid: 8, fxid: 409, files: 'Spool.ZDL and the older TEcho4.ZDL' }]
+ * so neither is installed, even after both effects moved to new IDs. */
+export const CLASHING_EFFECT_IDS = [{ gid: 8, fxid: 409, files: 'Spool.ZDL and TEcho4.ZDL', moved: 'Spool is now 914 and TEcho4 946' }]
 
 /** Why an effect file can't be installed, or undefined when it can: the name, an effect header, an added effect, no known clash. */
 export function installRefusal(name: string, data: ArrayLike<number>): string | undefined {
@@ -155,5 +155,5 @@ export function installRefusal(name: string, data: ArrayLike<number>): string | 
   if (!info) return name + ' is not an effect file.'
   if (!isAddedEffect(info)) return name + ' has effect ID ' + id + ': only added effects (group 8, IDs 403 to 957) are installed. Zoom’s own effects stay as they are.'
   const clash = CLASHING_EFFECT_IDS.find(c => c.gid === info.gid && c.fxid === info.fxid)
-  if (clash) return name + ' uses effect ID ' + id + ', which ' + clash.files + ' both use. Swapping one for the other has frozen a pedal at boot, so it isn’t installed.'
+  if (clash) return name + ' uses effect ID ' + id + ', which older builds of ' + clash.files + ' both used. Swapping one for the other has frozen a pedal at boot, so it isn’t installed. ' + clash.moved + ': get the current file.'
 }
