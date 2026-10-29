@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: MIT
- * WAVE's oscillators (engine.h). Band-limited saws by polyBLEP; a pulse is the difference of two
+ * SYNTIZ's oscillators (engine.h). Band-limited saws by polyBLEP; a pulse is the difference of two
  * saws a width apart, a square sub the same at half width; the sines are a corrected parabola, so
  * no table is needed. Controls become increments and gains once per block; the per-sample loop
  * only adds, shifts and multiplies values below 2^16. */

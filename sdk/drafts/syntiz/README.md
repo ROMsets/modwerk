@@ -1,8 +1,8 @@
-# WAVE (draft)
+# SYNTIZ (draft)
 
-Status: **draft**. WAVE is an Octatrack track machine with six models, whose sound goes through the track's
+Status: **draft**. SYNTIZ is an Octatrack track machine with six models, whose sound goes through the track's
 own filter, AMP envelope, LFOs and effects. All six have played on the author's MKII over USB, and a project
-with WAVE tracks came back whole after a power cycle (TESTING.md); no CPU reading on a unit yet.
+with SYNTIZ tracks came back whole after a power cycle (TESTING.md); no CPU reading on a unit yet.
 
 The engine is original: no code, table or recording of any other product is used.
 
@@ -24,7 +24,7 @@ The output stage is DRIVE's gain, a cubic soft clip with first-order antiderivat
 Zavalishin and Le Bivic, DAFx 2016) after a small treble emphasis that gives back what the anti-aliasing
 takes, and a DC blocker.
 
-Panel layout (agreed with the author): choose WAVE in the machine chooser, then a double tap of the track key
+Panel layout (agreed with the author): choose SYNTIZ in the machine chooser, then a double tap of the track key
 opens the model list, as Analog BD does for 808/909. PTCH stays on SRC A with FLEX's scale (about
 +/-1 octave, five steps a semitone), so chromatic keys, scales, LFOs and locks work as on FLEX; OCT on
 SRC SETUP picks the register (the author's choice, 27 October 2026).

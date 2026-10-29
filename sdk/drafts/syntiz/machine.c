@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: MIT
- * WAVE as a track machine: one row of the base's machine chooser (the ot_machines table), its three pages and
+ * SYNTIZ as a track machine: one row of the base's machine chooser (the ot_machines table), its three pages and
  * its render. The stock RAM and ROM it reads are the ones Analog BD (control.c) and FM Synth (poly.s) read the
  * same way; INTEGRATION.md cites them. The model is the signature's version byte: 1 SAW, 2 PULSE, 3 ENS, 4 TABLE,
  * 5 MORPH, 6 CHOIR. */
@@ -54,7 +54,7 @@ static void signed_text(char *out, int v)
     out[i++] = (char)('0' + a % 10u);
     out[i] = 0;
 }
-/* Formatters, called with the stored value (every WAVE slot's minimum is 0). */
+/* Formatters, called with the stored value (every SYNTIZ slot's minimum is 0). */
 void wave_fmt_fine(char *out, int v) { signed_text(out, v - 64); }
 void wave_fmt_oct(char *out, int v) { signed_text(out, v - 3); }
 void wave_fmt_switch(char *out, int v) { text((uint8_t *)out, v ? "ON" : "OFF", 4); }
@@ -88,10 +88,11 @@ static const Slot slots[WAVE_MODELS][11] = {
                      { "CHOR", 128, 64, F_NUM }, { "FINE", 128, 64, F_FINE }, { "OCT", 7, 3, F_OCT }, { "DRIV", 128, 64, F_NUM },
                      { "RTRG", 2, 0, F_SWITCH }, { "SUB", 128, 0, F_NUM }, { "SUB2", 128, 0, F_NUM } },
 };
-static const char *const full_names[WAVE_MODELS] = { "WAVE SAW", "WAVE PULSE", "WAVE ENS", "WAVE TABLE", "WAVE MORPH",
-                                                     "WAVE CHOIR" };
+/* The footer reads "<this> > <label>" in 18 characters, as stock's "SRC > FLEX": the model joins the page name. */
+static const char *const full_names[WAVE_MODELS] = { "SRC SAW", "SRC PULSE", "SRC ENS", "SRC TABLE", "SRC MORPH",
+                                                     "SRC CHOIR" };
 
-/* The twelve bytes a track takes when it becomes WAVE: SAW's, PTCH at stock's neutral 64. */
+/* The twelve bytes a track takes when it becomes SYNTIZ: SAW's, PTCH at stock's neutral 64. */
 const uint8_t wave_part_defaults[12] = { 64, 24, 0, 0, 0, 0, 64, 3, 64, 0, 0, 0 };
 
 static uint8_t desc[WAVE_MODELS][DESC_BYTES];
@@ -108,7 +109,7 @@ static __attribute__((noinline)) void build_page(unsigned m)
     const volatile uint8_t *src = (const volatile uint8_t *)(uintptr_t)FLEX_DESC;
     uint8_t *d = desc[m], *p = d + 0x38;
     for (unsigned i = 0; i < DESC_BYTES; ++i) d[i] = src[i];
-    text(p + 4, "WAVE", 5), text(p + 9, full_names[m], 13);
+    text(p + 4, "SYNT", 5), text(p + 9, full_names[m], 13);
     uint32_t lo = 1u, hi = 0;           /* slot 0, PTCH, stays stock's and enabled */
     for (unsigned i = 1; i < 12u; ++i) {
         const Slot *s = &slots[m][i - 1];
@@ -147,7 +148,7 @@ unsigned wave_admit_track(const volatile uint8_t *part, unsigned track)
 static Wave voices[8];
 static uint8_t ready;                   /* a bit a track: its oscillators were reset */
 
-/* Called twice a frame for each WAVE track, before and after its event's sample offset (the second call has
+/* Called twice a frame for each SYNTIZ track, before and after its event's sample offset (the second call has
  * end == 16). It writes the header stock's packer expects at the cursor (source count, ring write position,
  * rate 1.0 in Q26, read position) and the samples as L and R longs, the sample in the high half. */
 int wave_render_track(unsigned track, unsigned ping, unsigned start, unsigned end)
@@ -175,7 +176,7 @@ int wave_render_track(unsigned track, unsigned ping, unsigned start, unsigned en
 }
 
 /* ---- the model list ----------------------------------------------------------------------------------- */
-/* RIGHT or a double tap of the track key on WAVE's row opens the models in stock's sample-pool list
+/* RIGHT or a double tap of the track key on SYNTIZ's row opens the models in stock's sample-pool list
  * window, driven by stock's list controller (arrows, LEVEL, YES, NO); LEFT goes back to the machine column. Adapted from Analog BD's engine browser
  * (sdk/octabam/modules/analog-bassdrum/control.c, MIT, repeat98): the same stock window, list and redraw calls,
  * and the same dirty flags and bank notification as stock's SRC SETUP editor. */
@@ -265,14 +266,14 @@ void wave_pool_open(void)
     uint32_t window = ((uint32_t (*)(int, int, int, int, int, uint32_t))(uintptr_t)0x4005829cu)(110, 64, -1, 0, 1, 0x4006d754u);
     U32(LIST_WINDOW) = window;
     if (!window) return;
-    ((void (*)(uint32_t, const char *, unsigned))(uintptr_t)0x400570b8u)(window, "\xab MACHINE:WAVE", 0);
+    ((void (*)(uint32_t, const char *, unsigned))(uintptr_t)0x400570b8u)(window, "\xab MACHINE:SYNTIZ", 0);
     ((void (*)(uint32_t))(uintptr_t)0x40031494u)(0x400ce0c4u);
     wave_models_draw();
 }
 /* LEFT in the model list (the base's choice_left): back to the machine column, as VECTOR's pool choice does
  * (sdk/octabam/modules/vector/native.c and hooks.s, MIT, repeat98): close the list, open stock's track window on
  * its pool (the two instructions the base displaced at 0x400791e4, then the rest), then stock's LEFT from the pool.
- * The base then puts the cursor back on WAVE's row. */
+ * The base then puts the cursor back on SYNTIZ's row. */
 void wave_stock_pool_open(void);
 __asm__(
     "        .text\n"
@@ -290,7 +291,7 @@ void wave_choice_left(unsigned key, unsigned edge)
     call0(0x4007893cu);
 }
 
-/* Entered as stock's list drawer (0x4006d784), registers and all, for any list while a WAVE track is current:
+/* Entered as stock's list drawer (0x4006d784), registers and all, for any list while a SYNTIZ track is current:
  * ours draws ours, anything else goes on to stock's (its two displaced instructions, then the rest). */
 void wave_list_draw(void);
 __asm__(
@@ -316,7 +317,7 @@ __asm__(
 const struct modwerk_machine wave_machine = {
     .abi = MODWERK_MACHINE_ABI,
     .sig = { 'W', 'V' }, .sig_lo = 1, .sig_hi = WAVE_MODELS,
-    .label = "WAVE",
+    .label = "SYNTIZ",
     .flags = MODWERK_MACHINE_PROTECT | MODWERK_MACHINE_POOL | SETUP_ALL,
     .defaults = wave_part_defaults,
     .admit_track = wave_admit_track,

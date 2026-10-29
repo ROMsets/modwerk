@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MIT
-"""One ot_emu session for WAVE: boot a base, install a package over the emulated USB, pick WAVE on track 1,
+"""One ot_emu session for SYNTIZ: boot a base, install a package over the emulated USB, pick SYNTIZ on track 1,
 pick models from its list, place four trigs, play, and save track 1's stem per segment as WAV plus the LCD.
 Emulator only; never a unit. The session behind TESTING.md's emulator results (28 October 2026).
 
@@ -72,9 +72,9 @@ press(YES); snap('lcd_1_after_date')                         # the MKII's SET DA
 press(TRACK1)
 press(SRC, with_func=True); snap('lcd_2_chooser')            # FUNC + SRC: the machine chooser
 for _ in range(int(os.environ.get('DOWNS', '4'))): press(DOWN)
-snap('lcd_3_on_wave')
+snap('lcd_3_on_syntiz')
 press(YES); run(800)
-press(SRC); snap('lcd_4_src')                                # WAVE's SRC page
+press(SRC); snap('lcd_4_src')                                # SYNTIZ's SRC page
 press(SRC); snap('lcd_5_setup')                              # a second press: SRC SETUP
 AMP = 0x23
 segments = []
@@ -95,7 +95,7 @@ def played(name):
     press(STOP); press(STOP); run(300); segments.append((name, a))
 played('1_saw')
 def pick(downs, tag):
-    press(TRACK1, gap=40); press(TRACK1); run(300)            # a double tap of the track key: WAVE's model list
+    press(TRACK1, gap=40); press(TRACK1); run(300)            # a double tap of the track key: SYNTIZ's model list
     for _ in range(3): press(0x33)
     for _ in range(downs): press(DOWN)
     snap('lcd_%s_a_list' % tag)

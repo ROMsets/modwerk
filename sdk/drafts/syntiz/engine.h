@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: MIT
- * WAVE's oscillators: an original engine for an Octatrack track machine. No firmware, DSP or
+ * SYNTIZ's oscillators: an original engine for an Octatrack track machine. No firmware, DSP or
  * stock dependencies; the track's own filter, AMP envelope, LFOs and effects follow it.
  *
  * Integer only, and no 64-bit products: the ColdFire has no FPU and multiplies 32 x 32 -> 32,

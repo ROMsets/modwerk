@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: MIT
- * WAVE's engine on the host.
+ * SYNTIZ's engine on the host.
  *   test_engine check           every note 0..127 at the controls' extremes: no overflow (build with
  *                               -fsanitize=undefined -fno-sanitize-recover), bounded, no DC, silent
  *                               above Nyquist, and the levels below

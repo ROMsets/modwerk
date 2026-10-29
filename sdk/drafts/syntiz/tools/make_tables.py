@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MIT
-"""WAVE's TABLE model: the 32 single-cycle tables, written as tables.h (generated: do not edit it by hand).
+"""SYNTIZ's TABLE model: the 32 single-cycle tables, written as tables.h (generated: do not edit it by hand).
 
     python3 tools/make_tables.py > tables.h
 

@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: MIT
- * WAVE's panel as the engine reads it (machine_map.h). */
+ * SYNTIZ's panel as the engine reads it (machine_map.h). */
 #include "machine_map.h"
 
 static uint8_t raw(uint8_t v) { return v > 127u ? 127u : v; }

@@ -1,4 +1,4 @@
-# WAVE as a track machine: what the integration builds on
+# SYNTIZ as a track machine: what the integration builds on
 
 Working notes for the machine glue (not written yet), from the sources cited. Confidence is marked.
 
@@ -9,10 +9,10 @@ Working notes for the machine glue (not written yet), from the sources cited. Co
   range at Part offset 60 + 30 x track), flags (PROTECT, POOL for a model list), page, defaults, and
   callbacks, among them `render(track, ping, start, end)`. Certain (source).
 - The chooser holds five stock machines and four contributed ones (`machine_registry.c:26`, ROWS 9).
-  POLY8, Analog BD, VECTOR and FM Synth are the four today, so WAVE beside all of them needs the base to grow;
+  POLY8, Analog BD, VECTOR and FM Synth are the four today, so SYNTIZ beside all of them needs the base to grow;
   beside FM Synth alone it fits. Certain (source).
 - No module contributes a machine through its own `runtime.json` yet: the four are ports
-  (`module-adapters/machine-ports.json`). WAVE would be the first. Certain (source).
+  (`module-adapters/machine-ports.json`). SYNTIZ would be the first. Certain (source).
 
 ## The render call
 

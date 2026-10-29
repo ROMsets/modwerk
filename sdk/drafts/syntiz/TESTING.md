@@ -1,12 +1,16 @@
-# WAVE testing
+# SYNTIZ testing
+
+SYNTIZ was called WAVE until 29 October 2026, renamed so as not to be confused with Octabam's WAVE.
+The dated records below keep the names the screens and files had then (WAVE, `wave.mwrm`); the Part
+signature `WV` and the sound are unchanged, so they still apply.
 
 Engine only, on the host and under qemu. No Octatrack, emulator, panel, Part or USB result exists yet.
 
 ## Host checks
 
 ```sh
-cc -std=c11 -O1 -g -fsanitize=undefined,address -fno-sanitize-recover=all -o /tmp/wave engine.c test_engine.c -lm
-/tmp/wave check
+cc -std=c11 -O1 -g -fsanitize=undefined,address -fno-sanitize-recover=all -o /tmp/syntiz engine.c test_engine.c -lm
+/tmp/syntiz check
 ```
 
 27 October 2026, macOS (Apple clang), this source:
@@ -38,7 +42,7 @@ analysis) is -47 to -49 dB. The author compared renders by ear and chose this st
 
 These are instruction counts, not cycles or time on the unit: divides take several cycles, and module
 code that runs uncached costs several times more (POLY8's measurements). The base's frame guard
-(`npm run device -- guard`) is the measure that will qualify WAVE.
+(`npm run device -- guard`) is the measure that will qualify SYNTIZ.
 
 ## In the emulator (28 October 2026)
 
@@ -124,3 +128,12 @@ not hardware evidence.
   `b30d9b09…`, nothing missing. No CPU reading (not a development base) or level against FLEX yet.
 - LEFT in the model list (emulator, test base `b30d9b09`, package `896d7f8d`): the list closes onto SELECT MACHINE
   TYPE with WAVE's row selected; RIGHT opens the list again; a model picked afterwards plays at C3. Not yet on a unit.
+
+## The rename to SYNTIZ (29 October 2026)
+
+- Host checks (`check`, the knob map) pass again; the engine and the map changed only in comments.
+- Emulator, tools/emu_session.py: test base `f49116e4…` (`main` + `WV` 1-15), this package (`syntiz.mwrm`,
+  `da5f1e78`) installed over emulated USB with no refusal. The chooser lists SYNTIZ after PICKUP; the model list is
+  titled "MACHINE:SYNTIZ"; the SRC page's footer reads "SRC SAW", "SRC PULSE" and "SRC ENS", then the label
+  SYNTIZ, whole. ("SYNTIZ PULSE" before the label filled the footer's 18 characters and cut it to SYNTI.) Track 1
+  at C3 130.86 Hz for SAW and PULSE, ENS with a fifth at 61.68 Hz, as before the rename. Not yet on a unit.

@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: MIT
- * WAVE's panel as the engine reads it: the track's twelve knob bytes per model, and the played pitch.
+ * SYNTIZ's panel as the engine reads it: the track's twelve knob bytes per model, and the played pitch.
  * No stock address here; the machine glue passes the bytes and the stock pitch curve in. */
 #ifndef WAVE_MACHINE_MAP_H
 #define WAVE_MACHINE_MAP_H
