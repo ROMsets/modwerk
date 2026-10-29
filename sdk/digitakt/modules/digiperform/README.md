@@ -14,12 +14,12 @@ The change is added after the engine has smoothed and modulated the parameter. I
 
 | Control | What it does |
 | --- | --- |
-| TRIG, pressed again on the TRIG page | Opens the Perform page. Tap TRIG again, or press SRC, FLTR, AMP, LFO or a menu key, to leave. The trig keys and the transport keep working under it. |
+| TRIG, pressed again on the TRIG page | Opens the Perform page when you tap it; holding TRIG there is still the stock page's (its values, copy, paste and clear). Tap TRIG again, or press SRC, FLTR, AMP, LFO or a menu key, to leave. The trig keys and the transport keep working under it. |
 | Knobs A–H | Move the knob’s parameter over its range with the stock encoder acceleration; push and turn for larger steps. The value shows under the knob for a second after it moves. |
 | FUNC + turn a knob | Snaps the parameter to its own stock snap values, with the stock lock after each snap. |
 | FUNC + a knob’s push (Perform Quick Assign) | On an empty knob: turn to choose the track (1–8 or ALL) and push, then turn to choose the parameter and push. NO cancels. On an assigned knob: removes the assignment. |
 | FUNC + NO | Reloads the pattern as stock does; the offsets go and the knobs pick up the reloaded values again. |
-| Hold TRIG + REC / STOP / PLAY | Copy the page (all eight assignments), paste it over the page, or clear every assignment. The same key again undoes a paste or clear. Holding TRIG shows the values instead of the labels. Plain REC, STOP and PLAY work as usual. |
+| Hold TRIG + REC / STOP / PLAY | Copy the page (all eight assignments), paste it over the page, or clear every assignment. The same key again undoes a paste or clear. Holding TRIG shows the values instead of the labels, and letting go with no other key brings the labels back and keeps the page. Plain REC, STOP and PLAY work as usual. |
 | NO | Puts any moved knob back to its stored value and stays on the page. TRIG or another page key leaves. |
 | FUNC + TRK, FUNC + PTN, FUNC + PAGE, a held step with LEFT/RIGHT or UP/DOWN | Leave the Perform page and open the stock chord setup, metronome, scale, microtiming or retrig screens, which behave exactly as stock. Press TRIG twice to come back. |
 
@@ -70,7 +70,7 @@ Digi Perform needs core 2.1 and is built for OS 1.53 and 1.54.
 
 With Digi Perform installed every stock flow works as before, except for these listed changes. Nothing changes until you press TRIG a second time or add an assignment, and no assignment exists in a new project.
 
-- **TRIG pressed again on the TRIG page** (stock: nothing happens) opens the Perform page. This is needed because the page replaces no stock screen; a new key or an own top-level page would have taken a key the Digitakt already uses. TRIG again, or any other page key, leaves it. It is hooked on the TRIG page of the audio tracks and on the MIDI tracks’ pages that carry the same TRIG key; on the MIDI CC pages TRIG keeps its stock job.
+- **A tap of TRIG on the TRIG page** (stock: nothing happens; holding it keeps its stock job, the values and copy, paste and clear) opens the Perform page. This is needed because the page replaces no stock screen; a new key or an own top-level page would have taken a key the Digitakt already uses. TRIG again, or any other page key, leaves it. It is hooked on the TRIG page of the audio tracks and on the MIDI tracks’ pages that carry the same TRIG key; on the MIDI CC pages TRIG keeps its stock job.
 - **A PERFORM EDIT row in SETTINGS**, after the stock rows. YES opens Perform Edit; NO goes back to the SETTINGS list.
 - **Inside the Perform page** the knobs A–H, FUNC and a knob’s push, and hold TRIG + REC / STOP / PLAY work as described above. FUNC + TRK, FUNC + PTN, FUNC + PAGE and a held step with an arrow leave the page, so the stock chord setup, metronome, scale, microtiming and retrig screens are the stock ones, unchanged.
 - **Saved projects:** save the project to keep your assignments. They are stored with the pattern's sounds, so a power cycle without a save brings back the last saved state, the same as for other sound edits. The assignments are kept in spare bits of the sounds on tracks 5 to 8 (byte 3 bits 0–6, bytes 4 and 5), which the firmware saves and loads but does not use itself. These bytes travel with the sound: a sound saved from track 5–8 to the pool, or copied onto another track, carries the bits along. Loading a sound onto tracks 5–8 puts the pattern’s assignments back, and the module checks its own marker before it trusts the bits; on tracks 1–4 Digi EQ and Digi Poly guard their own bytes the same way. A project saved with assignments and loaded on a build without Digi Perform should ignore them. Neither the copy case nor the build change is tested yet.

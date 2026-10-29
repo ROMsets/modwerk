@@ -54,7 +54,7 @@
     {
       "name": "TRIG, pressed again on the TRIG page",
       "default": null,
-      "doc": "Opens the Perform page over the TRIG page. Tap TRIG again, or press SRC, FLTR, AMP, LFO or a menu key, to leave. The trig keys, transport and the rest of the sequencer keep working under it.",
+      "doc": "Opens the Perform page over the TRIG page when you tap it; holding TRIG there is still the stock page's (its values, copy, paste and clear). Tap TRIG again, or press SRC, FLTR, AMP, LFO or a menu key, to leave. The trig keys, transport and the rest of the sequencer keep working under it.",
       "labels": null
     },
     {
@@ -84,7 +84,7 @@
     {
       "name": "Hold TRIG + REC / STOP / PLAY",
       "default": null,
-      "doc": "Copy the page (all eight assignments), paste it over the page, or clear every assignment. The same key again undoes the paste or clear. Holding TRIG shows the values instead of the labels; a tap of TRIG leaves the page. Plain REC, STOP and PLAY work as usual.",
+      "doc": "Copy the page (all eight assignments), paste it over the page, or clear every assignment. The same key again undoes the paste or clear. Holding TRIG shows the values instead of the labels, and letting go with no other key brings the labels back and keeps the page; a tap of TRIG leaves the page. Plain REC, STOP and PLAY work as usual.",
       "labels": null
     },
     {
@@ -175,7 +175,7 @@
     ]
   },
   "resources": {
-    "memoryBytes": 18060,
+    "memoryBytes": 18228,
     "fastBytes": 0,
     "load": {
       "display": "Not measured yet",
