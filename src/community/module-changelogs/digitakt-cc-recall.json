@@ -7,7 +7,7 @@
       "It acts after a pattern reload, a pattern change (also while playing, in a chain or in song mode), a project load or STOP; stock waits for each track’s next trig.",
       "Pitch bend and aftertouch go out as with the stock first trig. Unticked, MIDI output is stock.",
       "The setting is not saved and starts unticked at every power-on.",
-      "Known issue: on a unit only the reload is tested so far; pattern changes while playing are not yet."
+      "Tested on a Digitakt I, alone and with FX Track."
     ]
   }
 ]

@@ -28,7 +28,7 @@
       "category": "MIDI",
       "author": "draadpiraat",
       "needs_core": "2.1",
-      "on_unit": "Reload tested on a Digitakt I by the author; the fix for pattern changes while playing is emulator-tested only."
+      "on_unit": "Tested on a Digitakt I by the author, alone and with FX Track."
     }
   ]
 }

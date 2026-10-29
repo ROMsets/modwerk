@@ -51,7 +51,7 @@ Requires Core 2.1. Built for OS 1.54 only.
 
 ## Tests and measurements
 
-See [TESTING.md](TESTING.md) for the exact evidence and the checks still open. The emulator results cover the message path, project load and the SETTINGS row; they do not prove timing on the unit or behaviour beside every other module on hardware.
+See [TESTING.md](TESTING.md) for the exact evidence and the checks still open. The author tested a pattern change while playing (also between banks, in a chain and in song mode) and a reload on a Digitakt I, alone and with FX Track. The emulator results add STOP, project load and the SETTINGS row; nothing here proves behaviour beside every other module on hardware.
 
 ## Authorship and licences
 

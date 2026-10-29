@@ -4,7 +4,7 @@ Module version 0.1.0-experimental, Digitakt I OS 1.54 (stock file SHA-256 `f78ba
 
 ## Evidence tier
 
-Emulator, plus the author's first hardware report on 0.1.0-experimental before the pattern-change fix (section 5). The fixed build has not been on a unit yet.
+Author hardware: the current build, alone and with FX Track, on the author's Digitakt I (section 5), plus the emulator results below.
 
 ## How it works (OS 1.54)
 
@@ -55,7 +55,9 @@ Build `.syx` SHA-256: module alone `e43f0e6b…124beb`; with FX Track `294c8843�
 
 Builds: module alone `e43f0e6b…124beb`, and with FX Track `294c8843…92d357`.
 
-**Author's results (draadpiraat, 29 October 2026, the first 0.1.0-experimental build `0f79fa5e…69a70a`, before the pattern-change fix):** reloading a pattern sent the saved values. Switching to another pattern with the same CC numbers at different values, while playing, sent nothing: in and between banks, in a chain and in song mode, with CHAN on in both patterns. The values went out only after turning a VAL knob or after stopping and starting. The task's pattern record for a playing pattern change had no site; the current build adds it (0x400e126c). Not yet retested on the unit.
+**Author's results (draadpiraat, 29 October 2026, the first 0.1.0-experimental build `0f79fa5e…69a70a`, before the pattern-change fix):** reloading a pattern sent the saved values. Switching to another pattern with the same CC numbers at different values, while playing, sent nothing: in and between banks, in a chain and in song mode, with CHAN on in both patterns. The values went out only after turning a VAL knob or after stopping and starting. The task's pattern record for a playing pattern change had no site; the current build adds it (0x400e126c).
+
+**Author's results (draadpiraat, 29 October 2026, the current builds `e43f0e6b…124beb` alone and `294c8843…92d357` with FX Track):** asked to tick CC RECALL, change pattern while playing, repeat between banks, in a chain and in song mode, and check a reload, the author reported: "cc recall works completely, both with fx track and alone". Reported as one statement for the four steps; test time not reported. Details in [evidence/hardware-testing.json](evidence/hardware-testing.json).
 
 1. CC RECALL appears in SETTINGS, unticked.
 2. Setup: a synth (or a MIDI monitor) on MIDI OUT; MIDI track A CHAN on its channel, SEL1 its cutoff CC, a trig on step 1. Save the project.
@@ -76,10 +78,10 @@ Builds: module alone `e43f0e6b…124beb`, and with FX Track `294c8843…92d357`.
 | Ticking the row | Sends nothing |
 | SETTINGS menu | Stock rows and order unchanged; one row added at the end |
 | Power cycle | Row unticked again |
-| Pattern change while playing, chain, song mode | Emulator: injected pattern record only (section 2); author's unit: failed before the fix, fixed build not yet tested |
+| Pattern change while playing, chain, song mode | Author's unit: works with the current build (failed before the fix); emulator: injected pattern record (section 2) |
 
 ## Still to test
 
-- Everything in section 5 on hardware.
+- Project load, STOP alone and several MIDI tracks at once on hardware (not reported separately).
 - A real pattern change while playing (digiemu does not change pattern while playing).
 - USB as the only output port.
