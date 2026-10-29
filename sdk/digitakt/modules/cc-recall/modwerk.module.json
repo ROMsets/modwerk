@@ -102,12 +102,12 @@
       "release": "1.54",
       "testedOn": "2026-10-29",
       "tester": "draadpiraat",
-      "durationMinutes": null,
+      "durationMinutes": 2,
       "summary": "draadpiraat flashed the module-alone build and a build with FX Track on their Digitakt I, OS 1.54. A first build sent the saved values on a pattern reload but nothing on a pattern change while playing (in and between banks, chain, song mode) until a VAL knob moved or the sequencer stopped and started. With the pattern-record site added, the author reported that CC Recall works completely, alone and with FX Track: a pattern change while playing, in and between banks, in a chain and in song mode, and a reload.",
       "limitations": [
         "The current build's result was reported as one statement for the four steps asked.",
         "Project load, STOP alone and several MIDI tracks at once were not reported separately.",
-        "Test time was not reported."
+        "Tested for a couple of minutes (recorded as 2), thoroughly, as the author reported."
       ]
     },
     "verifiedBy": null

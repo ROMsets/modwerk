@@ -38,8 +38,11 @@
   "limitations": [
     "The result for the current build was reported as one statement for the four steps asked, not step by step.",
     "Project load, STOP alone, several MIDI tracks at once and USB as the only output were not reported separately.",
-    "Test time was not reported.",
     "Firmware was not read back from the device; the builds are identified by their SysEx hashes."
   ],
-  "packageParity": "The isolated Docker build (toolchain image sha256:f5c85e78…4854) of commit 7e6bb564, packaged with scripts/package-elemod-recipe.mjs and linked with Core 2.1, gives the SysEx of both hardware-tested current builds byte for byte (e43f0e6b…124beb alone, 294c8843…92d357 with FX Track)."
+  "packageParity": "The isolated Docker build (toolchain image sha256:f5c85e78…4854) of commit 7e6bb564, packaged with scripts/package-elemod-recipe.mjs and linked with Core 2.1, gives the SysEx of both hardware-tested current builds byte for byte (e43f0e6b…124beb alone, 294c8843…92d357 with FX Track).",
+  "usage": {
+    "statement": "only tested for a couple minutes, but did so thoroughly.",
+    "durationMinutes": "a couple, as reported (recorded as 2)"
+  }
 }
