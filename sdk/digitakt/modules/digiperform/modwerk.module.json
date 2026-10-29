@@ -54,7 +54,7 @@
     {
       "name": "TRIG, pressed again on the TRIG page",
       "default": null,
-      "doc": "Opens the Perform page over the TRIG page when you tap it; holding TRIG there is still the stock page's (its values, copy, paste and clear). Tap TRIG again, or press SRC, FLTR, AMP, LFO or a menu key, to leave. The trig keys, transport and the rest of the sequencer keep working under it.",
+      "doc": "Opens the Perform page over the TRIG page when you tap it; holding TRIG there is still the stock page’s (its values, copy, paste and clear). Tap TRIG again, or press SRC, FLTR, AMP, LFO or a menu key, to leave. The trig keys, transport and the rest of the sequencer keep working under it.",
       "labels": null
     },
     {

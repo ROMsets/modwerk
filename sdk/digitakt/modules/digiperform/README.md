@@ -14,7 +14,7 @@ The change is added after the engine has smoothed and modulated the parameter. I
 
 | Control | What it does |
 | --- | --- |
-| TRIG, pressed again on the TRIG page | Opens the Perform page when you tap it; holding TRIG there is still the stock page's (its values, copy, paste and clear). Tap TRIG again, or press SRC, FLTR, AMP, LFO or a menu key, to leave. The trig keys and the transport keep working under it. |
+| TRIG, pressed again on the TRIG page | Opens the Perform page when you tap it; holding TRIG there is still the stock page’s (its values, copy, paste and clear). Tap TRIG again, or press SRC, FLTR, AMP, LFO or a menu key, to leave. The trig keys and the transport keep working under it. |
 | Knobs A–H | Move the knob’s parameter over its range with the stock encoder acceleration; push and turn for larger steps. The value shows under the knob for a second after it moves. |
 | FUNC + turn a knob | Snaps the parameter to its own stock snap values, with the stock lock after each snap. |
 | FUNC + a knob’s push (Perform Quick Assign) | On an empty knob: turn to choose the track (1–8 or ALL) and push, then turn to choose the parameter and push. NO cancels. On an assigned knob: removes the assignment. |
