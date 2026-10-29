@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "about": "Modwerk's Analog Rytm MKII base, built by npm run machine:base -- analog-rytm-mkii. Today it is core-ar2 0.7's source unchanged (sdk/imports/core-ar2-source-fb58292.json); the send bus and the FX list come next.",
+  "about": "Modwerk's Analog Rytm MKII base, built by npm run machine:base -- analog-rytm-mkii: core-ar2 0.7's source unchanged (sdk/imports/core-ar2-source-fb58292.json), with Modwerk's own sources in base/ added on top (add). A site names the stock bytes it replaces by length and SHA-256; the build fills them from the user's OS.",
   "core": "core-ar2",
   "include": "sdk/machines/analog-rytm-mkii/include",
   "os": "1.74",
@@ -8,6 +8,14 @@
   "reference": {
     "file": "vendor/elekloader/catalog/core-ar2-0.7.elemod",
     "sha256": "f1e9cb2c39eb52af15e7cf8ad25596e46f550e4f748bc9dd60d63a44da2dd9c1",
-    "same": ["id", "version", "build", "sites", "exports", "imports", "weak", "contribute", "collections", "requires", "conflicts"]
+    "keeps": ["id", "version", "build", "sites", "exports", "imports", "weak", "contribute", "collections", "requires", "conflicts"]
+  },
+  "add": {
+    "sources": ["../base/locks.c", "../base/locks.s"],
+    "sites": [
+      { "addr": "0x4000940c", "len": 8, "stockSha256": "9d8b5c6fa44fca2b22f8cb24de82782737e5615dff673baad1c7423135d0d27f", "op": "jmp", "target": "core_lk_save_one" },
+      { "addr": "0x40009216", "len": 8, "stockSha256": "9763fb611c807f5dc904f9b5ee15ae74bda1e39d0f9e46671289a147cd2daaa7", "op": "jmp", "target": "core_lk_save_all" },
+      { "addr": "0x40008f98", "len": 8, "stockSha256": "b53d75034fecf8309dbb02802961868579be15db8fe3165ad3123f52c2a9c36c", "op": "jmp", "target": "core_lk_load" }
+    ]
   }
 }
