@@ -7,7 +7,7 @@
   "mods": [
     {
       "file": "cc-recall-0.1.0-experimental-os1.54.elemod",
-      "sha256": "85bede0895f3b90c25af33f37a87773dd947d5bbd5bc4d668d6deb9356b44325",
+      "sha256": "bde67ff2d8b1eaa966fa9fcb64ef242bc02e11e37a9ab1701e4b695d65db029c",
       "id": "cc-recall",
       "version": "0.1.0-experimental",
       "device": "digitakt-mk1",
@@ -15,7 +15,7 @@
       "license": "GPL-3.0-or-later",
       "source": {
         "repo": "repeat98/modwerk",
-        "commit": "fb5de82d01d8a4e8b05d330cf658faa1496b8829",
+        "commit": "5c6be8031e680469d608da24cbd580ca57014fd5",
         "path": "sdk/imports/packages/cc-recall/cc-recall-0.1.0-experimental-os1.54.elemod"
       },
       "title": "CC Recall",
@@ -28,7 +28,7 @@
       "category": "MIDI",
       "author": "draadpiraat",
       "needs_core": "2.1",
-      "on_unit": "Emulator-tested only; not yet tested on a Digitakt I."
+      "on_unit": "Reload tested on a Digitakt I by the author; the fix for pattern changes while playing is emulator-tested only."
     }
   ]
 }
