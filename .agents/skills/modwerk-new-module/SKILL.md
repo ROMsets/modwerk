@@ -27,7 +27,7 @@ Follow `docs/ADD_A_MODULE.md` and the rules in `AGENTS.md`, in this order.
    - `module:new` claims the module on the agent board for the signed-in developer (`npm run board -- login` once) and refuses one someone else holds; the doctor's `board claim` line stays red until the claim is theirs.
    - A new hook, table or migration number gets its claim as soon as you pick it: `npm run board -- claim hook <machine>/<index>` or `claim migration <number>` (`docs/AGENT_BOARD.md`).
 7. **Test** on their unit (`/modwerk-try-on-unit`) or in the emulator. Record only what was observed, on the named build.
-8. **Finish:**
+8. **Finish,** once the developer says testing is done (until then, commit without pushing):
    - docs, credits, and a thumbnail in the shared style (`docs/ADD_A_MODULE.md#module-thumbnail-style`);
    - release notes in `src/community/module-changelogs/`;
    - then `/modwerk-pr-ready` and the pull request.
