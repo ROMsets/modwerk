@@ -2,7 +2,7 @@
   "schemaVersion": 3,
   "id": "digiperform",
   "name": "Digi Perform",
-  "version": "0.1.0-experimental",
+  "version": "0.1.1-experimental",
   "machine": "digitakt",
   "category": "system",
   "exclusive": false,
@@ -185,7 +185,7 @@
   },
   "evidence": {
     "tier": "none",
-    "moduleVersion": "0.1.0-experimental",
+    "moduleVersion": "0.1.1-experimental",
     "sourceSha256": null,
     "reports": [],
     "hardware": null,
