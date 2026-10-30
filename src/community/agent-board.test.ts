@@ -301,7 +301,7 @@ describe('the terminal client against the Worker', () => {
     expect((await client.messageAction(message.id, 'close', {}, { ...options, token: bo })).message.endedReason).toBe('author')
     expect((await client.activity(options)).questions.open).toBe(0)
     // Nobody holds Tape Echo itself, so a question goes to the author in its manifest; its author has to name someone.
-    const author = client.moduleAuthor('octatrack/tapeecho')
+    const author = String(client.moduleAuthor('octatrack/tapeecho'))
     expect((await client.post({ kind: 'question', topic: 'module', key: 'octatrack/tapeecho', body: 'Room for a wow control?' }, { ...options, token: bo })).message.to).toBe(author.toLowerCase())
     await expect(client.post({ kind: 'question', topic: 'module', key: 'octatrack/tapeecho', body: 'Mine?' }, { ...options, token: await boardLogin(author) })).rejects.toThrow('--to <login>')
     vi.unstubAllEnvs()
