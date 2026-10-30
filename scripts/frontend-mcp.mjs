@@ -64,8 +64,8 @@ const TOOLS = [
   { ...tool('device_saved_backup', 'Read only /MODWERK0.SET and /MODWERK1.SET through the frontend client, save verified bytes in the startup-selected private workspace and return only a metadata receipt. No card writes, memory access, arbitrary paths or recovery qualification. Older bases report unsupported.'),
     annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: true, idempotentHint: false } },
   tool('device_review', 'Review a requested set against exact connected base, active digest and verified packages. Returns a short-lived plan; no device changes.', { moduleIds: strings }, ['moduleIds']),
-  tool('device_trial', 'Execute a reviewed set through the real frontend link and self-test. A trial requires --allow-device-writes; never accepts automatically.', { review: string }, ['review'], true),
-  tool('device_keep', 'Explicitly accept the current successful self-tested trial and save it on the card. Requires --allow-device-writes.', { trial: string }, ['trial'], true),
+  tool('device_trial', 'Install a reviewed set through the real frontend link as a trial, with no self-test (as a site sync). Requires --allow-device-writes; never accepts automatically.', { review: string }, ['review'], true),
+  tool('device_keep', 'Explicitly accept the current trial and save it on the card. Requires --allow-device-writes.', { trial: string }, ['trial'], true),
   tool('device_undo', 'Undo the current trial and restore its exact reviewed previous packages.', { trial: string }, ['trial'], true),
   tool('remote_session_request', 'Ask a member, by username, for a read-only remote debug session on their Octatrack. They see who asks and why, and must accept in their browser. Administrators only; needs --allow-api-writes and confirm=true.', { username: string, reason: string, minutes: { type: 'number' }, confirm: { type: 'boolean' } }, ['username', 'reason', 'confirm'], true),
   tool('remote_session_status', 'Read a remote session request: pending, declined, active (with its end time), ended or expired, and the relay state when connected.', { session: string }, ['session']),
@@ -313,15 +313,10 @@ export async function createFrontendTools(options, injected, dependencies = {}) 
       const wholeSet = !!(now.capabilities?.features & 512)
       if (!wholeSet && plan.prepared.changes.length > 1) throw new Error('Multiple changes require a base with module-set transactions; nothing was sent.')
       if (!wholeSet && plan.prepared.changes.some(change => !change.undo)) throw new Error('Exact Undo is unavailable; nothing was sent.')
-      let selftest
-      const unsubscribe = link.subscribeDiagnostics(event => { if (event.event === 'selftest') selftest = event.reading })
-      try { await link.update(plan.prepared.name, plan.prepared.changes, () => link.selftest()) } finally { unsubscribe() }
-      // A self-test that only peaked over 90 % passes, as on the site: the runtime guards load (selftest.ts SELFTEST_LOAD).
-      const passed = selftest?.state === 2 && !selftest.failed || selftest?.state === 3 && !!selftest.failed && !frontend.selftestFaults(selftest.failed)
-      if (link.getState().status !== 'trial' || !link.getState().tested || !passed) {
-        if (link.getState().status === 'trial') await link.undo()
-        throw new Error('Device trial did not provide a passed physical self-test: ' + (link.getState().notice?.text ?? link.getState().status))
-      }
+      // No self-test at install (owner, 30 October 2026): a module is compatible or it isn't published. The menu's
+      // SELF TEST (link.test()) still checks the running set.
+      await link.update(plan.prepared.name, plan.prepared.changes)
+      if (link.getState().status !== 'trial') throw new Error('Device trial did not start: ' + (link.getState().notice?.text ?? link.getState().status))
       trial = { id: randomUUID(), before: plan.before, base: now.state.identity.base, active: link.getState().active }
       return { trial: trial.id, state: link.getState() }
     },

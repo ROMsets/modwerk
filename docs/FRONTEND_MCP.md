@@ -149,8 +149,8 @@ persistence. The cause of the earlier `1829f316` Begin BUSY refusals is unknown.
 Enable `--allow-device-writes` only for authorized hardware tests. Review with
 `device_review({"moduleIds":[...]})`, then call `device_trial` with its review ID
 within 60 seconds. The server rechecks base, active digest and inventory before
-sending, refuses unsupported capabilities, and requires actual passed device
-self-test evidence. `device_undo` restores the reviewed previous set;
+sending and refuses unsupported capabilities. Like a site sync, a trial runs no
+self-test (owner, 30 October 2026). `device_undo` restores the reviewed previous set;
 `device_keep` is a separate explicit tool that accepts and saves the trial.
 Both require the returned trial token and the unchanged trial identity. Exiting
 the server attempts Undo; the base's timeout handles a lost unaccepted session.
@@ -160,7 +160,7 @@ whole-set offer; the device retains the actual baseline for one complete Undo.
 Older bases support one changed package and preserve installed modules whose
 exact bytes their inventory cannot identify. Several changes are refused
 before any write. `verify-octatrack-module-sets.mjs --whole-set --trial
---expect-base SHA256` runs the reviewed combination, self-test and Undo, with
+--expect-base SHA256` runs the reviewed combination and Undo, with
 an isolated data directory and the exact candidate frontend root. It never
 Keeps. Audio, mixed replacements/removals and physical reboot persistence
 need separate exact-build hardware qualification.
@@ -274,7 +274,7 @@ lockf -k /tmp/modwerk-check.lock npm run check -- --base origin/main
 The tests exercise protocol initialization/discovery/errors, private configuration
 round trips, current-version normalization, source catalogue/USB validation,
 credential/route boundaries, workspace ownership, pure stdio and write opt-ins.
-Device regressions cover stale/expired reviews, actual self-test failures, exact package
+Device regressions cover stale/expired reviews, trials that do not start, exact package
 Undo, token consumption after a failed status receipt and hidden intermediate
 Keep prevention. Site operations through this MCP are domain/API evidence.
 DOM regressions exercise React interactions without

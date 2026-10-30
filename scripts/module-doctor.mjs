@@ -140,7 +140,7 @@ function octatrack(id) {
     if (usbRow?.version === document.version) ok('usb package', 'at ' + document.version + ' (npm run octatrack:module-packages -- --check)')
     else if (usbRow?.lagsBehind === document.version) info('usb package', 'kept at ' + usbRow.version + ' by a declared lag: ' + usbRow.lagReason)
     else if (usbRow) fail('usb package', 'the USB package is ' + usbRow.version + ', not ' + document.version, 'npm run octatrack:module-packages, then -- --check')
-    else if (usbRequired) fail('usb package', 'none. A new Octatrack module ships its USB package beside the card build: install, self-test, Keep/Undo and removal, tested on a unit', 'build it as docs/ADD_A_MODULE.md#octatrack-base-and-usb-lifecycle describes, then npm run octatrack:module-packages')
+    else if (usbRequired) fail('usb package', 'none. A new Octatrack module ships its USB package beside the card build: install, Keep/Undo and removal, tested on a unit', 'build it as docs/ADD_A_MODULE.md#octatrack-base-and-usb-lifecycle describes, then npm run octatrack:module-packages')
     else info('usb package', 'none: card-only, listed before ' + USB_PACKAGE_REQUIRED_FROM + '; a reviewed migration comes before USB rollout')
   }
 
