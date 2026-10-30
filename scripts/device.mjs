@@ -315,7 +315,8 @@ async function missing() {
 /** One connection for a whole sequence: KEY or KEY+KEY (with *N to repeat), w300 (wait ms), encC+3, fader128, ui, screen, state,
  * stats (one line: CPU, each core's mean/peak per mille and idle passes a frame), png:FILE, mem:0xADDR:LEN, part1-4, pick:T1:FX2:NAME,
  * +KEY / -KEY (press, release), crash (the last crash's record), crashtest (development bases: crash on purpose),
- * stall (the last DSP stall's record), stalltest (development bases: write one now), selftest (PROJ > MODWERK > SELF TEST, about 15 s)
+ * stall (the last DSP stall's record), stalltest (development bases: write one now), guardtest / guardtest:0 (development
+ * bases: the next start leaves the set's first module out, or holds every module, as after a crash in its restore), selftest (PROJ > MODWERK > SELF TEST, about 15 s)
  * hold:N (development bases: host frames wait N seconds, as after a boot), missing (modules the project names, not installed),
  * inventory (the installed modules, INVENTORY),
  * reload (the current Part from its saved copy, through the Part menu), gap (the longest time between frames since the last gap),
@@ -345,6 +346,7 @@ async function run(sequence, until = Infinity) { // serve: past its time limit a
     }
     else if (step === 'report') console.log(named(await statusWords())) // the loader's full report (dsp.c modwerk_dsp_report)
     else if (step === 'stalltest') await devIn(18, 0, 1) // development bases: write the stall record now, nothing recovered
+    else if (step.startsWith('guardtest')) await devIn(40, step === 'guardtest:0' ? 0 : 1, 1) // development bases: the next start acts as after a crash in its restore
     else if ((m = /^storm([01])$/.exec(step))) await devIn(19, Number(m[1]), 1) // development bases: a finished PEEK goes again at once
     else if ((m = /^mask:(\d+)$/.exec(step))) await devIn(20, Math.min(Number(m[1]), 65535), 1) // development bases: interrupts off for N microseconds
     else if (step === 'missing') console.log(await missing())
