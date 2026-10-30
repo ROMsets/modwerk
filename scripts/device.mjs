@@ -5,7 +5,7 @@
 //
 //   ~/.cache/modwerk-upstream/venv/bin/python -B scripts/octatrack-usb-bridge.py /tmp/modwerk-ot.sock &
 //   npm run device -- status
-//   while :; do npm run device -- serve [--share /tmp/modwerk-share.sock]; sleep 1; done   # one long-lived link (starts the bridge
+//   while [ -f scripts/device.mjs ]; do npm run device -- serve [--share /tmp/modwerk-share.sock]; sleep 1; done   # one long-lived link (starts the bridge
 //       if needed; --share lets the frontend MCP use the unit through it, --device-socket that path); send it
 //       scripts/device-send.py part2 pick:T1:FX2:E-Verb stats png:/tmp/s.png   # or 'try FILE', 'remove FILE', 'boot DIR'
 //   npm run device -- try MODULE.mwrm [--seconds 5] [--accept]
