@@ -37,9 +37,10 @@ Read this before you plan a core, a base or the first modules for any machine ot
 | Digitakt, Digitone | preview | Modwerk cores, interfaces 2.1 and 2.2 (in development, frozen) | not started | digiemu | grow the core into the base, then the loader glue (the Octatrack's ColdFire family) |
 | Analog Rytm MKII | preview | elekloader core-ar2 0.7 | started: the base is core-ar2 0.7's source, built by `npm run machine:base`, with the send bus and the FX list `mw_fx` (29 October 2026); the plan was agreed on #878, with a SysEx link over USB MIDI | rytm-emu | the site on the base (#878), then the USB link |
 | Analog Four MKII | research | elekloader core-a4 0.2 | not started | none known | as the Rytm: same platform |
-| Digitakt II | research | digitakt2-perform 1.0 | not started | none known | a base from the core source |
+| Digitakt II | research | digitakt2-perform 1.0 | started: core-dt2 1.1's source is copied into `sdk/machines/digitakt-ii/elekloader/` (29 October 2026), with its additions proposed in the interface; nothing builds from it yet | digikit (the author's; emulator only) | build the base from the owner's OS file and ship it with the 1.1 hooks |
 | Syntakt | research | Modwerk boot probe | not started | none known | the core stage, planned as the base |
-| Digitone II, Analog Keys, Model:Cycles | research | none | not started | none known | the machine steps first ([add a machine](ADD_A_MACHINE.md)) |
+| Digitone II | research | a local draft; core-dn2 0.3, with the Digitakt II 1.1 additions, is in toonst's elekloader fork | not started | digikit (the author's; emulator only) | the machine steps, then an SDK and a base from core-dn2's source ([add a machine](ADD_A_MACHINE.md)) |
+| Analog Keys, Model:Cycles | research | none | not started | none known | the machine steps first ([add a machine](ADD_A_MACHINE.md)) |
 | Zoom MultiStomp | research | MIDISTOMP | the base builds in the browser; flashing it, a SysEx hello and loading without a reboot are not built | none | [plan](ZOOM_MULTISTOMP.md#plan) |
 | LXR-02 | research | published source | planned: SD-card base, USB-MIDI SysEx link | none | [plan](LXR_02.md) |
 | Tonverk | research | none | closed: signed, encrypted updates | none | nothing without Elektron's agreement |
