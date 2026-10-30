@@ -216,32 +216,37 @@
   ],
   "captures": [
     {
-      "path": "perform-page.png",
+      "path": "media/perform-page.png",
       "sha256": "5f155f08ba73af7b64a8bfe743ad14235b60d0c6a0d75f23dcc13c9f330690c4",
+      "plan": "wait 1000\ntap TRIG\ntap TRIG\nwait 500\nsnap perform-page\npress FUNC\npress #40\nrelease #40\nrelease FUNC\nwait 300\nsnap assign-track\ntap #40\nwait 300\ntap #40\nwait 2500\nsnap assigned\ntap GLOBAL\nwait 500\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\nsnap settings\ntap YES\nwait 500\nsnap perform-edit\n",
       "atMs": 2097.5878205128206,
       "requestedAtMs": 2314.2606837606836
     },
     {
-      "path": "assign-track.png",
+      "path": "media/assign-track.png",
       "sha256": "a62fe4fbb94a716c40f58460e27aeb97336ff98e4166c3cf7be65a7d93aba6c3",
+      "plan": "wait 1000\ntap TRIG\ntap TRIG\nwait 500\nsnap perform-page\npress FUNC\npress #40\nrelease #40\nrelease FUNC\nwait 300\nsnap assign-track\ntap #40\nwait 300\ntap #40\nwait 2500\nsnap assigned\ntap GLOBAL\nwait 500\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\nsnap settings\ntap YES\nwait 500\nsnap perform-edit\n",
       "atMs": 2797.6081196581194,
       "requestedAtMs": 3014.2805555555556
     },
     {
-      "path": "assigned.png",
+      "path": "media/assigned.png",
       "sha256": "f8fa69dccbbc1b288f82882d58907fcd6201c6ed3932f82e7b28a552c0ae75cb",
+      "plan": "wait 1000\ntap TRIG\ntap TRIG\nwait 500\nsnap perform-page\npress FUNC\npress #40\nrelease #40\nrelease FUNC\nwait 300\nsnap assign-track\ntap #40\nwait 300\ntap #40\nwait 2500\nsnap assigned\ntap GLOBAL\nwait 500\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\nsnap settings\ntap YES\nwait 500\nsnap perform-edit\n",
       "atMs": 6397.71282051282,
       "requestedAtMs": 6614.385683760684
     },
     {
-      "path": "settings.png",
+      "path": "media/settings.png",
       "sha256": "7cfb7f7622ff1ca7c35b9356d1e81793529d680d7834eeab619770df89c94a5a",
+      "plan": "wait 1000\ntap TRIG\ntap TRIG\nwait 500\nsnap perform-page\npress FUNC\npress #40\nrelease #40\nrelease FUNC\nwait 300\nsnap assign-track\ntap #40\nwait 300\ntap #40\nwait 2500\nsnap assigned\ntap GLOBAL\nwait 500\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\nsnap settings\ntap YES\nwait 500\nsnap perform-edit\n",
       "atMs": 11514.528205128205,
       "requestedAtMs": 11514.528205128205
     },
     {
-      "path": "perform-edit.png",
+      "path": "media/perform-edit.png",
       "sha256": "21a7d8976b98c282be5662c3a64156402de8960ff5d1726a7bee9d9d5b480c96",
+      "plan": "wait 1000\ntap TRIG\ntap TRIG\nwait 500\nsnap perform-page\npress FUNC\npress #40\nrelease #40\nrelease FUNC\nwait 300\nsnap assign-track\ntap #40\nwait 300\ntap #40\nwait 2500\nsnap assigned\ntap GLOBAL\nwait 500\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\ntap DOWN\nsnap settings\ntap YES\nwait 500\nsnap perform-edit\n",
       "atMs": 12199.999786324786,
       "requestedAtMs": 12414.554059829059
     }
