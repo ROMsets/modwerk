@@ -18,7 +18,7 @@ List them with `gh pr list --state open --json number,title,author,isDraft,label
 
 - **Review** new and changed pull requests. Read the code they touch, not only the diff, and judge each against the [modding guidelines](../MODDING_GUIDELINES.md) and the whole stack:
   - **The base:** its hooks, events and tables, and the order open pull requests regenerate it in.
-  - **The USB lifecycle:** package, self-test, Keep/Undo, removal, base-bound packages.
+  - **The USB lifecycle:** package, Keep/Undo, removal, base-bound packages.
   - **Module splits:** one job per module, no dependency on another module, shared code in the base or SDK first, no gesture only one module can hold.
   - **Cross-compatibility:** its `uiClaims` and conflicts against every other module.
   - **A new machine:** the [machine recipe](MACHINE_RECIPE.md).
