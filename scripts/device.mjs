@@ -316,7 +316,8 @@ async function missing() {
  * stats (one line: CPU, each core's mean/peak per mille and idle passes a frame), png:FILE, mem:0xADDR:LEN, part1-4, pick:T1:FX2:NAME,
  * +KEY / -KEY (press, release), crash (the last crash's record), crashtest (development bases: crash on purpose),
  * stall (the last DSP stall's record), stalltest (development bases: write one now), guardtest / guardtest:0 (development
- * bases: the next start leaves the set's first module out, or holds every module, as after a crash in its restore), selftest (PROJ > MODWERK > SELF TEST, about 15 s)
+ * bases: the next start leaves the set's first module out, or holds every module, as after a crash in its restore),
+ * saved (the card set's result, modset.c: 1 restored, 10 left out, 11 held; development bases), selftest (PROJ > MODWERK > SELF TEST, about 15 s)
  * hold:N (development bases: host frames wait N seconds, as after a boot), missing (modules the project names, not installed),
  * inventory (the installed modules, INVENTORY),
  * reload (the current Part from its saved copy, through the Part menu), gap (the longest time between frames since the last gap),
@@ -394,6 +395,10 @@ async function run(sequence, until = Infinity) { // serve: past its time limit a
     // RELOAD from the Part menu, which keeps its cursor and stops at RENAME. Never PART+FUNC+PLAY: that is CLEAR.
     else if (step === 'reload') await run('FUNC+PART w600 UP w150 UP w150 UP w150 DOWN w200 YES w1000')
     else if ((m = /^hold:(\d)$/.exec(step))) await devIn(22, Number(m[1]), 1) // development bases: host frames wait N seconds, as after a boot
+    else if (step === 'saved') { // the self-test record's card set, read without starting a test (modset.c's result)
+      const b = Buffer.from(await devIn(21, 0, 96))
+      console.log(`card set ${b.readUInt32BE(60)}, ${b.readUInt32BE(64)} modules saved, ${b.readUInt32BE(68)} live`)
+    }
     else if (step === 'selftest' || step === 'selftest:trace') { // dsp.c's self-test (PROJ > MODWERK > SELF TEST): started, then read until it is done
       // :trace prints each read beside the CPU meter's latest half-second window (development bases), to see what a peak was
       const trace = step.endsWith(':trace') && (async (r, t0) => { const w = await statusWords(); console.log(`  ${((Date.now() - t0) / 1000).toFixed(1)} s phase ${r.phase} done ${r.done}/${r.total} ran ${r.ran} cpu now ${w(66)} recorded ${r.cpu} T1-4 ${w(70)} T5-8 ${w(68)}`) })

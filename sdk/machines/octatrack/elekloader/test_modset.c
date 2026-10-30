@@ -251,7 +251,8 @@ int main(void)
     cut(); modwerk_test_said = 0; modwerk_modset_service();
     CHECK(modwerk_modset_result == LEFT_OUT && installed == 2 && ids[1] == 0x103u && refused_m == 0x102u && refused_c == GUARD_LEFT);
     run(GUARD_NOTICE - 1u - modwerk_test_ticks); CHECK(!modwerk_test_said);
-    run(1); CHECK(said("SUPERCALIFR LEFT OUT"));
+    modwerk_test_dialog = 1; run(700); CHECK(!modwerk_test_said); /* MISSING shows: the notice waits for it */
+    modwerk_test_dialog = 0; run(1); CHECK(said("SUPERCALIFR LEFT OUT"));
     run(GUARD_SETTLE + 1u); CHECK(!modwerk_test_guard.armed);
     boot(); modwerk_modset_service(); CHECK(modwerk_modset_result == LEFT_OUT && installed == 2 && writes == written);
     /* A stall while Tape Echo installs: the loader refuses the rest, frames stop, and the power cycle leaves both out. */

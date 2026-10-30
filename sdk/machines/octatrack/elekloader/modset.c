@@ -47,6 +47,8 @@ const char *modwerk_test_said; /* the last notice */
 int modwerk_test_settling;
 #define SAY(text) (modwerk_test_said = (text))
 #define SETTLING() (modwerk_test_settling)
+int modwerk_test_dialog;
+#define DIALOG() (modwerk_test_dialog)
 #ifdef MODWERK_HOST_CARD
 extern uint8_t modwerk_test_card_io[512]; /* the fixture's stock file calls under the real store and load below */
 #define octamod_log_io modwerk_test_card_io
@@ -65,6 +67,8 @@ extern volatile uint32_t modwerk_runtime_ticks;
 #define SAY(text) ((void (*)(const char *, unsigned))0x4005a2b8u)(text, 0xa0)
 __attribute__((weak)) int modwerk_controller_settling(void) { return 0; } /* controller_board.c, on a resident base */
 #define SETTLING() modwerk_controller_settling()
+__attribute__((weak)) int modwerk_status_dialog(void) { return 0; } /* status.c: one of its dialogs shows */
+#define DIALOG() modwerk_status_dialog()
 #endif
 #if !defined MODWERK_HOST || defined MODWERK_HOST_CARD
 extern int olog_stock_open(struct file_object *, const char *, const char *, void *, unsigned);
@@ -442,7 +446,8 @@ static void restore(void)
     restored = 0, left_out = left_why = 0;
     restore_pass();
 }
-/* ep0.c's tick (sys task, as the board's): the restore's notice, once its engines run or its time is up; and the
+/* ep0.c's tick (sys task, as the board's): the restore's notice, once its engines run or its time is up and no dialog of
+ * status.c's shows (MISSING opens after a restore that left out a module the bank names); and the
  * guard's settling, once the restore has run ten seconds with frames moving and no crash or stall recorded. */
 void modwerk_modset_notice_tick(void)
 {
@@ -454,7 +459,7 @@ void modwerk_modset_notice_tick(void)
     frames = now;
     const char *text = notice;
     uint32_t waited = TICKS - notice_at;
-    if (!text || TICKS < notice_after || waited < NOTICE_FIRST || (waited < NOTICE_LAST && SETTLING())) return;
+    if (!text || TICKS < notice_after || DIALOG() || waited < NOTICE_FIRST || (waited < NOTICE_LAST && SETTLING())) return;
     notice = 0;
     SAY(text);
 }
