@@ -21,6 +21,6 @@ description: Triage Modwerk's open issues in one pass - read and sort each, repl
 4. **Plan the rest** in chat: the confirmed bugs and the features worth doing, one line each, in the order to work on them.
    - Say what breaks for whom, how many issues share the cause, and where in the code it likely sits.
    - Group issues one fix closes. Put first what loses work or stops the instrument, then what most people hit.
-   - Say who does it: the owner with `/modwerk-fix-issue`, the module's author (someone else's module waits for their OK), or a `Fix:` pull request for shared code.
+   - Say who does it: the owner with `/modwerk-fix-issue`, the module's author (someone else's module waits for their OK), or a `Fix:` pull request for shared code. Name whoever holds the module on the agent board (`npm run board -- list module <machine>/<id>`): they are changing it now.
 
    Start only what the invoker picks, each through `/modwerk-fix-issue`.
