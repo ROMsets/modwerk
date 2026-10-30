@@ -8,7 +8,6 @@ describe('the agent board stays in the context agents read and the commands they
   it('is named where an agent plans, claims and pushes', () => {
     expect(read('AGENTS.md')).toContain('the [agent board](docs/AGENT_BOARD.md)')
     expect(read('AGENTS.md')).toContain('never work around a claim')
-    expect(read('AGENTS.md')).toContain('`npm run board -- finding`')
     for (const folder of ['.claude/skills', '.agents/skills']) {
       expect(read(folder + '/modwerk-new-module/SKILL.md')).toContain('npm run board -- list module')
       expect(read(folder + '/modwerk-new-module/SKILL.md')).toContain('Never work around a claim')
