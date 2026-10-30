@@ -11,13 +11,14 @@ description: Triage Modwerk's open issues in one pass - read and sort each, repl
 
 1. **Read and sort** each by the issue worker's section in `docs/MAINTENANCE.md#issue-worker`:
    - read the body and every comment (`gh issue view <n> --json body,comments`);
+   - list what we already said on it: each of our comments, what it asked or suggested, of whom, and whether it was answered. On a mirrored report every comment shows as repeat98: one that starts `Reply from **[… on Modwerk]**` is the reporter's, the rest are ours;
    - sort it: fixed or answered, duplicate, superseded (the module, version or feature it is about has changed or gone), needs details, confirmed, question or feature, stale;
    - look for its fix in merged pull requests and live releases first, then in open pull requests; its cause in the beta findings; and other issues with the same cause.
 2. **Reply where needed**, at most one comment per issue: ask for missing details, answer a question, or point to the release or pull request that fixes it.
    - Ask for everything still missing in that one comment, so the next pass can close or fix it.
    - Ask with `/modwerk needs-info …` on a module you maintain, a plain reply elsewhere (`docs/DEVELOPER_WORKFLOW.md#manage-reports-on-github`).
    - Write plainly and friendly, in the invoker's voice, and post from a file.
-   - Post nothing when nothing is needed, and never repeat a request already on the thread.
+   - Post nothing when nothing is needed, and never repeat a question, request, suggestion or workaround already on the thread, closing comments included. A follow-up adds something new or asks someone not yet asked.
    - Name no tester and quote nothing from private diagnostics.
    - Replies only, until the invoker picks: no labels, confirms, closes or resolves.
 3. **Present the closures** first, in chat as one list, a reason for each. Lean toward closing:
